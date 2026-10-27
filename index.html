@@ -339,7 +339,7 @@ p { margin: 0; }
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
     { type: "speak", dim: "Voz", sentence: "I think this sheep is cheap, but that ship isn't." },
     { type: "speak", dim: "Voz", sentence: "I think they have three very big bags." },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute." },
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
@@ -593,7 +593,7 @@ p { margin: 0; }
     $("sp-err").hidden = !s.err; $("sp-err").textContent = s.err;
     const res = $("sp-res"); res.hidden = !s.g || s.listening;
     if (s.g && !s.listening) {
-      const c = Math.round(s.g.ratio * 100), f = Math.round((s.flu || 0) * 100);
+      const c = Math.round((s.clar || 0) * 100), f = Math.round((s.flu || 0) * 100);
       $("m-clar").textContent = c + "%"; $("m-clar-bar").style.width = c + "%";
       $("m-flu").textContent = f + "%"; $("m-flu-bar").style.width = f + "%";
     }
@@ -612,7 +612,7 @@ p { margin: 0; }
     stopRecog();
     const r = new SR();
     // Keep listening through short pauses; stop when the student taps, after ~2.5 s of silence, or after 25 s.
-    r.lang = "en-US"; r.interimResults = true; r.maxAlternatives = 3; r.continuous = true;
+    r.lang = "en-US"; r.interimResults = true; r.maxAlternatives = 1; r.continuous = true;
     let segs = [], timer = null, hard = null, firstT = 0, lastT = 0, maxGap = 0;
     const quiet = (ms) => { clearTimeout(timer); timer = setTimeout(() => { try { r.stop(); } catch (e) {} }, ms); };
     s.listening = true; s.live = ""; s.err = "";
@@ -621,11 +621,10 @@ p { margin: 0; }
     r.onresult = (e) => {
       segs = [];
       for (let k = 0; k < e.results.length; k++) {
-        const res = e.results[k], alts = [];
-        for (let a = 0; a < res.length; a++) alts.push(res[a].transcript);
-        segs.push(alts);
+        const res = e.results[k];
+        segs.push({ text: res[0].transcript, conf: res.isFinal ? res[0].confidence : 0 });
       }
-      s.live = segs.map((x) => x[0]).join(" ").replace(/\s+/g, " ").trim();
+      s.live = segs.map((x) => x.text).join(" ").replace(/\s+/g, " ").trim();
       const now = performance.now();
       if (!firstT) firstT = now; else maxGap = Math.max(maxGap, now - lastT);
       lastT = now;
@@ -643,22 +642,26 @@ p { margin: 0; }
       clearTimeout(timer); clearTimeout(hard);
       s.listening = false; recog = null;
       if (segs.length && s.live) {
-        // the top transcript, plus versions that swap in each segment's alternatives; keep the closest one
-        const top = segs.map((x) => x[0]);
-        const cands = [top.join(" ")];
-        segs.forEach((alts, k) => alts.slice(1).forEach((alt) => { const c = top.slice(); c[k] = alt; cands.push(c.join(" ")); }));
+        // Strict: only the browser's first transcript counts (no picking among its guesses).
         s.tries++;
-        let best = null;
-        cands.forEach((t) => { const g = grade(t, q.sentence); if (!best || g.ratio > best.ratio) best = g; });
-        // Fluency estimate: speaking pace (words per minute), minus a penalty for long pauses inside the sentence.
+        const g = grade(s.live, q.sentence);
+        // How sure the browser was. Unclear pronunciation lowers it even when the browser "fixes" the words.
+        let cw = 0, cs = 0;
+        segs.forEach((x) => { if (x.conf > 0) { const w = x.text.length; cw += w; cs += x.conf * w; } });
+        const conf = cw ? cs / cw : 0;
+        const confFactor = cw ? Math.max(0, Math.min(1, (conf - 0.5) / 0.4)) : 0.8;
+        const clarity = Math.max(0, Math.min(1, g.ratio * confFactor));
+        // Fluency: speaking pace and long pauses, minus missed reductions (saying "want to" where a native says "wanna").
         const words = q.sentence.split(" ").length;
         const secs = Math.max(0.8, (lastT - firstT) / 1000 + 0.6);
         const wpm = words / secs * 60;
-        let flu = Math.min(1, Math.max(0, (wpm - 50) / 80));
-        if (maxGap > 1500) flu -= Math.min(0.4, (maxGap - 1500) / 1000 * 0.2);
-        flu = Math.max(0, Math.min(1, flu)) * Math.min(1, best.ratio / 0.6);
-        const combined = best.ratio * 0.7 + flu * 0.3;
-        if (!s.g || combined > s.combined) { s.g = best; s.flu = flu; s.combined = combined; }
+        let flu = Math.min(1, Math.max(0, (wpm - 60) / 90));
+        if (maxGap > 1200) flu -= Math.min(0.5, (maxGap - 1200) / 1000 * 0.25);
+        const said = " " + s.live.toLowerCase().replace(/[^a-z' ]/g, " ").replace(/\s+/g, " ") + " ";
+        (q.reduce || []).forEach(([formal, reduced]) => { if (said.includes(" " + formal + " ") && !said.includes(" " + reduced + " ")) flu -= 0.3; });
+        flu = Math.max(0, Math.min(1, flu)) * Math.min(1, clarity / 0.7);
+        const combined = clarity * 0.7 + flu * 0.3;
+        if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.combined = combined; }
         s.err = "";
       } else if (!s.err) s.err = "No te escuché. Acércate al micrófono e intenta de nuevo.";
       if (current === idx) renderSpeak(q);
