@@ -575,14 +575,14 @@ p { margin: 0; }
     $("q-text").textContent = "Lee esta frase en voz alta";
     $("q-hint").hidden = false;
     $("q-hint").textContent = n === 1
-      ? "Presiona «Grabar mi voz», lee la frase con calma y espera un momento al terminar. Tienes " + SPEAK_TRIES + " intentos. La primera vez, tu navegador te va a pedir permiso para usar el micrófono."
+      ? "Presiona «Grabar mi voz», lee la frase con calma y toca el botón otra vez cuando termines. Tienes " + SPEAK_TRIES + " intentos. La primera vez, tu navegador te va a pedir permiso para usar el micrófono."
       : "Tienes " + SPEAK_TRIES + " intentos.";
     $("sp-sentence").textContent = q.sentence;
     const left = SPEAK_TRIES - s.tries;
     const btn = $("rec");
     btn.classList.toggle("on", s.listening);
     btn.disabled = !s.listening && left <= 0;
-    $("rec-label").textContent = s.listening ? "Te estoy escuchando… (toca para terminar)" : left <= 0 ? "Ya usaste tus " + SPEAK_TRIES + " intentos" : s.tries ? "Intentar otra vez" : "Grabar mi voz";
+    $("rec-label").textContent = s.listening ? "Toca aquí cuando termines" : left <= 0 ? "Ya usaste tus " + SPEAK_TRIES + " intentos" : s.tries ? "Intentar otra vez" : "Grabar mi voz";
     $("rec-left").textContent = !s.listening && s.tries && left > 0 ? "Te queda 1 intento" : "";
     $("sp-live").hidden = !s.listening || !s.live; $("sp-live").textContent = s.live;
     $("sp-err").hidden = !s.err; $("sp-err").textContent = s.err;
@@ -608,24 +608,22 @@ p { margin: 0; }
     if (s.tries >= SPEAK_TRIES) return;
     stopRecog();
     const r = new SR();
-    r.lang = "en-US"; r.interimResults = true; r.maxAlternatives = 5; r.continuous = false;
-    let finals = null;
+    // Keep listening through short pauses; stop when the student taps, after ~2.5 s of silence, or after 25 s.
+    r.lang = "en-US"; r.interimResults = true; r.maxAlternatives = 3; r.continuous = true;
+    let segs = [], timer = null, hard = null;
+    const quiet = (ms) => { clearTimeout(timer); timer = setTimeout(() => { try { r.stop(); } catch (e) {} }, ms); };
     s.listening = true; s.live = ""; s.err = "";
+    quiet(9000);
+    hard = setTimeout(() => { try { r.stop(); } catch (e) {} }, 25000);
     r.onresult = (e) => {
-      let text = "";
-      for (let k = 0; k < e.results.length; k++) text += e.results[k][0].transcript + " ";
-      s.live = text.trim();
-      const last = e.results[e.results.length - 1];
-      if (last.isFinal) {
-        // keep every alternative of the full utterance and grade the one closest to the sentence
-        const alts = [];
-        for (let a = 0; a < last.length; a++) {
-          let t = "";
-          for (let k = 0; k < e.results.length - 1; k++) t += e.results[k][0].transcript + " ";
-          alts.push((t + last[a].transcript).trim());
-        }
-        finals = alts;
+      segs = [];
+      for (let k = 0; k < e.results.length; k++) {
+        const res = e.results[k], alts = [];
+        for (let a = 0; a < res.length; a++) alts.push(res[a].transcript);
+        segs.push(alts);
       }
+      s.live = segs.map((x) => x[0]).join(" ").replace(/\s+/g, " ").trim();
+      quiet(2500);
       if (current === idx) renderSpeak(q);
     };
     r.onerror = (e) => {
@@ -636,15 +634,19 @@ p { margin: 0; }
       else if (e.error !== "aborted") s.err = "Algo falló al escucharte. Intenta de nuevo.";
     };
     r.onend = () => {
+      clearTimeout(timer); clearTimeout(hard);
       s.listening = false; recog = null;
-      if (!finals && s.live) finals = [s.live];
-      if (finals && finals.length) {
+      if (segs.length && s.live) {
+        // the top transcript, plus versions that swap in each segment's alternatives; keep the closest one
+        const top = segs.map((x) => x[0]);
+        const cands = [top.join(" ")];
+        segs.forEach((alts, k) => alts.slice(1).forEach((alt) => { const c = top.slice(); c[k] = alt; cands.push(c.join(" ")); }));
         s.tries++;
         let best = null;
-        finals.forEach((t) => { const g = grade(t, q.sentence); if (!best || g.ratio > best.ratio) best = g; });
+        cands.forEach((t) => { const g = grade(t, q.sentence); if (!best || g.ratio > best.ratio) best = g; });
         if (!s.g || best.ratio > s.g.ratio) s.g = best;
         s.err = "";
-      }
+      } else if (!s.err) s.err = "No te escuché. Acércate al micrófono e intenta de nuevo.";
       if (current === idx) renderSpeak(q);
     };
     recog = r;
