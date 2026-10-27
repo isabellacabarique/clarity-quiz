@@ -345,7 +345,7 @@ p { margin: 0; }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
-  const AZURE_TOKEN_URL = "";
+  const AZURE_TOKEN_URL = "https://clarity-quiz-token.isabellacabarique.workers.dev/";
   const USE_AZURE = !!AZURE_TOKEN_URL && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
   if (!SR && !USE_AZURE) { for (let i = QUESTIONS.length - 1; i >= 0; i--) if (QUESTIONS[i].type === "speak") QUESTIONS.splice(i, 1); }
