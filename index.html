@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Clarity Speaker Quiz</title>
+<meta name="description" content="Quiz de Clarity by teacher Isa: descubre qué tipo de speaker eres hoy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap">
+<style>
+/* Layout: one focused column for the quiz; the result opens into two columns (shareable card left, explanation right). Palette and type follow clarity.immersa.com.co. */
+:root {
+  --bg: #EAF6F3;
+  --bg-deep: #DCF0EB;
+  --surface: #FFFFFF;
+  --ink: #15302B;
+  --ink-soft: #3F5955;
+  --line: #B9E0DA;
+  --teal: #3F9C92;
+  --teal-dark: #2D7A72;
+  --teal-pale: #CDEAE5;
+  --coral: #FF6A53;
+  --coral-dark: #E5563F;
+  --on-strong: #FFFFFF;
+  --focus: #2D7A72;
+  --font-display: "Fredoka", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-brand: "Outfit", "Fredoka", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1F1C; --bg-deep: #0B1916; --surface: #16302B; --ink: #E6F4F1; --ink-soft: #A9C4BF;
+    --line: #2A4A44; --teal-dark: #7FD3C8; --teal-pale: #1D3A35; --coral: #FF7A65; --coral-dark: #E5563F; --focus: #7FD3C8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1F1C; --bg-deep: #0B1916; --surface: #16302B; --ink: #E6F4F1; --ink-soft: #A9C4BF;
+  --line: #2A4A44; --teal-dark: #7FD3C8; --teal-pale: #1D3A35; --coral: #FF7A65; --coral-dark: #E5563F; --focus: #7FD3C8;
+  color-scheme: dark;
+}
+html { -webkit-text-size-adjust: 100%; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+* { box-sizing: border-box; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+}
+.wrap {
+  max-width: 1060px; margin: 0 auto;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.brand b { font-family: var(--font-brand); font-weight: 800; letter-spacing: -.01em; font-size: 26px; line-height: 1; }
+.brand span { color: var(--ink-soft); font-size: 14px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; font-weight: 600; }
+h1 { font-size: clamp(34px, 6.4vw, 56px); }
+h2 { font-size: clamp(24px, 4vw, 34px); font-weight: 600; }
+h3 { font-size: 21px; }
+p { margin: 0; }
+.lede { color: var(--ink-soft); max-width: 60ch; font-size: 18px; }
+.hint { color: var(--ink-soft); font-size: 14px; }
+.btn {
+  font: 700 17px/1 var(--font-body); border: 0; border-radius: 999px; cursor: pointer;
+  padding: 16px 26px; background: var(--coral-dark); color: var(--on-strong);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn:hover { background: var(--coral); }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+.btn.ghost:hover { background: var(--surface); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn:disabled:hover { background: var(--coral-dark); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+/* Intro */
+.intro { display: grid; gap: 28px; }
+.intro-top { display: grid; gap: 16px; max-width: 860px; min-width: 0; }
+.reflection { padding-left: 18px; border-left: 4px solid var(--coral); min-width: 0; }
+.motto { font-family: var(--font-display); font-weight: 500; font-size: clamp(19px, 2.6vw, 24px); line-height: 1.25; text-wrap: balance; color: var(--teal-dark); }
+@media (min-width: 900px) { .motto { white-space: nowrap; } }
+.meta { display: flex; gap: 6px 18px; flex-wrap: wrap; color: var(--ink-soft); font-size: 15px; }
+
+/* Question */
+.q-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip { font: 700 12px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; padding: 7px 11px; border-radius: 999px; background: var(--teal-pale); color: var(--teal-dark); }
+.count { color: var(--ink-soft); font-size: 15px; font-variant-numeric: tabular-nums; }
+.bar { height: 8px; background: var(--teal-pale); border-radius: 99px; overflow: hidden; margin-bottom: 36px; }
+.bar > div { height: 100%; background: var(--teal); width: 0; transition: width .3s ease; }
+.question { max-width: 720px; display: grid; gap: 26px; }
+.q-title { display: grid; gap: 8px; }
+.options { display: grid; gap: 12px; }
+.opt {
+  display: flex; gap: 14px; align-items: center; text-align: left; width: 100%;
+  background: var(--surface); color: var(--ink); border: 2px solid var(--line); border-radius: 16px;
+  padding: 16px 18px; font: 600 17px/1.35 var(--font-body); cursor: pointer;
+  transition: border-color .15s, background .15s, opacity .15s;
+}
+.opt:hover { border-color: #3F9C92; }
+.opt kbd { flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--teal-pale); color: var(--teal-dark); font: 600 15px var(--font-display); }
+.opt.on { border-color: #3F9C92; background: #3F9C92; color: #FFFFFF; }
+.opt.on kbd { background: #FFFFFF; color: #2D7A72; }
+.opt.off { opacity: .45; cursor: default; }
+.opt.off:hover { border-color: var(--line); }
+.q-nav { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.dict { display: grid; gap: 14px; }
+.play-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.play { display: inline-flex; align-items: center; gap: 12px; border: 0; border-radius: 999px; cursor: pointer; padding: 12px 22px 12px 12px; background: #3F9C92; color: #FFFFFF; font: 700 17px/1 var(--font-body); }
+.play:hover { background: #2D7A72; }
+.play:disabled { background: var(--line); color: var(--ink-soft); cursor: default; }
+.play-ic { width: 36px; height: 36px; border-radius: 50%; background: #FFFFFF; position: relative; flex: none; }
+.play-ic::after { content: ""; position: absolute; left: 14px; top: 10px; border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent #3F9C92; }
+.play:disabled .play-ic::after { border-left-color: var(--ink-soft); }
+.dict-in { width: 100%; font: 600 18px/1.45 var(--font-body); padding: 14px 16px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; }
+.dict-in:focus { border-color: #3F9C92; outline: none; }
+.dict-in[readonly] { background: var(--bg); }
+.linkbtn { justify-self: start; border: 0; background: none; padding: 2px 0; color: var(--ink-soft); font: 600 15px var(--font-body); text-decoration: underline; cursor: pointer; }
+.dict-res { display: grid; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; }
+.cmp { display: grid; gap: 6px; }
+.cmp-label { font: 700 12px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.cmp.ok .cmp-label { color: var(--teal-dark); }
+.words { font: 600 19px/1.7 var(--font-body); }
+.w { border-radius: 6px; padding: 1px 4px; }
+.w.hit { background: var(--teal-pale); color: var(--ink); }
+.w.miss { background: #FFE1D9; color: #8A2414; box-shadow: inset 0 -2px 0 #E5563F; }
+.w.extra { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: #E5563F; }
+.w.empty { color: var(--ink-soft); font-weight: 500; font-style: italic; }
+.dict-score { font-weight: 700; }
+.speak { display: grid; gap: 14px; }
+.sentence { font: 600 clamp(22px, 4vw, 30px)/1.3 var(--font-display); background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 18px 20px; text-wrap: balance; }
+.rec-ic { width: 36px; height: 36px; border-radius: 50%; background: #FFFFFF; position: relative; flex: none; }
+.rec-ic::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: #E5563F; }
+.rec.on { background: #E5563F; }
+.rec.on .rec-ic::after { inset: 12px; border-radius: 3px; background: #E5563F; animation: pulse 1s ease-in-out infinite alternate; }
+@keyframes pulse { from { opacity: 1; } to { opacity: .45; } }
+.live { color: var(--ink-soft); font-style: italic; font-size: 17px; }
+.sp-err { color: #B33A26; font-weight: 600; font-size: 15px; }
+.notes ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+
+/* Result */
+.result { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 44px; align-items: start; }
+@media (max-width: 860px) { .result { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
+.card-col { display: grid; gap: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+@media (max-width: 860px) { .card-col { position: static; } }
+.card-img { width: 100%; max-width: 100%; aspect-ratio: 4 / 5; border-radius: 24px; display: block; background: var(--teal-pale); box-shadow: 0 18px 40px -20px rgba(21,48,43,.35); }
+.save-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.info { display: grid; gap: 26px; min-width: 0; }
+.headline { display: grid; gap: 14px; }
+.eyebrow { font: 700 13px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--teal-dark); }
+.headline h1 { font-size: clamp(30px, 4.6vw, 44px); }
+.headline h1 .lvl { color: var(--teal-dark); display: inline; }
+.score-line { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.score-line strong { color: var(--teal-dark); }
+.personal { font-size: 18px; color: var(--ink-soft); max-width: 60ch; padding-left: 16px; border-left: 4px solid var(--coral); }
+.personal em { font-style: normal; font-weight: 700; color: var(--ink); }
+.section { display: grid; gap: 8px; }
+.section h3 { color: var(--ink); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: grid; gap: 14px; min-width: 0; }
+.path { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.path li { display: grid; gap: 2px; }
+.path b { font: 700 13px/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--teal-dark); }
+.sign { font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--teal-dark); }
+.toggle { display: inline-flex; background: var(--bg); border-radius: 999px; padding: 4px; gap: 4px; flex-wrap: wrap; }
+.toggle button { border: 0; background: transparent; color: var(--ink); font: 700 14px var(--font-body); padding: 9px 14px; border-radius: 999px; cursor: pointer; }
+.toggle button[aria-pressed="true"] { background: #3F9C92; color: #FFFFFF; }
+.prev { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; }
+.prev input { width: 90px; font: 600 16px var(--font-body); padding: 9px 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
+.msg { width: 100%; min-height: 96px; resize: vertical; font: 500 16px/1.5 var(--font-body); padding: 14px 16px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
+.copied { color: var(--teal-dark); font-weight: 700; font-size: 15px; }
+.retake { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Phones */
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .wrap { padding-block: 20px 48px; }
+  .brand { margin-bottom: 22px; }
+  h1 { font-size: clamp(30px, 9vw, 40px); }
+  .question h2 { font-size: clamp(22px, 6.4vw, 28px); }
+  .bar { margin-bottom: 24px; }
+  .question { gap: 20px; }
+  .opt { padding: 14px; font-size: 16px; gap: 12px; }
+  .q-nav .btn, .intro .btn, .save-row .btn, .retake .btn { flex: 1 1 auto; }
+  .panel { padding: 18px; }
+  .toggle { display: flex; }
+  .toggle button { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand"><b>Clarity</b><span>by teacher Isa</span></header>
+
+  <!-- INTRO -->
+  <section id="intro" class="intro">
+    <div class="intro-top">
+      <div class="reflection"><p class="motto">Para saber a dónde vas, primero tienes que saber dónde estás.</p></div>
+      <h1>¿Qué tipo de speaker eres hoy?</h1>
+      <p class="lede">Vamos a averiguarlo para definir juntos tu camino en Clarity. Responde las siguientes preguntas:</p>
+      <div class="meta"><span id="meta-count">20 preguntas</span><span>7 minutos</span><span id="meta-mic">Necesitas micrófono</span><span>Repítelo cada 30 días</span></div>
+    </div>
+    <div><button class="btn" id="start">Empezar el quiz</button></div>
+  </section>
+
+  <!-- QUESTION -->
+  <section id="quiz" hidden>
+    <div class="q-head"><span class="chip" id="q-dim">Bases</span><span class="count" id="q-count">Pregunta 1 de 11</span></div>
+    <div class="bar" aria-hidden="true"><div id="q-bar"></div></div>
+    <div class="question">
+      <div class="q-title"><h2 id="q-text"></h2><p class="hint" id="q-hint"></p></div>
+      <div class="options" id="q-opts" role="group" aria-labelledby="q-text"></div>
+      <div class="dict" id="dict" hidden>
+        <div class="play-row">
+          <button class="play" id="play" type="button"><span class="play-ic" aria-hidden="true"></span><span id="play-label">Escuchar el audio</span></button>
+          <span class="hint" id="play-left"></span>
+        </div>
+        <label class="sr" for="dict-in">Lo que escuchaste</label>
+        <textarea id="dict-in" class="dict-in" rows="3" placeholder="Escribe aquí lo que escuchas, en inglés" autocomplete="off" autocapitalize="sentences" spellcheck="false"></textarea>
+        <button class="linkbtn" id="dict-skip" type="button">No entendí nada</button>
+        <div class="dict-res" id="dict-res" hidden>
+          <div class="cmp"><span class="cmp-label">Tu respuesta</span><p class="words" id="dict-you"></p></div>
+          <div class="cmp ok"><span class="cmp-label">Lo que dice el audio</span><p class="words" id="dict-ok"></p></div>
+          <p class="dict-score" id="dict-score"></p>
+        </div>
+      </div>
+      <div class="speak" id="speak" hidden>
+        <p class="sentence" id="sp-sentence" lang="en"></p>
+        <div class="play-row">
+          <button class="play rec" id="rec" type="button"><span class="rec-ic" aria-hidden="true"></span><span id="rec-label">Grabar mi voz</span></button>
+          <span class="hint" id="rec-left"></span>
+        </div>
+        <p class="live" id="sp-live" hidden lang="en"></p>
+        <p class="sp-err" id="sp-err" role="alert" hidden></p>
+        <div class="dict-res" id="sp-res" hidden>
+          <div class="cmp"><span class="cmp-label">Lo que entendí</span><p class="words" id="sp-you" lang="en"></p></div>
+          <div class="cmp ok"><span class="cmp-label">La frase</span><p class="words" id="sp-ok" lang="en"></p></div>
+          <p class="dict-score" id="sp-score"></p>
+        </div>
+        <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
+      </div>
+      <div class="q-nav"><button class="btn ghost" id="back">Anterior</button><button class="btn" id="next" disabled>Siguiente</button></div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" hidden>
+    <div class="result">
+      <div class="card-col">
+        <img id="card" class="card-img" alt="Tu tarjeta de resultado de Clarity">
+        <div class="save-row"><button class="btn" id="save" hidden>Guardar imagen</button></div>
+        <p class="hint" id="save-hint">Toma un pantallazo de tu tarjeta, o mantén presionada la imagen para guardarla.</p>
+      </div>
+      <div class="info">
+        <div class="headline">
+          <h1 id="r-name"></h1>
+          <p class="score-line" id="r-score"></p>
+          <p class="personal" id="r-intro"></p>
+        </div>
+
+        <div class="section">
+          <h3 id="r-mean-title"></h3>
+          <p id="r-desc"></p>
+        </div>
+
+        <div class="section">
+          <h3>Tu reto más grande en este momento</h3>
+          <p id="r-challenge"></p>
+        </div>
+
+        <div class="panel">
+          <h3 id="r-path-title"></h3>
+          <ul class="path" id="r-path"></ul>
+          <p class="sign">Con cariño, Isa</p>
+        </div>
+
+        <div class="retake"><button class="btn ghost" id="again">Volver a hacer el quiz</button></div>
+
+        <div class="panel">
+          <h3>¡Cuéntale a la comunidad!</h3>
+          <p>¡Comparte tu resultado en la comunidad de Telegram! Copia este mensaje y pégalo junto con tu tarjeta.</p>
+          <textarea id="msg" class="msg" aria-label="Mensaje para la comunidad"></textarea>
+          <div class="save-row"><button class="btn" id="copy">Copiar mensaje</button><span class="copied" id="copied" aria-live="polite"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // max: how many options can be chosen (1 = single choice). score:false = not counted in the level.
+  const QUESTIONS = [
+    { dim: "Bases", max: 2, text: "¿Has estudiado pronunciación en inglés, es decir, cómo suenan los sonidos?",
+      opts: [["Nunca", 0], ["He visto videos sueltos en redes como Instagram o YouTube", 1], ["He estudiado algunos temas y tengo conocimiento básico", 2], ["Conozco bien los sonidos del inglés y sus reglas", 3]] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-1.mp3", answer: "And I gotta go sell some Christmas trees",
+      notes: ["«gotta» es la forma reducida de «got to» (tengo que).", "«And I» se pega y suena casi como «an-ai»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-2.mp3", answer: "OMG! Where did you get this?",
+      notes: ["«OMG» significa «Oh my God».", "«where did you» se reduce y suena como «wheredja».", "En «get this», la T casi desaparece."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-3.mp3", answer: "What did you get her?",
+      notes: ["«What did you» se reduce y suena como «whadja» o «whaddya».", "En «get her», la H desaparece y la T suena suave: «ge-der»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-4.mp3", answer: "Ok, so when do you want to go?",
+      notes: ["«do you» se reduce y suena como «d'ya».", "«want to» se reduce y suena como «wanna»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-5.mp3", answer: "If I had to make a suggestion...",
+      notes: ["«had to» se reduce y suena como «hadda».", "«make a» se pega en una sola palabra: «may-ka»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-6.mp3", answer: "If you ask me, as long as you got this job, you got nothing pushing you to get another one",
+      notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
+    { dim: "Oído", max: 1, text: "Cuando ves una serie, video o película en inglés, ¿qué subtítulos usas?",
+      opts: [["En español, siempre", 0], ["En español casi siempre, a veces en inglés", 1], ["En inglés", 2], ["Puedo verla sin subtítulos", 3], ["No suelo ver contenido en inglés", 0]] },
+    { dim: "Lectura", max: 1, score: false, key: "reading", text: "Cuando lees un texto en inglés, como un artículo, un post o los subtítulos de una serie, ¿cuánto entiendes?",
+      opts: [["Muy poco, necesito traductor", 0], ["La idea general, pero se me escapan muchas palabras", 1], ["Casi todo, aunque a veces busco alguna palabra", 2], ["Todo o casi todo, sin esfuerzo", 3]] },
+    { dim: "Oído", text: "Sin subtítulos, ¿cuánto entiendes de una conversación entre nativos?",
+      opts: [["Casi nada", 0], ["Algunas palabras sueltas", 1], ["La idea general", 2], ["Casi todo", 3]] },
+    { dim: "Oído", text: "¿Cuánto entiendes de un podcast o audio en inglés, sin imagen?",
+      opts: [["Casi nada", 0], ["Solo si es lento o hecho para estudiantes", 1], ["Entiendo podcasts normales, con esfuerzo", 2], ["Entiendo sin esfuerzo", 3]] },
+    { dim: "Voz", key: "speak", text: "Cuando tienes que hablar en inglés, ¿qué te pasa?",
+      opts: [["Lo evito siempre que puedo", 0], ["Me bloqueo o me quedo en blanco", 1], ["Hablo, pero lento y traduciendo del español", 2], ["Hablo, pero sé que cometo muchos errores gramaticales", 2], ["Hablo con fluidez, sin traducir", 3]] },
+    { dim: "Voz", max: 2, key: "freq", text: "¿Con qué frecuencia hablas en inglés con otras personas?",
+      opts: [["Nunca", 0], ["Solo cuando me toca, en clase o en el trabajo, por ejemplo", 1], ["Algunas veces por semana", 2], ["A diario o siempre que tengo la oportunidad", 3]] },
+    { dim: "Voz", text: "Cuando hablas en inglés, ¿qué tan seguido tienes que repetir algo porque no te entienden?",
+      opts: [["Muy seguido", 0], ["Con frecuencia", 1], ["A veces", 2], ["Casi nunca", 3]] },
+    { dim: "Voz", text: "¿Cómo te sientes con la forma en que suenas en inglés?",
+      opts: [["Me da vergüenza escucharme", 0], ["Siento que sueno como un robot", 1], ["Sueno bien, pero todavía no natural", 2], ["Me siento cómodo y natural", 3]] },
+    { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
+    { type: "speak", dim: "Voz", sentence: "I think this sheep is cheap, but that ship isn't." },
+    { type: "speak", dim: "Voz", sentence: "I think they have three very big bags." },
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute." },
+    { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" }
+  ];
+  // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  if (!SR) { for (let i = QUESTIONS.length - 1; i >= 0; i--) if (QUESTIONS[i].type === "speak") QUESTIONS.splice(i, 1); }
+  const SPEAK_WEIGHT = 6, SPEAK_TRIES = 2;
+  let speakOff = !SR;
+  // The 6 dictations together are worth 6 points (the weight of the two questions they replaced).
+  const DICT_WEIGHT = 6;
+  const SCORED_MAX = QUESTIONS.filter((q) => q.score !== false && q.type !== "dictation" && q.type !== "speak").length * 3 + DICT_WEIGHT;
+  const MAX_PLAYS = 2;
+  const qIndex = (key) => QUESTIONS.findIndex((q) => q.key === key);
+
+  // ---------- dictation: compare what the student wrote with the sentence ----------
+  const CANON = {
+    gotta: "got to", gonna: "going to", wanna: "want to", hafta: "have to", hadda: "had to", hadta: "had to",
+    whaddya: "what did you", whadya: "what did you", whadja: "what did you", whaddaya: "what did you", whatcha: "what did you", watcha: "what did you",
+    wheredja: "where did you", whereja: "where did you", "where'd": "where did", "what'd": "what did", didja: "did you", didya: "did you",
+    dya: "do you", "d'ya": "do you", "d'you": "do you", ya: "you", u: "you", okay: "ok", okey: "ok", "o.k": "ok",
+    nothin: "nothing", "nothin'": "nothing", xmas: "christmas", "3": "three", omg: "oh my god", gosh: "god", gimme: "give me", lemme: "let me", gotcha: "got you"
+  };
+  function canonWord(w) {
+    let x = w.toLowerCase().replace(/[‘’`]/g, "'").replace(/[^a-z0-9']/g, "");
+    if (!CANON[x]) x = x.replace(/^'+|'+$/g, "");
+    if (CANON[x]) x = CANON[x];
+    return x.replace(/'/g, "").split(" ").filter(Boolean);
+  }
+  function tokenize(text) {
+    // [{word (as written), toks: [canonical tokens]}]
+    return text.split(/\s+/).filter(Boolean).map((w) => ({ word: w, toks: canonWord(w) })).filter((t) => t.toks.length);
+  }
+  function lcsMatch(a, b) {
+    const n = a.length, m = b.length, dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    const ma = new Array(n).fill(false), mb = new Array(m).fill(false);
+    let i = 0, j = 0;
+    while (i < n && j < m) { if (a[i] === b[j]) { ma[i] = mb[j] = true; i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++; }
+    return [ma, mb];
+  }
+  function grade(typed, answer) {
+    const you = tokenize(typed), ok = tokenize(answer);
+    const flat = (list) => { const t = [], owner = []; list.forEach((w, k) => w.toks.forEach((x) => { t.push(x); owner.push(k); })); return [t, owner]; };
+    const [ta, oa] = flat(you), [tb, ob] = flat(ok);
+    const [ma, mb] = lcsMatch(ta, tb);
+    const hitWords = (list, owner, marks) => list.map((w, k) => owner.every((o, idx) => o !== k || marks[idx]));
+    const youHit = hitWords(you, oa, ma), okHit = hitWords(ok, ob, mb);
+    const right = mb.filter(Boolean).length, extra = ma.filter((x) => !x).length;
+    const ratio = tb.length ? Math.max(0, (right - extra * 0.5) / tb.length) : 0;
+    return { you, ok, youHit, okHit, ratio, okWords: okHit.filter(Boolean).length, totalWords: ok.length };
+  }
+
+  const LEVELS = [
+    { n: 1, name: "Observer", art: "an", min: 0,
+      phrase: "I understand English when I read it, but not when I hear it.",
+      desc: "Ser Observer significa que entiendes el inglés cuando lo lees, pero cuando lo escuchas todavía se te escapa. Es lo más normal del mundo: tu oído nunca fue entrenado para los sonidos reales del inglés. Por ahora observas más de lo que participas, y está bien. Desde aquí empieza todo.",
+      challenge: "Tu reto más grande ahora es que tu oído reconozca las palabras que ya conoces. Cuando un nativo habla, esas palabras suenan distinto a como las aprendiste: se reducen, se pegan entre sí y algunos sonidos desaparecen. Por eso no las reconoces, aunque sí las sepas.",
+      week: "Cada semana, haz 2 lecciones de Pronunciation Foundation y 2 sesiones de Read Along With Me conmigo. Al principio solo escúchame y sigue el texto con la vista; cuando te sientas con confianza, lee en voz baja junto a mí.",
+      up: "Cuando termines los módulos de sonidos y reducciones, y empieces a ver series con subtítulos en inglés en lugar de español, vas a estar a un paso de ser Shy Speaker." },
+    { n: 2, name: "Shy Speaker", art: "a", min: 21,
+      phrase: "I'm starting to understand, but speaking still scares me.",
+      desc: "Ser Shy Speaker significa que entiendes mucho más de lo que dices. Captas la idea general de lo que escuchas, pero cuando te toca hablar, la boca no responde igual de rápido que tu cabeza. Te entiendo perfectamente, y te prometo que ese bloqueo se puede soltar.",
+      challenge: "Tu reto más grande ahora es soltar la boca. Ya tienes el inglés adentro, pero el miedo a equivocarte o a quedarte en blanco te frena justo cuando te toca hablar. Necesitas empezar a usar tu voz en un espacio seguro, poco a poco, sin presión.",
+      week: "Cada semana, haz 1 análisis de Shadow the Scene, 1 ejercicio de Listening Lab y 3 sesiones de Read Along With Me leyendo en voz alta conmigo. Leer en voz alta es la forma más segura de empezar a soltar la boca, sin que nadie te escuche.",
+      up: "Envía tu primera nota de voz en el Telegram o habla una vez en la clase en vivo. Aunque sea una sola frase. Yo voy a estar ahí para celebrarlo contigo." },
+    { n: 3, name: "Brave Speaker", art: "a", min: 41,
+      phrase: "I speak, even if I make mistakes.",
+      desc: "Ser Brave Speaker significa que ya te atreves a hablar, y eso es lo más difícil. A veces todavía traduces del español, te trabas o cometes errores, pero no dejas que el miedo decida por ti. ¡Me encanta verte aquí!",
+      challenge: "Tu reto más grande ahora es dejar de traducir. Ya hablas, pero muchas veces armas la frase en español primero y luego la pasas al inglés, y eso te hace ir lento y trabarte. Necesitas que las frases te salgan directo en inglés, como te salen en español.",
+      week: "Cada semana, haz 2 escenas de Shadow the Scene repitiendo cada oración, 1 ejercicio de Listening Lab y 2 sesiones de Read Along With Me fijándote en el ritmo y la entonación. Y en la clase en vivo, pídeme feedback sobre algo concreto: para eso estoy.",
+      up: "Empieza a decir frases cortas sin traducirlas primero del español, y pasa a ver series con subtítulos en inglés, o sin ellos. Vas mejor de lo que crees." },
+    { n: 4, name: "Fluent Speaker", art: "a", min: 61,
+      phrase: "I understand real English and speak without translating.",
+      desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
+      challenge: "Tu reto más grande ahora es pulir los detalles: la entonación, el énfasis y esos sonidos que todavía delatan al español. También es momento de entender el inglés más rápido, el de las conversaciones reales entre nativos, sin ningún filtro.",
+      week: "Cada semana, haz 2 escenas o podcasts de Shadow the Scene y los ejercicios más retadores de Listening Lab. En la clase en vivo trabajemos juntos la entonación, el énfasis y esos sonidos que todavía quieras afinar.",
+      up: "Sigue escuchando inglés real sin subtítulos y habla en inglés siempre que puedas. Y empieza a compartir lo que ya sabes en la comunidad: responder los audios de otros también te hace crecer." },
+    { n: 5, name: "Leader", art: "a", min: 81,
+      phrase: "I speak with confidence and help others find their voice.",
+      desc: "Ser Leader significa que hablas con total confianza y entiendes el inglés real sin esfuerzo. Llegaste al nivel más alto del camino Clarity, y ahora puedes ayudar a otros a encontrar su voz. ¡No sabes lo feliz que me hace ver esto!",
+      challenge: "Tu reto ahora es mantener tu nivel y compartirlo. Seguir entrenando tu oído con contenido real para no perder lo que lograste, y acompañar a quienes van empezando: cada estudiante que llega quiere estar donde tú estás.",
+      week: "Sigue entrenando el oído con Shadow the Scene y, si te animas, ayúdame a liderar la comunidad: organiza o anima espacios de práctica y dale la bienvenida a quienes van llegando.",
+      up: "Sigue guiando a otros. Verte les demuestra que sí se puede." }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  const screens = { intro: $("intro"), quiz: $("quiz"), result: $("result") };
+  const blank = () => QUESTIONS.map(() => []);
+  const blankDict = () => QUESTIONS.map(() => ({ text: "", checked: false, plays: 0, g: null }));
+  const maxOf = (q) => q.max || q.opts.length;
+  const DICT_TOTAL = QUESTIONS.filter((q) => q.type === "dictation").length;
+  let answers = blank();
+  let dict = blankDict();
+  const blankSpk = () => QUESTIONS.map(() => ({ tries: 0, g: null, listening: false, live: "", err: "" }));
+  let spk = blankSpk();
+  let recog = null;
+  const audio = new Audio();
+  audio.preload = "auto";
+  let current = 0;
+  let result = null;
+  let isRepeat = false;
+
+  function show(name) {
+    Object.entries(screens).forEach(([k, el]) => { el.hidden = k !== name; });
+    window.scrollTo({ top: 0 });
+  }
+  function store(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+  function recall(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+
+  // ---------- quiz ----------
+  function renderQuestion() {
+    const q = QUESTIONS[current];
+    $("q-count").textContent = "Pregunta " + (current + 1) + " de " + QUESTIONS.length;
+    $("q-bar").style.width = (current / QUESTIONS.length * 100) + "%";
+    audio.pause();
+    const isDict = q.type === "dictation", isSpk = q.type === "speak";
+    if (!isSpk) stopRecog();
+    $("q-opts").hidden = isDict || isSpk; $("dict").hidden = !isDict; $("speak").hidden = !isSpk;
+    $("back").disabled = current === 0;
+    if (isDict) { renderDictation(q); return; }
+    if (isSpk) { renderSpeak(q); return; }
+    const max = maxOf(q), sel = answers[current];
+    $("q-dim").textContent = q.dim;
+    $("q-text").textContent = q.text;
+    const hint = max === 1 ? "" : (max < q.opts.length ? "Puedes elegir hasta " + max + " opciones." : "Puedes elegir más de una opción.");
+    $("q-hint").textContent = hint; $("q-hint").hidden = !hint;
+    const full = max > 1 && sel.length >= max;
+    const box = $("q-opts"); box.textContent = "";
+    q.opts.forEach(([label], i) => {
+      const on = sel.includes(i);
+      const b = document.createElement("button");
+      b.className = "opt" + (on ? " on" : "") + (full && !on ? " off" : "");
+      b.setAttribute("role", max === 1 ? "radio" : "checkbox");
+      b.setAttribute("aria-checked", on ? "true" : "false");
+      if (full && !on) b.setAttribute("aria-disabled", "true");
+      const k = document.createElement("kbd"); k.textContent = "ABCDE"[i];
+      const s = document.createElement("span"); s.textContent = label;
+      b.append(k, s);
+      b.addEventListener("click", () => choose(i));
+      box.appendChild(b);
+    });
+    $("back").disabled = current === 0;
+    $("next").disabled = sel.length === 0;
+    $("next").textContent = current === QUESTIONS.length - 1 ? "Ver mi resultado" : "Siguiente";
+  }
+
+  function choose(i) {
+    const q = QUESTIONS[current], max = maxOf(q), sel = answers[current];
+    if (i >= q.opts.length) return;
+    if (max === 1) answers[current] = [i];
+    else if (sel.includes(i)) answers[current] = sel.filter((x) => x !== i);
+    else if (sel.length < max) answers[current] = sel.concat(i).sort();
+    renderQuestion();
+  }
+  function goNext() {
+    const q = QUESTIONS[current];
+    if (q.type === "dictation") {
+      const d = dict[current];
+      if (!d.checked) { if (d.text.trim()) checkDictation(); return; }
+    } else if (q.type === "speak") {
+      if (!spk[current].tries) return;
+      stopRecog();
+    } else if (!answers[current].length) return;
+    if (current < QUESTIONS.length - 1) { current++; renderQuestion(); }
+    else { finish(); }
+  }
+
+  // ---------- dictation questions ----------
+  function dictNumber(i) { return QUESTIONS.slice(0, i + 1).filter((q) => q.type === "dictation").length; }
+  function renderDictation(q) {
+    const d = dict[current], n = dictNumber(current);
+    $("q-dim").textContent = "Dictado " + n + " de " + DICT_TOTAL;
+    $("q-text").textContent = "Escucha el audio y escribe lo que dice";
+    $("q-hint").hidden = false;
+    $("q-hint").textContent = n === 1
+      ? "Puedes escucharlo " + MAX_PLAYS + " veces. Escribe en inglés todo lo que entiendas; no te preocupes por la ortografía perfecta."
+      : "Puedes escucharlo " + MAX_PLAYS + " veces.";
+    const left = MAX_PLAYS - d.plays;
+    const play = $("play");
+    play.disabled = !d.checked && left <= 0;
+    $("play-label").textContent = d.checked ? "Escuchar otra vez" : left <= 0 ? "Ya lo escuchaste " + MAX_PLAYS + " veces" : (d.plays === 0 ? "Escuchar el audio" : "Escuchar otra vez");
+    $("play-left").textContent = d.checked ? "" : left > 0 ? (left === 1 ? "Te queda 1 vez" : "Te quedan " + left + " veces") : "";
+    const inp = $("dict-in");
+    inp.value = d.text; inp.readOnly = d.checked;
+    $("dict-skip").hidden = d.checked;
+    renderDictResult(q, d);
+    const nx = $("next");
+    if (!d.checked) { nx.textContent = "Comprobar"; nx.disabled = !d.text.trim(); }
+    else { nx.disabled = false; nx.textContent = current === QUESTIONS.length - 1 ? "Ver mi resultado" : "Siguiente"; }
+  }
+  function wordsInto(el, list, hits, missCls) {
+    el.textContent = "";
+    if (!list.length) { const s = document.createElement("span"); s.className = "w empty"; s.textContent = "(no escribiste nada)"; el.appendChild(s); return; }
+    list.forEach((w, k) => {
+      const s = document.createElement("span");
+      s.className = "w " + (hits[k] ? "hit" : missCls);
+      s.textContent = w.word; el.append(s, " ");
+    });
+  }
+  function renderDictResult(q, d) {
+    const box = $("dict-res");
+    box.hidden = !d.checked;
+    if (!d.checked) return;
+    const g = d.g;
+    wordsInto($("dict-you"), g.you, g.youHit, "extra");
+    wordsInto($("dict-ok"), g.ok, g.okHit, "miss");
+    const pct = Math.round(g.ratio * 100);
+    $("dict-score").textContent = pct >= 90 ? "¡Excelente! Entendiste " + g.okWords + " de " + g.totalWords + " palabras."
+      : pct >= 60 ? "¡Muy bien! Entendiste " + g.okWords + " de " + g.totalWords + " palabras."
+      : g.okWords > 0 ? "Entendiste " + g.okWords + " de " + g.totalWords + " palabras."
+      : "Esta estuvo difícil, y es normal. Sigamos con la siguiente.";
+  }
+  function checkDictation() {
+    const q = QUESTIONS[current], d = dict[current];
+    d.g = grade(d.text, q.answer); d.checked = true;
+    renderQuestion();
+    $("dict-res").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function playCurrent() {
+    const q = QUESTIONS[current], d = dict[current];
+    if (!d.checked && d.plays >= MAX_PLAYS) return;
+    if (!d.checked) d.plays++;
+    if (!audio.src.endsWith(q.src)) audio.src = q.src;
+    audio.currentTime = 0;
+    const pr = audio.play(); if (pr && pr.catch) pr.catch(() => {});
+    renderDictation(q);
+  }
+
+  // ---------- reading aloud (speech recognition) ----------
+  function spkNumber(i) { return QUESTIONS.slice(0, i + 1).filter((q) => q.type === "speak").length; }
+  const SPK_TOTAL = QUESTIONS.filter((q) => q.type === "speak").length;
+  function renderSpeak(q) {
+    const s = spk[current], n = spkNumber(current);
+    $("q-dim").textContent = "Tu voz · Frase " + n + " de " + SPK_TOTAL;
+    $("q-text").textContent = "Lee esta frase en voz alta";
+    $("q-hint").hidden = false;
+    $("q-hint").textContent = n === 1
+      ? "Presiona «Grabar mi voz», lee la frase con calma y espera un momento al terminar. Tienes " + SPEAK_TRIES + " intentos. La primera vez, tu navegador te va a pedir permiso para usar el micrófono."
+      : "Tienes " + SPEAK_TRIES + " intentos.";
+    $("sp-sentence").textContent = q.sentence;
+    const left = SPEAK_TRIES - s.tries;
+    const btn = $("rec");
+    btn.classList.toggle("on", s.listening);
+    btn.disabled = !s.listening && left <= 0;
+    $("rec-label").textContent = s.listening ? "Te estoy escuchando… (toca para terminar)" : left <= 0 ? "Ya usaste tus " + SPEAK_TRIES + " intentos" : s.tries ? "Intentar otra vez" : "Grabar mi voz";
+    $("rec-left").textContent = !s.listening && s.tries && left > 0 ? "Te queda 1 intento" : "";
+    $("sp-live").hidden = !s.listening || !s.live; $("sp-live").textContent = s.live;
+    $("sp-err").hidden = !s.err; $("sp-err").textContent = s.err;
+    const res = $("sp-res"); res.hidden = !s.g || s.listening;
+    if (s.g && !s.listening) {
+      wordsInto($("sp-you"), s.g.you, s.g.youHit, "extra");
+      wordsInto($("sp-ok"), s.g.ok, s.g.okHit, "miss");
+      const pct = Math.round(s.g.ratio * 100);
+      $("sp-score").textContent = pct >= 90 ? "¡Excelente! Entendí " + s.g.okWords + " de " + s.g.totalWords + " palabras."
+        : s.g.okWords > 0 ? "Entendí " + s.g.okWords + " de " + s.g.totalWords + " palabras." : "No logré entender la frase.";
+    }
+    const nx = $("next");
+    nx.disabled = !s.tries || s.listening;
+    nx.textContent = current === QUESTIONS.length - 1 ? "Ver mi resultado" : "Siguiente";
+  }
+  function stopRecog() {
+    if (recog) { try { recog.abort(); } catch (e) {} recog = null; }
+    spk.forEach((s) => { s.listening = false; });
+  }
+  function toggleRecord() {
+    const q = QUESTIONS[current], s = spk[current], idx = current;
+    if (s.listening) { try { recog && recog.stop(); } catch (e) {} return; }
+    if (s.tries >= SPEAK_TRIES) return;
+    stopRecog();
+    const r = new SR();
+    r.lang = "en-US"; r.interimResults = true; r.maxAlternatives = 5; r.continuous = false;
+    let finals = null;
+    s.listening = true; s.live = ""; s.err = "";
+    r.onresult = (e) => {
+      let text = "";
+      for (let k = 0; k < e.results.length; k++) text += e.results[k][0].transcript + " ";
+      s.live = text.trim();
+      const last = e.results[e.results.length - 1];
+      if (last.isFinal) {
+        // keep every alternative of the full utterance and grade the one closest to the sentence
+        const alts = [];
+        for (let a = 0; a < last.length; a++) {
+          let t = "";
+          for (let k = 0; k < e.results.length - 1; k++) t += e.results[k][0].transcript + " ";
+          alts.push((t + last[a].transcript).trim());
+        }
+        finals = alts;
+      }
+      if (current === idx) renderSpeak(q);
+    };
+    r.onerror = (e) => {
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") s.err = "No pude usar tu micrófono. Revisa que le hayas dado permiso a esta página (en el candado junto a la dirección) e intenta de nuevo, o salta esta parte.";
+      else if (e.error === "no-speech") s.err = "No te escuché. Acércate al micrófono e intenta de nuevo.";
+      else if (e.error === "audio-capture") s.err = "No encontré un micrófono en tu dispositivo.";
+      else if (e.error === "network") s.err = "Se perdió la conexión mientras te escuchaba. Intenta de nuevo.";
+      else if (e.error !== "aborted") s.err = "Algo falló al escucharte. Intenta de nuevo.";
+    };
+    r.onend = () => {
+      s.listening = false; recog = null;
+      if (!finals && s.live) finals = [s.live];
+      if (finals && finals.length) {
+        s.tries++;
+        let best = null;
+        finals.forEach((t) => { const g = grade(t, q.sentence); if (!best || g.ratio > best.ratio) best = g; });
+        if (!s.g || best.ratio > s.g.ratio) s.g = best;
+        s.err = "";
+      }
+      if (current === idx) renderSpeak(q);
+    };
+    recog = r;
+    try { r.start(); } catch (e) { s.listening = false; s.err = "Algo falló al escucharte. Intenta de nuevo."; }
+    renderSpeak(q);
+  }
+  function skipSpeaking() {
+    stopRecog();
+    speakOff = true;
+    finish();
+  }
+
+  // ---------- scoring ----------
+  // With several options chosen, a question is worth the average of their points.
+  function pointsOf(i) {
+    const sel = answers[i];
+    return sel.reduce((s, a) => s + QUESTIONS[i].opts[a][1], 0) / sel.length;
+  }
+  function compute() {
+    let raw = 0, bases = 0, ear = 0, earN = 0, reading = null, dictSum = 0, spkSum = 0, spkDone = 0;
+    QUESTIONS.forEach((q, i) => {
+      if (q.type === "dictation") { dictSum += dict[i].g ? dict[i].g.ratio : 0; return; }
+      if (q.type === "speak") { if (spk[i].tries) { spkSum += spk[i].g ? spk[i].g.ratio : 0; spkDone++; } return; }
+      const pts = pointsOf(i);
+      if (q.key === "reading") reading = pts;
+      if (q.score === false) return;
+      raw += pts;
+      if (q.dim === "Bases") bases += pts;
+      if (q.dim === "Oído") { ear += pts; earN++; }
+    });
+    const dictPts = DICT_TOTAL ? dictSum / DICT_TOTAL * DICT_WEIGHT : 0;
+    raw += dictPts; bases += dictPts;
+    let max = SCORED_MAX;
+    if (!speakOff && spkDone) { raw += spkSum / spkDone * SPEAK_WEIGHT; max += SPEAK_WEIGHT; }
+    const score = Math.round(raw / max * 100);
+    const idx = score <= 20 ? 0 : score <= 40 ? 1 : score <= 60 ? 2 : score <= 80 ? 3 : 4;
+    const level = LEVELS[idx], next = idx < 4 ? LEVELS[idx + 1] : null;
+    const toNext = next ? next.min - score : 0;
+    const progress = next ? Math.max(0, Math.min(1, (score - level.min) / (next.min - level.min))) : 1;
+    return { score, bases, earAvg: ear / earN, reading, level, next, toNext, progress };
+  }
+
+  function finish() {
+    isRepeat = recall("clarity-quiz-last") !== null;
+    result = compute();
+    renderResult();
+    show("result");
+  }
+
+  // ---------- result ----------
+  function startPhrase() { return "Hoy eres"; }
+
+  function renderResult() {
+    const r = result, L = r.level;
+    const h = $("r-name"); h.textContent = startPhrase() + " ";
+    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = (L.art === "an" ? "un " : "un ") + L.name;
+    h.appendChild(lvl);
+
+    const sl = $("r-score"); sl.textContent = "";
+    const st = document.createElement("strong"); st.textContent = r.score + "/100";
+    sl.append("Tu puntaje: ", st, ". ");
+    sl.append(r.next ? "Te faltan " + r.toNext + " puntos para ser " + r.next.name + "." : "¡Llegaste al nivel más alto!");
+
+    const pi = $("r-intro"); pi.textContent = "";
+    const dear = document.createElement("em"); dear.textContent = "my dear student";
+    pi.append("Ahora, ", dear, ", te voy a explicar tu resultado: qué significa ser " + L.name + ", cuál es tu reto más grande en este momento y cómo puedes empezar a trabajar desde hoy " + (r.next ? "para que logres ser " + r.next.name + "." : "para mantener tu nivel y seguir creciendo."));
+
+    $("r-mean-title").textContent = "¿Qué significa ser " + L.name + "?";
+    $("r-desc").textContent = L.desc;
+
+    let ch = L.challenge;
+    if (L.n <= 3 && r.reading !== null && r.reading >= 2 && r.earAvg < 2) {
+      ch += " Además, me contaste que entiendes bien cuando lees. Eso me confirma algo importante: no te falta vocabulario. Lo que vamos a trabajar es tu pronunciación y tu oído, para que reconozcas al escucharlas las palabras que ya conoces.";
+    }
+    $("r-challenge").textContent = ch;
+
+    $("r-path-title").textContent = "Lo que te recomiendo hacer ahora";
+    const startBy = r.bases <= 5
+      ? (L.n === 1 ? "Te recomiendo empezar por Pronunciation Foundation, en orden: la iniciación, por qué el cerebro bloquea el inglés, las consonantes, las vocales, las reducciones y el linking. Ahí te explico todo desde la base." : "Te recomiendo empezar por Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
+      : (L.n >= 4 ? "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene, con las escenas rápidas y los podcasts. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation." : "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation.");
+    // Little or no speaking experience: "Lo evito" (Q8) or "Nunca" (Q9), or the two first levels.
+    const lowSpeak = answers[qIndex("speak")].includes(0) || answers[qIndex("freq")].includes(0);
+    let week = L.week;
+    if ((L.n <= 2 || lowSpeak) && week.indexOf("Read Along With Me") !== -1) {
+      week += " Y un consejo: si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video en Read Along With Me. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo.";
+    }
+    const items = [["Por dónde empezar", startBy], ["Tu semana", week], [r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
+    // Reading question: "Muy poco" or "La idea general, pero se me escapan muchas palabras" -> vocabulary still needs work.
+    if (r.reading !== null && r.reading <= 1) {
+      items.splice(2, 0, ["Tu vocabulario", "Me contaste que, cuando lees, todavía se te escapan muchas palabras. Para entender el inglés hay que conocer su vocabulario, así que es muy importante que uses los PDFs de vocabulario de cada lección y te asegures de conocer las palabras que aparecen. Puedes hacer este trabajo al mismo tiempo que te familiarizas con los sonidos, pero no dejes de construir tu vocabulario: cuando conozcas al menos el 60% de las palabras de lo que escuchas, vas a sentir cómo se empieza a desbloquear tu speaking."]);
+    }
+    const ul = $("r-path"); ul.textContent = "";
+    items.forEach(([k, v]) => {
+      const li = document.createElement("li");
+      const b = document.createElement("b"); b.textContent = k;
+      const s = document.createElement("span"); s.textContent = v;
+      li.append(b, s); ul.appendChild(li);
+    });
+
+    $("msg").value = buildMessage();
+    $("copied").textContent = "";
+    store("clarity-quiz-last", String(r.score));
+    drawCard();
+  }
+
+  function buildMessage() {
+    const r = result, L = r.level;
+    const goal = r.next ? "Mi objetivo es llegar a ser " + r.next.name + " en los próximos 60 días."
+      : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
+    return "I'm " + L.art + " " + L.name + "! " + goal + " ¡Vamos con toda! 💪";
+  }
+
+  // ---------- shareable card (canvas, brand colors) ----------
+  const C = { mint: "#EAF6F3", mintDeep: "#DCF0EB", ink: "#15302B", soft: "#3F5955", teal: "#3F9C92", tealDark: "#2D7A72", pale: "#CDEAE5", line: "#B9E0DA", coral: "#FF6A53", white: "#FFFFFF" };
+  let cardBlob = null;
+
+  function wrapLines(ctx, text, maxW) {
+    const words = text.split(" "); const lines = []; let line = "";
+    words.forEach((w) => { const t = line ? line + " " + w : w; if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; } else { line = t; } });
+    if (line) lines.push(line);
+    return lines;
+  }
+  function rr(ctx, x, y, w, h, r) {
+    r = Math.min(r, h / 2, w / 2);
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  async function drawCard() {
+    try {
+      await Promise.all([
+        document.fonts.load('600 120px "Fredoka"'), document.fonts.load('500 40px "Fredoka"'),
+        document.fonts.load('700 34px "Manrope"'), document.fonts.load('600 30px "Manrope"'), document.fonts.load('800 30px "Manrope"'),
+        document.fonts.load('800 48px "Outfit"')
+      ]);
+    } catch (e) {}
+    const r = result, L = r.level;
+    const W = 1080, H = 1350, X = 80, IW = 920;
+    const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const ctx = cv.getContext("2d");
+    const D = '"Fredoka", system-ui, sans-serif', B = '"Manrope", system-ui, sans-serif';
+
+    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, C.mint); g.addColorStop(1, C.mintDeep);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+
+    // brand
+    ctx.fillStyle = C.ink; ctx.font = '800 50px "Outfit", ' + D; ctx.fillText("Clarity", X, 122);
+    const bw = ctx.measureText("Clarity").width;
+    ctx.fillStyle = C.soft; ctx.font = "600 28px " + B; ctx.fillText("by teacher Isa", X + bw + 16, 122);
+
+    // headline
+    ctx.fillStyle = C.ink; ctx.font = "700 46px " + B;
+    let y = 240; ctx.fillText(startPhrase(), X, y); y += 62;
+
+    // level name box
+    const boxY = y - 10, boxH = 176;
+    rr(ctx, X, boxY, IW, boxH, 30); ctx.fillStyle = C.teal; ctx.fill();
+    let size = 118; ctx.font = "600 " + size + "px " + D;
+    while (ctx.measureText(L.name).width > IW - 96 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
+    ctx.fillStyle = C.white; ctx.textBaseline = "middle"; ctx.fillText(L.name, X + 48, boxY + boxH / 2 + 6);
+    ctx.textBaseline = "alphabetic";
+
+    // ladder panel
+    y = boxY + boxH;
+    const pY = y + 44, pH = 1100 - pY;
+    rr(ctx, X, pY, IW, pH, 28); ctx.fillStyle = C.white; ctx.fill();
+    const pad = 36, gap = 18, colW = (IW - pad * 2 - gap * 4) / 5, base = pY + pH - 92;
+    const maxH = base - (pY + 112), minH = Math.min(70, maxH * 0.3);
+    const hs = [0, 1, 2, 3, 4].map((k) => minH + (maxH - minH) * k / 4);
+    LEVELS.forEach((lv, i) => {
+      const x = X + pad + i * (colW + gap), h = hs[i], top = base - h;
+      const isCur = i === L.n - 1, done = i < L.n - 1;
+      rr(ctx, x, top, colW, h, 12);
+      ctx.fillStyle = isCur ? C.teal : done ? C.pale : C.mint; ctx.fill();
+      if (!isCur && !done) { ctx.lineWidth = 3; ctx.strokeStyle = C.line; ctx.stroke(); }
+      ctx.fillStyle = isCur ? C.white : C.tealDark; ctx.font = "600 38px " + D; ctx.textAlign = "center";
+      ctx.fillText(String(lv.n), x + colW / 2, top + 46);
+      ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "27px " + B;
+      const parts = lv.name.split(" ");
+      parts.forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 40 + j * 32));
+      if (isCur) {
+        // "Tú estás aquí" tag: exactly one column wide, sitting on top of the current bar with a pointer.
+        const tagH = 72, ty = top - tagH - 16, cx = x + colW / 2;
+        rr(ctx, x, ty, colW, tagH, 16); ctx.fillStyle = C.coral; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx - 12, ty + tagH); ctx.lineTo(cx + 12, ty + tagH); ctx.lineTo(cx, ty + tagH + 12); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = C.white; ctx.font = "800 24px " + B;
+        ctx.fillText("Tú estás", cx, ty + 31); ctx.fillText("aquí", cx, ty + 59);
+      }
+      ctx.textAlign = "left";
+    });
+
+    // score
+    ctx.fillStyle = C.tealDark; ctx.font = "600 76px " + D; ctx.fillText(r.score + "/100", X, 1185);
+    const sw = ctx.measureText(r.score + "/100").width;
+    ctx.fillStyle = C.ink; ctx.font = "700 30px " + B;
+    const note = r.next ? "Te faltan " + r.toNext + " puntos para ser " + r.next.name : "¡Llegaste al nivel más alto!";
+    const nl = wrapLines(ctx, note, IW - sw - 40);
+    ctx.textAlign = "right";
+    nl.forEach((ln, i) => ctx.fillText(ln, X + IW, 1185 - (nl.length - 1 - i) * 38));
+    ctx.textAlign = "left";
+    rr(ctx, X, 1212, IW, 20, 10); ctx.fillStyle = C.pale; ctx.fill();
+    rr(ctx, X, 1212, Math.max(20, IW * r.progress), 20, 10); ctx.fillStyle = C.teal; ctx.fill();
+
+    // footer
+    const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
+    ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, 1292);
+
+    $("card").src = cv.toDataURL("image/png");
+    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5, puntaje " + r.score + " de 100.";
+    cardBlob = await new Promise((res) => cv.toBlob(res, "image/png"));
+  }
+
+  // ---------- save the card ----------
+  $("save").hidden = false;
+  $("save-hint").textContent = "Si estás en el celular y no se descarga, mantén presionada la imagen para guardarla, o toma un pantallazo.";
+  $("save").addEventListener("click", () => {
+    if (!cardBlob) return;
+    const slug = result.level.name.toLowerCase().replace(/\s+/g, "-");
+    const url = URL.createObjectURL(cardBlob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "clarity-" + slug + ".png";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+
+  // ---------- copy ----------
+  $("copy").addEventListener("click", async () => {
+    const t = $("msg").value;
+    try { await navigator.clipboard.writeText(t); $("copied").textContent = "Mensaje copiado"; }
+    catch (e) { $("msg").focus(); $("msg").select(); $("copied").textContent = "Selecciona el texto y cópialo"; }
+  });
+
+  // ---------- wiring ----------
+  $("start").addEventListener("click", () => { current = 0; renderQuestion(); show("quiz"); });
+  $("back").addEventListener("click", () => { if (current > 0) { current--; renderQuestion(); } });
+  $("next").addEventListener("click", goNext);
+  $("play").addEventListener("click", playCurrent);
+  $("dict-in").addEventListener("input", (e) => {
+    const d = dict[current]; if (d.checked) return;
+    d.text = e.target.value;
+    $("next").disabled = !d.text.trim();
+  });
+  $("dict-skip").addEventListener("click", () => { dict[current].text = ""; dict[current].g = grade("", QUESTIONS[current].answer); dict[current].checked = true; renderQuestion(); });
+  $("rec").addEventListener("click", () => { if (SR) toggleRecord(); });
+  $("sp-skip").addEventListener("click", skipSpeaking);
+  if (!SR) { $("meta-count").textContent = QUESTIONS.length + " preguntas"; $("meta-mic").hidden = true; }
+  $("again").addEventListener("click", () => { answers = blank(); dict = blankDict(); stopRecog(); spk = blankSpk(); speakOff = !SR; current = 0; renderQuestion(); show("quiz"); });
+  document.addEventListener("keydown", (e) => {
+    if (screens.quiz.hidden || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || QUESTIONS[current].type === "dictation" || QUESTIONS[current].type === "speak") return;
+    const map = { "1": 0, "2": 1, "3": 2, "4": 3, "5": 4, a: 0, b: 1, c: 2, d: 3, e: 4 };
+    const k = e.key.toLowerCase();
+    if (k in map) choose(map[k]);
+    else if (e.key === "Enter" && e.target.tagName !== "BUTTON") goNext();
+  });
+})();
+</script>
+</body>
+</html>
