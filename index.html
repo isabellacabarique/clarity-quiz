@@ -141,6 +141,12 @@ p { margin: 0; }
 .rec.on { background: #E5563F; }
 .rec.on .rec-ic::after { inset: 12px; border-radius: 3px; background: #E5563F; animation: pulse 1s ease-in-out infinite alternate; }
 @keyframes pulse { from { opacity: 1; } to { opacity: .45; } }
+.metrics { gap: 16px; }
+.metric { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: baseline; }
+.m-label { font: 700 13px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.m-val { font: 600 28px/1 var(--font-display); color: var(--teal-dark); font-variant-numeric: tabular-nums; }
+.m-bar { grid-column: 1 / -1; height: 10px; border-radius: 99px; background: var(--teal-pale); overflow: hidden; }
+.m-bar > div { height: 100%; width: 0; background: #3F9C92; border-radius: 99px; transition: width .4s ease; }
 .live { color: var(--ink-soft); font-style: italic; font-size: 17px; }
 .sp-err { color: #B33A26; font-weight: 600; font-size: 15px; }
 .notes ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
@@ -240,10 +246,9 @@ p { margin: 0; }
         </div>
         <p class="live" id="sp-live" hidden lang="en"></p>
         <p class="sp-err" id="sp-err" role="alert" hidden></p>
-        <div class="dict-res" id="sp-res" hidden>
-          <div class="cmp"><span class="cmp-label">Lo que entendí</span><p class="words" id="sp-you" lang="en"></p></div>
-          <div class="cmp ok"><span class="cmp-label">La frase</span><p class="words" id="sp-ok" lang="en"></p></div>
-          <p class="dict-score" id="sp-score"></p>
+        <div class="dict-res metrics" id="sp-res" hidden>
+          <div class="metric"><span class="m-label">Claridad</span><span class="m-val" id="m-clar"></span><div class="m-bar"><div id="m-clar-bar"></div></div></div>
+          <div class="metric"><span class="m-label">Fluidez</span><span class="m-val" id="m-flu"></span><div class="m-bar"><div id="m-flu-bar"></div></div></div>
         </div>
         <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
       </div>
@@ -588,11 +593,9 @@ p { margin: 0; }
     $("sp-err").hidden = !s.err; $("sp-err").textContent = s.err;
     const res = $("sp-res"); res.hidden = !s.g || s.listening;
     if (s.g && !s.listening) {
-      wordsInto($("sp-you"), s.g.you, s.g.youHit, "extra");
-      wordsInto($("sp-ok"), s.g.ok, s.g.okHit, "miss");
-      const pct = Math.round(s.g.ratio * 100);
-      $("sp-score").textContent = pct >= 90 ? "¡Excelente! Entendí " + s.g.okWords + " de " + s.g.totalWords + " palabras."
-        : s.g.okWords > 0 ? "Entendí " + s.g.okWords + " de " + s.g.totalWords + " palabras." : "No logré entender la frase.";
+      const c = Math.round(s.g.ratio * 100), f = Math.round((s.flu || 0) * 100);
+      $("m-clar").textContent = c + "%"; $("m-clar-bar").style.width = c + "%";
+      $("m-flu").textContent = f + "%"; $("m-flu-bar").style.width = f + "%";
     }
     const nx = $("next");
     nx.disabled = !s.tries || s.listening;
@@ -610,7 +613,7 @@ p { margin: 0; }
     const r = new SR();
     // Keep listening through short pauses; stop when the student taps, after ~2.5 s of silence, or after 25 s.
     r.lang = "en-US"; r.interimResults = true; r.maxAlternatives = 3; r.continuous = true;
-    let segs = [], timer = null, hard = null;
+    let segs = [], timer = null, hard = null, firstT = 0, lastT = 0, maxGap = 0;
     const quiet = (ms) => { clearTimeout(timer); timer = setTimeout(() => { try { r.stop(); } catch (e) {} }, ms); };
     s.listening = true; s.live = ""; s.err = "";
     quiet(9000);
@@ -623,6 +626,9 @@ p { margin: 0; }
         segs.push(alts);
       }
       s.live = segs.map((x) => x[0]).join(" ").replace(/\s+/g, " ").trim();
+      const now = performance.now();
+      if (!firstT) firstT = now; else maxGap = Math.max(maxGap, now - lastT);
+      lastT = now;
       quiet(2500);
       if (current === idx) renderSpeak(q);
     };
@@ -644,7 +650,15 @@ p { margin: 0; }
         s.tries++;
         let best = null;
         cands.forEach((t) => { const g = grade(t, q.sentence); if (!best || g.ratio > best.ratio) best = g; });
-        if (!s.g || best.ratio > s.g.ratio) s.g = best;
+        // Fluency estimate: speaking pace (words per minute), minus a penalty for long pauses inside the sentence.
+        const words = q.sentence.split(" ").length;
+        const secs = Math.max(0.8, (lastT - firstT) / 1000 + 0.6);
+        const wpm = words / secs * 60;
+        let flu = Math.min(1, Math.max(0, (wpm - 50) / 80));
+        if (maxGap > 1500) flu -= Math.min(0.4, (maxGap - 1500) / 1000 * 0.2);
+        flu = Math.max(0, Math.min(1, flu)) * Math.min(1, best.ratio / 0.6);
+        const combined = best.ratio * 0.7 + flu * 0.3;
+        if (!s.g || combined > s.combined) { s.g = best; s.flu = flu; s.combined = combined; }
         s.err = "";
       } else if (!s.err) s.err = "No te escuché. Acércate al micrófono e intenta de nuevo.";
       if (current === idx) renderSpeak(q);
@@ -669,7 +683,7 @@ p { margin: 0; }
     let raw = 0, bases = 0, ear = 0, earN = 0, reading = null, dictSum = 0, spkSum = 0, spkDone = 0;
     QUESTIONS.forEach((q, i) => {
       if (q.type === "dictation") { dictSum += dict[i].g ? dict[i].g.ratio : 0; return; }
-      if (q.type === "speak") { if (spk[i].tries) { spkSum += spk[i].g ? spk[i].g.ratio : 0; spkDone++; } return; }
+      if (q.type === "speak") { if (spk[i].tries) { spkSum += spk[i].combined || 0; spkDone++; } return; }
       const pts = pointsOf(i);
       if (q.key === "reading") reading = pts;
       if (q.score === false) return;
