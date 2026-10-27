@@ -131,6 +131,8 @@ p { margin: 0; }
 .w.miss { background: #FFE1D9; color: #8A2414; box-shadow: inset 0 -2px 0 #E5563F; }
 .w.extra { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: #E5563F; }
 .w.empty { color: var(--ink-soft); font-weight: 500; font-style: italic; }
+.w.pre { color: var(--ink-soft); padding-left: 0; }
+.given-box { font: 600 clamp(19px, 3.4vw, 24px)/1.35 var(--font-display); background: var(--surface); border: 2px dashed var(--line); border-radius: 16px; padding: 14px 18px; }
 .dict-score { font-weight: 700; }
 .speak { display: grid; gap: 14px; }
 .sentence { font: 600 clamp(22px, 4vw, 30px)/1.3 var(--font-display); background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 18px 20px; text-wrap: balance; }
@@ -220,6 +222,7 @@ p { margin: 0; }
           <button class="play" id="play" type="button"><span class="play-ic" aria-hidden="true"></span><span id="play-label">Escuchar el audio</span></button>
           <span class="hint" id="play-left"></span>
         </div>
+        <p class="given-box" id="dict-prefix" lang="en" hidden></p>
         <label class="sr" for="dict-in">Lo que escuchaste</label>
         <textarea id="dict-in" class="dict-in" rows="3" placeholder="Escribe aquí lo que escuchas, en inglés" autocomplete="off" autocapitalize="sentences" spellcheck="false"></textarea>
         <button class="linkbtn" id="dict-skip" type="button">No entendí nada</button>
@@ -300,18 +303,6 @@ p { margin: 0; }
   const QUESTIONS = [
     { dim: "Bases", max: 2, text: "¿Has estudiado pronunciación en inglés, es decir, cómo suenan los sonidos?",
       opts: [["Nunca", 0], ["He visto videos sueltos en redes como Instagram o YouTube", 1], ["He estudiado algunos temas y tengo conocimiento básico", 2], ["Conozco bien los sonidos del inglés y sus reglas", 3]] },
-    { type: "dictation", dim: "Bases", src: "audio/audio-1.mp3", answer: "And I gotta go sell some Christmas trees",
-      notes: ["«gotta» es la forma reducida de «got to» (tengo que).", "«And I» se pega y suena casi como «an-ai»."] },
-    { type: "dictation", dim: "Bases", src: "audio/audio-2.mp3", answer: "OMG! Where did you get this?",
-      notes: ["«OMG» significa «Oh my God».", "«where did you» se reduce y suena como «wheredja».", "En «get this», la T casi desaparece."] },
-    { type: "dictation", dim: "Bases", src: "audio/audio-3.mp3", answer: "What did you get her?",
-      notes: ["«What did you» se reduce y suena como «whadja» o «whaddya».", "En «get her», la H desaparece y la T suena suave: «ge-der»."] },
-    { type: "dictation", dim: "Bases", src: "audio/audio-4.mp3", answer: "Ok, so when do you want to go?",
-      notes: ["«do you» se reduce y suena como «d'ya».", "«want to» se reduce y suena como «wanna»."] },
-    { type: "dictation", dim: "Bases", src: "audio/audio-5.mp3", answer: "If I had to make a suggestion...",
-      notes: ["«had to» se reduce y suena como «hadda».", "«make a» se pega en una sola palabra: «may-ka»."] },
-    { type: "dictation", dim: "Bases", src: "audio/audio-6.mp3", answer: "If you ask me, as long as you got this job, you got nothing pushing you to get another one",
-      notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     { dim: "Oído", max: 1, text: "Cuando ves una serie, video o película en inglés, ¿qué subtítulos usas?",
       opts: [["En español, siempre", 0], ["En español casi siempre, a veces en inglés", 1], ["En inglés", 2], ["Puedo verla sin subtítulos", 3], ["No suelo ver contenido en inglés", 0]] },
     { dim: "Lectura", max: 1, score: false, key: "reading", text: "Cuando lees un texto en inglés, como un artículo, un post o los subtítulos de una serie, ¿cuánto entiendes?",
@@ -328,6 +319,18 @@ p { margin: 0; }
       opts: [["Muy seguido", 0], ["Con frecuencia", 1], ["A veces", 2], ["Casi nunca", 3]] },
     { dim: "Voz", text: "¿Cómo te sientes con la forma en que suenas en inglés?",
       opts: [["Me da vergüenza escucharme", 0], ["Siento que sueno como un robot", 1], ["Sueno bien, pero todavía no natural", 2], ["Me siento cómodo y natural", 3]] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-1.mp3", answer: "And I gotta go sell some Christmas trees",
+      notes: ["«gotta» es la forma reducida de «got to» (tengo que).", "«And I» se pega y suena casi como «an-ai»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-2.mp3", answer: "OMG! Where did you get this?",
+      notes: ["«OMG» significa «Oh my God».", "«where did you» se reduce y suena como «wheredja».", "En «get this», la T casi desaparece."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-3.mp3", answer: "What did you get her?",
+      notes: ["«What did you» se reduce y suena como «whadja» o «whaddya».", "En «get her», la H desaparece y la T suena suave: «ge-der»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-4.mp3", answer: "Ok, so when do you want to go?",
+      notes: ["«do you» se reduce y suena como «d'ya».", "«want to» se reduce y suena como «wanna»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-5.mp3", answer: "If I had to make a suggestion...",
+      notes: ["«had to» se reduce y suena como «hadda».", "«make a» se pega en una sola palabra: «may-ka»."] },
+    { type: "dictation", dim: "Bases", src: "audio/audio-6.mp3", prefix: "If you ask me, as long as you got this job,", answer: "you got nothing pushing you to get another one",
+      notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
     { type: "speak", dim: "Voz", sentence: "I think this sheep is cheap, but that ship isn't." },
     { type: "speak", dim: "Voz", sentence: "I think they have three very big bags." },
@@ -514,6 +517,9 @@ p { margin: 0; }
     $("play-label").textContent = d.checked ? "Escuchar otra vez" : left <= 0 ? "Ya lo escuchaste " + MAX_PLAYS + " veces" : (d.plays === 0 ? "Escuchar el audio" : "Escuchar otra vez");
     $("play-left").textContent = d.checked ? "" : left > 0 ? (left === 1 ? "Te queda 1 vez" : "Te quedan " + left + " veces") : "";
     const inp = $("dict-in");
+    $("dict-prefix").hidden = !q.prefix; $("dict-prefix").textContent = q.prefix ? q.prefix + " …" : "";
+    if (q.prefix) $("q-text").textContent = "Escucha el audio y completa la frase";
+    inp.placeholder = q.prefix ? "Escribe aquí cómo termina la frase" : "Escribe aquí lo que escuchas, en inglés";
     inp.value = d.text; inp.readOnly = d.checked;
     $("dict-skip").hidden = d.checked;
     renderDictResult(q, d);
@@ -537,6 +543,7 @@ p { margin: 0; }
     const g = d.g;
     wordsInto($("dict-you"), g.you, g.youHit, "extra");
     wordsInto($("dict-ok"), g.ok, g.okHit, "miss");
+    if (q.prefix) ["dict-you", "dict-ok"].forEach((id) => { const s = document.createElement("span"); s.className = "w pre"; s.textContent = q.prefix; $(id).prepend(s, " "); });
     const pct = Math.round(g.ratio * 100);
     $("dict-score").textContent = pct >= 90 ? "¡Excelente! Entendiste " + g.okWords + " de " + g.totalWords + " palabras."
       : pct >= 60 ? "¡Muy bien! Entendiste " + g.okWords + " de " + g.totalWords + " palabras."
