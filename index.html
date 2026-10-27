@@ -249,6 +249,7 @@ p { margin: 0; }
         <div class="dict-res metrics" id="sp-res" hidden>
           <div class="metric"><span class="m-label">Claridad</span><span class="m-val" id="m-clar"></span><div class="m-bar"><div id="m-clar-bar"></div></div></div>
           <div class="metric"><span class="m-label">Fluidez</span><span class="m-val" id="m-flu"></span><div class="m-bar"><div id="m-flu-bar"></div></div></div>
+          <div class="metric" id="m-pro-row" hidden><span class="m-label">Entonación</span><span class="m-val" id="m-pro"></span><div class="m-bar"><div id="m-pro-bar"></div></div></div>
         </div>
         <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
       </div>
@@ -343,10 +344,13 @@ p { margin: 0; }
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
+  // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
+  const AZURE_TOKEN_URL = "";
+  const USE_AZURE = !!AZURE_TOKEN_URL && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-  if (!SR) { for (let i = QUESTIONS.length - 1; i >= 0; i--) if (QUESTIONS[i].type === "speak") QUESTIONS.splice(i, 1); }
+  if (!SR && !USE_AZURE) { for (let i = QUESTIONS.length - 1; i >= 0; i--) if (QUESTIONS[i].type === "speak") QUESTIONS.splice(i, 1); }
   const SPEAK_WEIGHT = 6, SPEAK_TRIES = 2;
-  let speakOff = !SR;
+  let speakOff = !SR && !USE_AZURE;
   // The 6 dictations together are worth 6 points (the weight of the two questions they replaced).
   const DICT_WEIGHT = 6;
   const SCORED_MAX = QUESTIONS.filter((q) => q.score !== false && q.type !== "dictation" && q.type !== "speak").length * 3 + DICT_WEIGHT;
@@ -587,7 +591,7 @@ p { margin: 0; }
     const btn = $("rec");
     btn.classList.toggle("on", s.listening);
     btn.disabled = !s.listening && left <= 0;
-    $("rec-label").textContent = s.listening ? "Toca aquí cuando termines" : left <= 0 ? "Ya usaste tus " + SPEAK_TRIES + " intentos" : s.tries ? "Intentar otra vez" : "Grabar mi voz";
+    $("rec-label").textContent = s.preparing ? "Preparando el micrófono…" : s.listening ? "Toca aquí cuando termines" : left <= 0 ? "Ya usaste tus " + SPEAK_TRIES + " intentos" : s.tries ? "Intentar otra vez" : "Grabar mi voz";
     $("rec-left").textContent = !s.listening && s.tries && left > 0 ? "Te queda 1 intento" : "";
     $("sp-live").hidden = !s.listening || !s.live; $("sp-live").textContent = s.live;
     $("sp-err").hidden = !s.err; $("sp-err").textContent = s.err;
@@ -596,13 +600,16 @@ p { margin: 0; }
       const c = Math.round((s.clar || 0) * 100), f = Math.round((s.flu || 0) * 100);
       $("m-clar").textContent = c + "%"; $("m-clar-bar").style.width = c + "%";
       $("m-flu").textContent = f + "%"; $("m-flu-bar").style.width = f + "%";
+      $("m-pro-row").hidden = s.pro == null;
+      if (s.pro != null) { const pv = Math.round(s.pro * 100); $("m-pro").textContent = pv + "%"; $("m-pro-bar").style.width = pv + "%"; }
     }
     const nx = $("next");
-    nx.disabled = !s.tries || s.listening;
+    nx.disabled = !s.tries || s.listening || s.preparing;
     nx.textContent = current === QUESTIONS.length - 1 ? "Ver mi resultado" : "Siguiente";
   }
   function stopRecog() {
     if (recog) { try { recog.abort(); } catch (e) {} recog = null; }
+    if (azRec) { try { azRec.close(); } catch (e) {} azRec = null; azFinish = null; }
     spk.forEach((s) => { s.listening = false; });
   }
   function toggleRecord() {
@@ -670,6 +677,106 @@ p { margin: 0; }
     try { r.start(); } catch (e) { s.listening = false; s.err = "Algo falló al escucharte. Intenta de nuevo."; }
     renderSpeak(q);
   }
+  // ---------- Azure pronunciation assessment ----------
+  let sdkPromise = null, tokenCache = null, azRec = null, azFinish = null;
+  function loadSdk() {
+    if (window.SpeechSDK) return Promise.resolve();
+    if (!sdkPromise) sdkPromise = new Promise((res, rej) => {
+      const sc = document.createElement("script"); sc.src = "vendor/speech-sdk-1.52.0.min.js";
+      sc.onload = () => res(); sc.onerror = () => { sdkPromise = null; rej(new Error("sdk")); };
+      document.head.appendChild(sc);
+    });
+    return sdkPromise;
+  }
+  async function getToken() {
+    if (tokenCache && Date.now() - tokenCache.t < 8 * 60 * 1000) return tokenCache;
+    const r = await fetch(AZURE_TOKEN_URL, { cache: "no-store" });
+    if (!r.ok) throw new Error("token " + r.status);
+    const j = await r.json();
+    tokenCache = { token: j.token, region: j.region, t: Date.now() };
+    return tokenCache;
+  }
+  function reductionPenalty(q, text) {
+    const said = " " + text.toLowerCase().replace(/[^a-z' ]/g, " ").replace(/\s+/g, " ") + " ";
+    let p = 0;
+    (q.reduce || []).forEach(([formal, reduced]) => { if (said.includes(" " + formal + " ") && !said.includes(" " + reduced + " ")) p += 0.3; });
+    return p;
+  }
+  async function toggleAzure() {
+    const q = QUESTIONS[current], s = spk[current], idx = current;
+    if (s.listening) { if (azFinish) azFinish(true); return; }
+    if (s.tries >= SPEAK_TRIES || s.preparing) return;
+    s.preparing = true; s.err = ""; s.live = ""; renderSpeak(q);
+    let tok;
+    try { await loadSdk(); tok = await getToken(); }
+    catch (e) { s.preparing = false; s.err = "No pude conectarme con el evaluador de voz. Revisa tu conexión a internet e intenta de nuevo."; if (current === idx) renderSpeak(q); return; }
+    const SDK = window.SpeechSDK;
+    const cfg = SDK.SpeechConfig.fromAuthorizationToken(tok.token, tok.region);
+    cfg.speechRecognitionLanguage = "en-US";
+    cfg.setProperty(SDK.PropertyId.Speech_SegmentationSilenceTimeoutMs, "1500");
+    const rec = new SDK.SpeechRecognizer(cfg, SDK.AudioConfig.fromDefaultMicrophoneInput());
+    const pa = new SDK.PronunciationAssessmentConfig(q.sentence, SDK.PronunciationAssessmentGradingSystem.HundredMark, SDK.PronunciationAssessmentGranularity.Word, true);
+    pa.enableProsodyAssessment = true;
+    pa.applyTo(rec);
+    azRec = rec;
+    const parts = []; let timer = null, hard = null, done = false, partial = "";
+    const quiet = (ms) => { clearTimeout(timer); timer = setTimeout(() => finish(false), ms); };
+    const finish = (byUser) => {
+      if (done) return; done = true;
+      clearTimeout(timer); clearTimeout(hard);
+      const close = () => { try { rec.close(); } catch (e) {} azRec = null; azFinish = null; };
+      // give the service a moment to return the last segment after the student taps
+      const wrap = () => { close(); s.listening = false; s.preparing = false; score(); if (current === idx) renderSpeak(q); };
+      try { rec.stopContinuousRecognitionAsync(() => setTimeout(wrap, 150), wrap); } catch (e) { wrap(); }
+    };
+    azFinish = finish;
+    const score = () => {
+      if (!parts.length) { if (!s.err) s.err = "No te escuché. Acércate al micrófono e intenta de nuevo."; return; }
+      const n = parts.reduce((a, p) => a + p.n, 0) || 1;
+      const avg = (k) => parts.reduce((a, p) => a + (p[k] == null ? 0 : p[k]) * p.n, 0) / n / 100;
+      const text = parts.map((p) => p.text).join(" ");
+      const g = grade(text, q.sentence);
+      const acc = avg("acc"), hasPro = parts.some((p) => p.pro != null), pro = hasPro ? avg("pro") : null;
+      const clarity = Math.max(0, Math.min(1, acc * Math.min(1, g.ratio / 0.9)));
+      let flu = avg("flu") - reductionPenalty(q, text);
+      flu = Math.max(0, Math.min(1, flu)) * Math.min(1, g.ratio / 0.7);
+      const proS = pro == null ? null : Math.max(0, Math.min(1, pro * Math.min(1, g.ratio / 0.7)));
+      const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
+      s.tries++; s.err = "";
+      if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.combined = combined; }
+    };
+    rec.recognizing = (_, e) => { partial = e.result.text || ""; s.live = (parts.map((p) => p.text).join(" ") + " " + partial).trim(); quiet(3000); if (current === idx) renderSpeak(q); };
+    rec.recognized = (_, e) => {
+      if (e.result.reason !== SDK.ResultReason.RecognizedSpeech || !e.result.text) return;
+      const pr = SDK.PronunciationAssessmentResult.fromResult(e.result);
+      const words = ((pr.detailResult && pr.detailResult.Words) || []).filter((w) => !w.PronunciationAssessment || w.PronunciationAssessment.ErrorType !== "Omission");
+      parts.push({ text: e.result.text, acc: pr.accuracyScore, flu: pr.fluencyScore, pro: pr.prosodyScore, n: Math.max(1, words.length) });
+      partial = ""; s.live = parts.map((p) => p.text).join(" ");
+      quiet(1800);
+      if (current === idx) renderSpeak(q);
+    };
+    rec.canceled = (_, e) => {
+      if (e.reason === SDK.CancellationReason.Error) {
+        const d = String(e.errorDetails || "");
+        s.err = e.errorCode === SDK.CancellationErrorCode.TooManyRequests ? "Hay muchas personas grabando en este momento. Espera unos segundos e intenta de nuevo."
+          : /permission|notallowed|denied/i.test(d) ? "No pude usar tu micrófono. Revisa que le hayas dado permiso a esta página (en el candado junto a la dirección) e intenta de nuevo, o salta esta parte."
+          : /token|auth|401|403/i.test(d) ? (tokenCache = null, "Se venció la conexión con el evaluador. Intenta de nuevo.")
+          : "Algo falló al escucharte. Intenta de nuevo.";
+      }
+      finish(false);
+    };
+    rec.startContinuousRecognitionAsync(() => {
+      s.preparing = false; s.listening = true; quiet(9000);
+      hard = setTimeout(() => finish(false), 25000);
+      if (current === idx) renderSpeak(q);
+    }, (err) => {
+      s.preparing = false; s.listening = false; done = true;
+      s.err = /permission|notallowed|denied/i.test(String(err)) ? "No pude usar tu micrófono. Revisa que le hayas dado permiso a esta página e intenta de nuevo, o salta esta parte." : "Algo falló al escucharte. Intenta de nuevo.";
+      try { rec.close(); } catch (e) {} azRec = null;
+      if (current === idx) renderSpeak(q);
+    });
+  }
+
   function skipSpeaking() {
     stopRecog();
     speakOff = true;
@@ -908,10 +1015,10 @@ p { margin: 0; }
     $("next").disabled = !d.text.trim();
   });
   $("dict-skip").addEventListener("click", () => { dict[current].text = ""; dict[current].g = grade("", QUESTIONS[current].answer); dict[current].checked = true; renderQuestion(); });
-  $("rec").addEventListener("click", () => { if (SR) toggleRecord(); });
+  $("rec").addEventListener("click", () => { if (USE_AZURE) toggleAzure(); else if (SR) toggleRecord(); });
   $("sp-skip").addEventListener("click", skipSpeaking);
-  if (!SR) { $("meta-count").textContent = QUESTIONS.length + " preguntas"; $("meta-mic").hidden = true; }
-  $("again").addEventListener("click", () => { answers = blank(); dict = blankDict(); stopRecog(); spk = blankSpk(); speakOff = !SR; current = 0; renderQuestion(); show("quiz"); });
+  if (!SR && !USE_AZURE) { $("meta-count").textContent = QUESTIONS.length + " preguntas"; $("meta-mic").hidden = true; }
+  $("again").addEventListener("click", () => { answers = blank(); dict = blankDict(); stopRecog(); spk = blankSpk(); speakOff = !SR && !USE_AZURE; current = 0; renderQuestion(); show("quiz"); });
   document.addEventListener("keydown", (e) => {
     if (screens.quiz.hidden || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || QUESTIONS[current].type === "dictation" || QUESTIONS[current].type === "speak") return;
     const map = { "1": 0, "2": 1, "3": 2, "4": 3, "5": 4, a: 0, b: 1, c: 2, d: 3, e: 4 };
