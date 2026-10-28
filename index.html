@@ -342,8 +342,8 @@ p { margin: 0; }
     { type: "dictation", dim: "Bases", src: "audio/audio-6.mp3", prefix: "If you ask me, as long as you got this job,", answer: "you got nothing pushing you to get another one",
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
-    { type: "speak", dim: "Voz", sentence: "I think this sheep is cheap, but that ship isn't." },
-    { type: "speak", dim: "Voz", sentence: "I think they have three very big bags." },
+    { type: "speak", dim: "Voz", sentence: "What are you going to do about it?" },
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here." },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" }
   ];
@@ -785,7 +785,7 @@ p { margin: 0; }
       const link = pairs ? linked / pairs : null;
       let flu = avg("flu");
       if (link != null) flu = flu * 0.5 + link * 0.5;
-      flu = Math.max(0, Math.min(1, flu - reductionPenalty(q, text))) * Math.min(1, g.ratio / 0.7);
+      flu = Math.max(0, Math.min(1, flu)) * Math.min(1, g.ratio / 0.7);
       const proS = pro == null ? null : Math.max(0, Math.min(1, (pro - 0.5) / 0.45)) * Math.min(1, g.ratio / 0.7);
       const linkS = link == null ? null : link * Math.min(1, g.ratio / 0.7);
       const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
