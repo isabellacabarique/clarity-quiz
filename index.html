@@ -676,7 +676,7 @@ p { margin: 0; }
         (q.reduce || []).forEach(([formal, reduced]) => { if (said.includes(" " + formal + " ") && !said.includes(" " + reduced + " ")) flu -= 0.3; });
         flu = Math.max(0, Math.min(1, flu)) * Math.min(1, clarity / 0.7);
         const combined = clarity * 0.7 + flu * 0.3;
-        if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.combined = combined; }
+        s.g = g; s.clar = clarity; s.flu = flu; s.best = Math.max(s.best || 0, combined); s.combined = s.best;
         s.err = "";
       } else if (!s.err) s.err = "No te escuché. Acércate al micrófono e intenta de nuevo.";
       if (current === idx) renderSpeak(q);
@@ -779,7 +779,7 @@ p { margin: 0; }
           const br = (((w2.PronunciationAssessment || {}).Feedback || {}).Prosody || {}).Break || {};
           const breakMs = typeof br.BreakLength === "number" ? br.BreakLength / 10000 : 0;
           const unexpected = (br.ErrorTypes || []).indexOf("UnexpectedBreak") !== -1;
-          if (gapMs <= 80 && breakMs <= 80 && !unexpected) linked++;
+          if (gapMs < 25 && breakMs < 20 && !unexpected) linked++;
         }
       }
       const link = pairs ? linked / pairs : null;
@@ -790,7 +790,8 @@ p { margin: 0; }
       const linkS = link == null ? null : link * Math.min(1, g.ratio / 0.7);
       const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
       s.tries++; s.err = "";
-      if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.combined = combined; }
+      s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS;
+      s.best = Math.max(s.best || 0, combined); s.combined = s.best;
       if (DEBUG) {
         const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text];
         refWords.forEach((w) => {
