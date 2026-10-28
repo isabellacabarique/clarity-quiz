@@ -972,8 +972,10 @@ p { margin: 0; }
     ctx.textAlign = "right";
     nl.forEach((ln, i) => ctx.fillText(ln, X + IW, 1185 - (nl.length - 1 - i) * 38));
     ctx.textAlign = "left";
+    // Bar = total score out of 100, with a mark where each level starts (21, 41, 61, 81).
     rr(ctx, X, 1212, IW, 20, 10); ctx.fillStyle = C.pale; ctx.fill();
-    rr(ctx, X, 1212, Math.max(20, IW * r.progress), 20, 10); ctx.fillStyle = C.teal; ctx.fill();
+    rr(ctx, X, 1212, Math.max(20, IW * Math.min(1, r.score / 100)), 20, 10); ctx.fillStyle = C.teal; ctx.fill();
+    [21, 41, 61, 81].forEach((m) => { ctx.fillStyle = C.white; ctx.fillRect(X + IW * m / 100 - 2, 1212, 4, 20); });
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
