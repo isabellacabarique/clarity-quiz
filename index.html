@@ -147,6 +147,8 @@ p { margin: 0; }
 .m-val { font: 600 28px/1 var(--font-display); color: var(--teal-dark); font-variant-numeric: tabular-nums; }
 .m-bar { grid-column: 1 / -1; height: 10px; border-radius: 99px; background: var(--teal-pale); overflow: hidden; }
 .m-bar > div { height: 100%; width: 0; background: #3F9C92; border-radius: 99px; transition: width .4s ease; }
+.dbg { display: grid; gap: 8px; }
+.dbg textarea { width: 100%; font: 500 12px/1.4 ui-monospace, Menlo, monospace; padding: 10px; border-radius: 10px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink); }
 .live { color: var(--ink-soft); font-style: italic; font-size: 17px; }
 .sp-err { color: #B33A26; font-weight: 600; font-size: 15px; }
 .notes ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
@@ -252,6 +254,7 @@ p { margin: 0; }
           <div class="metric" id="m-pro-row" hidden><span class="m-label">Entonación</span><span class="m-val" id="m-pro"></span><div class="m-bar"><div id="m-pro-bar"></div></div></div>
           <div class="metric" id="m-link-row" hidden><span class="m-label">Linking</span><span class="m-val" id="m-link"></span><div class="m-bar"><div id="m-link-bar"></div></div></div>
         </div>
+        <div class="dbg" id="sp-dbg" hidden><p class="hint">Diagnóstico (solo lo ves tú con ?debug): copia este texto y pégalo en el chat con Claude.</p><textarea id="sp-dbg-txt" readonly rows="10"></textarea><button class="btn ghost" id="sp-dbg-copy" type="button">Copiar diagnóstico</button></div>
         <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
       </div>
       <div class="q-nav"><button class="btn ghost" id="back">Anterior</button><button class="btn" id="next" disabled>Siguiente</button></div>
@@ -346,6 +349,7 @@ p { margin: 0; }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
+  const DEBUG = new URLSearchParams(location.search).has("debug");
   const AZURE_TOKEN_URL = "https://clarity-quiz-token.isabellacabarique.workers.dev/";
   const USE_AZURE = !!AZURE_TOKEN_URL && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -603,6 +607,7 @@ p { margin: 0; }
       $("m-flu").textContent = f + "%"; $("m-flu-bar").style.width = f + "%";
       $("m-pro-row").hidden = s.pro == null;
       if (s.pro != null) { const pv = Math.round(s.pro * 100); $("m-pro").textContent = pv + "%"; $("m-pro-bar").style.width = pv + "%"; }
+      $("sp-dbg").hidden = !(DEBUG && s.debug); if (DEBUG && s.debug) $("sp-dbg-txt").value = s.debug;
       $("m-link-row").hidden = s.link == null;
       if (s.link != null) { const lv = Math.round(s.link * 100); $("m-link").textContent = lv + "%"; $("m-link-bar").style.width = lv + "%"; }
     }
@@ -770,7 +775,10 @@ p { margin: 0; }
           const om = (w) => (w.PronunciationAssessment || {}).ErrorType === "Omission";
           if (om(w1) || om(w2) || typeof w1.Offset !== "number" || typeof w2.Offset !== "number") continue;
           const gapMs = (w2.Offset - (w1.Offset + (w1.Duration || 0))) / 10000;
-          if (gapMs <= 80) linked++;
+          const br = (((w2.PronunciationAssessment || {}).Feedback || {}).Prosody || {}).Break || {};
+          const breakMs = typeof br.BreakLength === "number" ? br.BreakLength / 10000 : 0;
+          const unexpected = (br.ErrorTypes || []).indexOf("UnexpectedBreak") !== -1;
+          if (gapMs <= 80 && breakMs <= 80 && !unexpected) linked++;
         }
       }
       const link = pairs ? linked / pairs : null;
@@ -782,6 +790,16 @@ p { margin: 0; }
       const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
       s.tries++; s.err = "";
       if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.combined = combined; }
+      if (DEBUG) {
+        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + " | dijo: " + text];
+        refWords.forEach((w) => {
+          const pa = w.PronunciationAssessment || {};
+          const br = ((pa.Feedback || {}).Prosody || {}).Break || {};
+          const ph = (w.Phonemes || []).map((x) => (x.Phoneme || "?") + ":" + Math.round((x.PronunciationAssessment || {}).AccuracyScore || 0)).join(" ");
+          lines.push(w.Word + " acc=" + Math.round(pa.AccuracyScore || 0) + " err=" + (pa.ErrorType || "-") + " off=" + Math.round((w.Offset || 0) / 10000) + " dur=" + Math.round((w.Duration || 0) / 10000) + " brk=" + (typeof br.BreakLength === "number" ? Math.round(br.BreakLength / 10000) : "-") + " " + (br.ErrorTypes || []).join(",") + " | " + ph);
+        });
+        s.debug = lines.join("\n");
+      }
     };
     rec.recognizing = (_, e) => { partial = e.result.text || ""; s.live = (parts.map((p) => p.text).join(" ") + " " + partial).trim(); quiet(3000); if (current === idx) renderSpeak(q); };
     rec.recognized = (_, e) => {
@@ -789,6 +807,7 @@ p { margin: 0; }
       const pr = SDK.PronunciationAssessmentResult.fromResult(e.result);
       const words = ((pr.detailResult && pr.detailResult.Words) || []).filter((w) => !w.PronunciationAssessment || w.PronunciationAssessment.ErrorType !== "Omission");
       parts.push({ text: e.result.text, acc: pr.accuracyScore, flu: pr.fluencyScore, pro: pr.prosodyScore, n: Math.max(1, words.length), words: (pr.detailResult && pr.detailResult.Words) || [] });
+      if (DEBUG) { try { parts[parts.length - 1].json = e.result.properties.getProperty(SDK.PropertyId.SpeechServiceResponse_JsonResult); } catch (err) {} }
       partial = ""; s.live = parts.map((p) => p.text).join(" ");
       quiet(1800);
       if (current === idx) renderSpeak(q);
@@ -1045,7 +1064,8 @@ p { margin: 0; }
   });
 
   // ---------- wiring ----------
-  $("start").addEventListener("click", () => { current = 0; renderQuestion(); show("quiz"); });
+  $("start").addEventListener("click", () => { const sp = QUESTIONS.findIndex((q) => q.type === "speak"); current = DEBUG && sp >= 0 ? sp : 0; renderQuestion(); show("quiz"); });
+  if (DEBUG) { $("start").textContent = "Probar solo la parte de voz"; }
   $("back").addEventListener("click", () => { if (current > 0) { current--; renderQuestion(); } });
   $("next").addEventListener("click", goNext);
   $("play").addEventListener("click", playCurrent);
@@ -1057,6 +1077,7 @@ p { margin: 0; }
   $("dict-skip").addEventListener("click", () => { dict[current].text = ""; dict[current].g = grade("", QUESTIONS[current].answer); dict[current].checked = true; renderQuestion(); });
   $("rec").addEventListener("click", () => { if (USE_AZURE) toggleAzure(); else if (SR) toggleRecord(); });
   $("sp-skip").addEventListener("click", skipSpeaking);
+  $("sp-dbg-copy").addEventListener("click", async () => { const t = $("sp-dbg-txt"); try { await navigator.clipboard.writeText(t.value); $("sp-dbg-copy").textContent = "Copiado"; } catch (e) { t.focus(); t.select(); } });
   if (!SR && !USE_AZURE) { $("meta-count").textContent = QUESTIONS.length + " preguntas"; $("meta-mic").hidden = true; }
   $("again").addEventListener("click", () => { answers = blank(); dict = blankDict(); stopRecog(); spk = blankSpk(); speakOff = !SR && !USE_AZURE; current = 0; renderQuestion(); show("quiz"); });
   document.addEventListener("keydown", (e) => {
