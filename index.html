@@ -253,6 +253,7 @@ p { margin: 0; }
           <div class="metric"><span class="m-label">Fluidez</span><span class="m-val" id="m-flu"></span><div class="m-bar"><div id="m-flu-bar"></div></div></div>
           <div class="metric" id="m-pro-row" hidden><span class="m-label">Entonación</span><span class="m-val" id="m-pro"></span><div class="m-bar"><div id="m-pro-bar"></div></div></div>
           <div class="metric" id="m-link-row" hidden><span class="m-label">Linking</span><span class="m-val" id="m-link"></span><div class="m-bar"><div id="m-link-bar"></div></div></div>
+          <div class="metric" id="m-red-row" hidden><span class="m-label">Reducciones</span><span class="m-val" id="m-red"></span><div class="m-bar"><div id="m-red-bar"></div></div></div>
         </div>
         <div class="dbg" id="sp-dbg" hidden><p class="hint">Diagnóstico (solo lo ves tú con ?debug): copia este texto y pégalo en el chat con Claude.</p><textarea id="sp-dbg-txt" readonly rows="10"></textarea><button class="btn ghost" id="sp-dbg-copy" type="button">Copiar diagnóstico</button></div>
         <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
@@ -342,9 +343,10 @@ p { margin: 0; }
     { type: "dictation", dim: "Bases", src: "audio/audio-6.mp3", prefix: "If you ask me, as long as you got this job,", answer: "you got nothing pushing you to get another one",
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
-    { type: "speak", dim: "Voz", sentence: "What are you going to do about it?" },
+    { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", links: [[0, 1], [5, 6], [6, 7]] },
     { type: "speak", dim: "Voz", sentence: "I want to get out of here." },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]] },
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]],
+      reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }, { label: "to → tə", words: [4], maxMs: 160 }] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
@@ -608,6 +610,8 @@ p { margin: 0; }
       $("m-pro-row").hidden = s.pro == null;
       if (s.pro != null) { const pv = Math.round(s.pro * 100); $("m-pro").textContent = pv + "%"; $("m-pro-bar").style.width = pv + "%"; }
       $("sp-dbg").hidden = !(DEBUG && s.debug); if (DEBUG && s.debug) $("sp-dbg-txt").value = s.debug;
+      $("m-red-row").hidden = s.red == null;
+      if (s.red != null) { const rv = Math.round(s.red * 100); $("m-red").textContent = rv + "%"; $("m-red-bar").style.width = rv + "%"; }
       $("m-link-row").hidden = s.link == null;
       if (s.link != null) { const lv = Math.round(s.link * 100); $("m-link").textContent = lv + "%"; $("m-link-bar").style.width = lv + "%"; }
     }
@@ -767,33 +771,52 @@ p { margin: 0; }
       const clean = (w) => w.toLowerCase().replace(/[^a-z']/g, "");
       let pairs = 0, linked = 0;
       if (refWords.length === sw.length) {
+        const autoPairs = [];
         for (let i = 0; i < sw.length - 1; i++) {
           if (/[,.?!;:]$/.test(sw[i])) continue;
           const a = clean(sw[i]), b = clean(sw[i + 1]);
-          if (!/[bcdfghjklmnpqrstvwxz]$/.test(a) || !/^[aeiou]/.test(b)) continue;
+          if (/[bcdfghjklmnpqrstvwxz]$/.test(a) && /^[aeiou]/.test(b)) autoPairs.push([i, i + 1]);
+        }
+        (q.links || autoPairs).forEach(([i, j]) => {
           pairs++;
-          const w1 = refWords[i], w2 = refWords[i + 1];
+          const w1 = refWords[i], w2 = refWords[j];
           const om = (w) => (w.PronunciationAssessment || {}).ErrorType === "Omission";
-          if (om(w1) || om(w2) || typeof w1.Offset !== "number" || typeof w2.Offset !== "number") continue;
+          if (om(w1) || om(w2) || typeof w1.Offset !== "number" || typeof w2.Offset !== "number") return;
           const gapMs = (w2.Offset - (w1.Offset + (w1.Duration || 0))) / 10000;
           const br = (((w2.PronunciationAssessment || {}).Feedback || {}).Prosody || {}).Break || {};
           const breakMs = typeof br.BreakLength === "number" ? br.BreakLength / 10000 : 0;
           const unexpected = (br.ErrorTypes || []).indexOf("UnexpectedBreak") !== -1;
           if (gapMs < 25 && breakMs < 20 && !unexpected) linked++;
-        }
+        });
       }
+      // Reductions measured by time: a reduced form is short ("wanna" ≈ want+to said in one go; "tə" instead of "tu:").
+      let redTotal = 0, redOk = 0; const redInfo = [];
+      if (q.reductions && refWords.length === sw.length) {
+        q.reductions.forEach((rd) => {
+          redTotal++;
+          const ws = rd.words.map((k) => refWords[k]);
+          if (ws.some((w) => typeof w.Offset !== "number" || (w.PronunciationAssessment || {}).ErrorType === "Omission")) { redInfo.push(rd.label + "=?"); return; }
+          const last = ws[ws.length - 1];
+          const ms = (last.Offset + (last.Duration || 0) - ws[0].Offset) / 10000;
+          if (ms <= rd.maxMs) redOk++;
+          redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ")");
+        });
+      }
+      const red = redTotal ? redOk / redTotal : null;
       const link = pairs ? linked / pairs : null;
       let flu = avg("flu");
-      if (link != null) flu = flu * 0.5 + link * 0.5;
+      const extras = [link, red].filter((v) => v != null);
+      if (extras.length) flu = flu * 0.5 + (extras.reduce((a, b) => a + b, 0) / extras.length) * 0.5;
       flu = Math.max(0, Math.min(1, flu)) * Math.min(1, g.ratio / 0.7);
       const proS = pro == null ? null : Math.max(0, Math.min(1, (pro - 0.5) / 0.45)) * Math.min(1, g.ratio / 0.7);
       const linkS = link == null ? null : link * Math.min(1, g.ratio / 0.7);
+      const redS = red == null ? null : red * Math.min(1, g.ratio / 0.7);
       const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
       s.tries++; s.err = "";
-      s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS;
+      s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.red = redS;
       s.best = Math.max(s.best || 0, combined); s.combined = s.best;
       if (DEBUG) {
-        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text];
+        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + (redInfo.length ? " red=" + redInfo.join(" ") : "") + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text];
         refWords.forEach((w) => {
           const pa = w.PronunciationAssessment || {};
           const br = ((pa.Feedback || {}).Prosody || {}).Break || {};
