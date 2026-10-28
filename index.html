@@ -250,6 +250,7 @@ p { margin: 0; }
           <div class="metric"><span class="m-label">Claridad</span><span class="m-val" id="m-clar"></span><div class="m-bar"><div id="m-clar-bar"></div></div></div>
           <div class="metric"><span class="m-label">Fluidez</span><span class="m-val" id="m-flu"></span><div class="m-bar"><div id="m-flu-bar"></div></div></div>
           <div class="metric" id="m-pro-row" hidden><span class="m-label">Entonación</span><span class="m-val" id="m-pro"></span><div class="m-bar"><div id="m-pro-bar"></div></div></div>
+          <div class="metric" id="m-link-row" hidden><span class="m-label">Linking</span><span class="m-val" id="m-link"></span><div class="m-bar"><div id="m-link-bar"></div></div></div>
         </div>
         <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
       </div>
@@ -602,6 +603,8 @@ p { margin: 0; }
       $("m-flu").textContent = f + "%"; $("m-flu-bar").style.width = f + "%";
       $("m-pro-row").hidden = s.pro == null;
       if (s.pro != null) { const pv = Math.round(s.pro * 100); $("m-pro").textContent = pv + "%"; $("m-pro-bar").style.width = pv + "%"; }
+      $("m-link-row").hidden = s.link == null;
+      if (s.link != null) { const lv = Math.round(s.link * 100); $("m-link").textContent = lv + "%"; $("m-link-bar").style.width = lv + "%"; }
     }
     const nx = $("next");
     nx.disabled = !s.tries || s.listening || s.preparing;
@@ -715,7 +718,7 @@ p { margin: 0; }
     cfg.speechRecognitionLanguage = "en-US";
     cfg.setProperty(SDK.PropertyId.Speech_SegmentationSilenceTimeoutMs, "1500");
     const rec = new SDK.SpeechRecognizer(cfg, SDK.AudioConfig.fromDefaultMicrophoneInput());
-    const pa = new SDK.PronunciationAssessmentConfig(q.sentence, SDK.PronunciationAssessmentGradingSystem.HundredMark, SDK.PronunciationAssessmentGranularity.Word, true);
+    const pa = new SDK.PronunciationAssessmentConfig(q.sentence, SDK.PronunciationAssessmentGradingSystem.HundredMark, SDK.PronunciationAssessmentGranularity.Phoneme, true);
     pa.enableProsodyAssessment = true;
     pa.applyTo(rec);
     azRec = rec;
@@ -736,21 +739,56 @@ p { margin: 0; }
       const avg = (k) => parts.reduce((a, p) => a + (p[k] == null ? 0 : p[k]) * p.n, 0) / n / 100;
       const text = parts.map((p) => p.text).join(" ");
       const g = grade(text, q.sentence);
-      const acc = avg("acc"), hasPro = parts.some((p) => p.pro != null), pro = hasPro ? avg("pro") : null;
-      const clarity = Math.max(0, Math.min(1, acc * Math.min(1, g.ratio / 0.9)));
-      let flu = avg("flu") - reductionPenalty(q, text);
-      flu = Math.max(0, Math.min(1, flu)) * Math.min(1, g.ratio / 0.7);
+      const hasPro = parts.some((p) => p.pro != null), pro = hasPro ? avg("pro") : null;
+      // Reference words in order (inserted extra words are left out).
+      const refWords = [];
+      parts.forEach((p) => p.words.forEach((w) => { const pa = w.PronunciationAssessment || {}; if (pa.ErrorType !== "Insertion") refWords.push(w); }));
+      // Clarity, sound by sound: each word counts its average sound AND its weakest sound,
+      // so one Spanish-style vowel ("pi:k" for "pick") pulls the word down.
+      const wordScores = refWords.map((w) => {
+        const pa = w.PronunciationAssessment || {};
+        if (pa.ErrorType === "Omission") return 0;
+        const ph = (w.Phonemes || []).map((x) => x.PronunciationAssessment && x.PronunciationAssessment.AccuracyScore).filter((v) => typeof v === "number");
+        if (!ph.length) return typeof pa.AccuracyScore === "number" ? pa.AccuracyScore : 0;
+        const mean = ph.reduce((a, b) => a + b, 0) / ph.length;
+        return 0.5 * mean + 0.5 * Math.min.apply(null, ph);
+      });
+      const rawClar = wordScores.length ? wordScores.reduce((a, b) => a + b, 0) / wordScores.length : avg("acc") * 100;
+      const clarity = Math.max(0, Math.min(1, (rawClar - 40) / 55)) * Math.min(1, g.ratio / 0.9);
+      // Linking: where a word ends in a consonant and the next starts with a vowel ("turn it off"),
+      // a native joins them. A pause between them (> 80 ms) counts as not linked.
+      const sw = q.sentence.split(" ");
+      const clean = (w) => w.toLowerCase().replace(/[^a-z']/g, "");
+      let pairs = 0, linked = 0;
+      if (refWords.length === sw.length) {
+        for (let i = 0; i < sw.length - 1; i++) {
+          if (/[,.?!;:]$/.test(sw[i])) continue;
+          const a = clean(sw[i]), b = clean(sw[i + 1]);
+          if (!/[bcdfghjklmnpqrstvwxz]$/.test(a) || !/^[aeiou]/.test(b)) continue;
+          pairs++;
+          const w1 = refWords[i], w2 = refWords[i + 1];
+          const om = (w) => (w.PronunciationAssessment || {}).ErrorType === "Omission";
+          if (om(w1) || om(w2) || typeof w1.Offset !== "number" || typeof w2.Offset !== "number") continue;
+          const gapMs = (w2.Offset - (w1.Offset + (w1.Duration || 0))) / 10000;
+          if (gapMs <= 80) linked++;
+        }
+      }
+      const link = pairs ? linked / pairs : null;
+      let flu = avg("flu");
+      if (link != null) flu = flu * 0.5 + link * 0.5;
+      flu = Math.max(0, Math.min(1, flu - reductionPenalty(q, text))) * Math.min(1, g.ratio / 0.7);
       const proS = pro == null ? null : Math.max(0, Math.min(1, pro * Math.min(1, g.ratio / 0.7)));
+      const linkS = link == null ? null : link * Math.min(1, g.ratio / 0.7);
       const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
       s.tries++; s.err = "";
-      if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.combined = combined; }
+      if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.combined = combined; }
     };
     rec.recognizing = (_, e) => { partial = e.result.text || ""; s.live = (parts.map((p) => p.text).join(" ") + " " + partial).trim(); quiet(3000); if (current === idx) renderSpeak(q); };
     rec.recognized = (_, e) => {
       if (e.result.reason !== SDK.ResultReason.RecognizedSpeech || !e.result.text) return;
       const pr = SDK.PronunciationAssessmentResult.fromResult(e.result);
       const words = ((pr.detailResult && pr.detailResult.Words) || []).filter((w) => !w.PronunciationAssessment || w.PronunciationAssessment.ErrorType !== "Omission");
-      parts.push({ text: e.result.text, acc: pr.accuracyScore, flu: pr.fluencyScore, pro: pr.prosodyScore, n: Math.max(1, words.length) });
+      parts.push({ text: e.result.text, acc: pr.accuracyScore, flu: pr.fluencyScore, pro: pr.prosodyScore, n: Math.max(1, words.length), words: (pr.detailResult && pr.detailResult.Words) || [] });
       partial = ""; s.live = parts.map((p) => p.text).join(" ");
       quiet(1800);
       if (current === idx) renderSpeak(q);
