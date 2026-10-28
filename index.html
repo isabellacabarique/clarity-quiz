@@ -759,7 +759,8 @@ p { margin: 0; }
         return 0.5 * mean + 0.5 * Math.min.apply(null, ph);
       });
       const rawClar = wordScores.length ? wordScores.reduce((a, b) => a + b, 0) / wordScores.length : avg("acc") * 100;
-      const clarity = Math.max(0, Math.min(1, (rawClar - 40) / 55)) * Math.min(1, g.ratio / 0.9);
+      // Calibrated with real readings (Oct 2026): careless reading ~78, clean native-like ~96.
+      const clarity = Math.max(0, Math.min(1, (rawClar - 65) / 32)) * Math.min(1, g.ratio / 0.9);
       // Linking: where a word ends in a consonant and the next starts with a vowel ("turn it off"),
       // a native joins them. A pause between them (> 80 ms) counts as not linked.
       const sw = q.sentence.split(" ");
@@ -785,13 +786,13 @@ p { margin: 0; }
       let flu = avg("flu");
       if (link != null) flu = flu * 0.5 + link * 0.5;
       flu = Math.max(0, Math.min(1, flu - reductionPenalty(q, text))) * Math.min(1, g.ratio / 0.7);
-      const proS = pro == null ? null : Math.max(0, Math.min(1, pro * Math.min(1, g.ratio / 0.7)));
+      const proS = pro == null ? null : Math.max(0, Math.min(1, (pro - 0.5) / 0.45)) * Math.min(1, g.ratio / 0.7);
       const linkS = link == null ? null : link * Math.min(1, g.ratio / 0.7);
       const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
       s.tries++; s.err = "";
       if (!s.g || combined > s.combined) { s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.combined = combined; }
       if (DEBUG) {
-        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + " | dijo: " + text];
+        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text];
         refWords.forEach((w) => {
           const pa = w.PronunciationAssessment || {};
           const br = ((pa.Feedback || {}).Prosody || {}).Break || {};
