@@ -213,7 +213,7 @@ p { margin: 0; }
       <div class="reflection"><p class="motto">Para saber a dónde vas, primero tienes que saber dónde estás.</p></div>
       <h1>¿Qué tipo de speaker eres hoy?</h1>
       <p class="lede">Vamos a averiguarlo para definir juntos tu camino en Clarity. Responde las siguientes preguntas:</p>
-      <div class="meta"><span id="meta-count">20 preguntas</span><span>7 minutos</span><span id="meta-mic">Necesitas micrófono</span><span>Repítelo cada 30 días</span></div>
+      <div class="meta"><span id="meta-count">22 preguntas</span><span>8 minutos</span><span id="meta-mic">Necesitas micrófono</span><span>Repítelo cada 30 días</span></div>
     </div>
     <div><button class="btn" id="start">Empezar el quiz</button></div>
   </section>
@@ -253,7 +253,7 @@ p { margin: 0; }
           <div class="metric"><span class="m-label">Fluidez</span><span class="m-val" id="m-flu"></span><div class="m-bar"><div id="m-flu-bar"></div></div></div>
           <div class="metric" id="m-pro-row" hidden><span class="m-label">Entonación</span><span class="m-val" id="m-pro"></span><div class="m-bar"><div id="m-pro-bar"></div></div></div>
           <div class="metric" id="m-link-row" hidden><span class="m-label">Linking</span><span class="m-val" id="m-link"></span><div class="m-bar"><div id="m-link-bar"></div></div></div>
-          <div class="metric" id="m-red-row" hidden><span class="m-label">Reducciones</span><span class="m-val" id="m-red"></span><div class="m-bar"><div id="m-red-bar"></div></div></div>
+          <div class="metric" id="m-red-row" hidden><span class="m-label" id="m-red-label">Reducciones</span><span class="m-val" id="m-red"></span><div class="m-bar"><div id="m-red-bar"></div></div></div>
         </div>
         <div class="dbg" id="sp-dbg" hidden><p class="hint">Diagnóstico (solo lo ves tú con ?debug): copia este texto y pégalo en el chat con Claude.</p><textarea id="sp-dbg-txt" readonly rows="10"></textarea><button class="btn ghost" id="sp-dbg-copy" type="button">Copiar diagnóstico</button></div>
         <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
@@ -347,7 +347,9 @@ p { margin: 0; }
     { type: "speak", dim: "Voz", sentence: "I want to get out of here.", reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]],
       reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }, { label: "to → tə", words: [4], maxMs: 120 }] },
-    { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" }
+    { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" },
+    { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", full: ["i am"], extra: ["am"] }, { label: "it's", full: ["it is", "it has"], extra: ["is", "has"] }] },
+    { type: "speak", dim: "Voz", sentence: "I don't think she'll be there.", contractions: [{ label: "don't", full: ["do not"], extra: ["not"] }, { label: "she'll", full: ["she will"], extra: ["will"] }] }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
@@ -611,6 +613,7 @@ p { margin: 0; }
       if (s.pro != null) { const pv = Math.round(s.pro * 100); $("m-pro").textContent = pv + "%"; $("m-pro-bar").style.width = pv + "%"; }
       $("sp-dbg").hidden = !(DEBUG && s.debug); if (DEBUG && s.debug) $("sp-dbg-txt").value = s.debug;
       $("m-red-row").hidden = s.red == null;
+      $("m-red-label").textContent = q.contractions && !q.reductions ? "Contracciones" : "Reducciones";
       if (s.red != null) { const rv = Math.round(s.red * 100); $("m-red").textContent = rv + "%"; $("m-red-bar").style.width = rv + "%"; }
       $("m-link-row").hidden = s.link == null;
       if (s.link != null) { const lv = Math.round(s.link * 100); $("m-link").textContent = lv + "%"; $("m-link-bar").style.width = lv + "%"; }
@@ -807,6 +810,17 @@ p { margin: 0; }
           redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ")");
         });
       }
+      if (q.contractions) {
+        const heard = " " + text.toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z' ]/g, " ").replace(/\s+/g, " ") + " ";
+        const inserted = [];
+        parts.forEach((p) => p.words.forEach((w) => { if ((w.PronunciationAssessment || {}).ErrorType === "Insertion") inserted.push(String(w.Word || "").toLowerCase()); }));
+        q.contractions.forEach((c) => {
+          redTotal++;
+          const longForm = c.full.some((f) => heard.includes(" " + f + " ")) || c.extra.some((x) => inserted.indexOf(x) !== -1);
+          if (!longForm) redOk++;
+          redInfo.push(c.label + "=" + (longForm ? "forma larga" : "ok"));
+        });
+      }
       const red = redTotal ? redOk / redTotal : null;
       const link = pairs ? linked / pairs : null;
       let flu = avg("flu");
@@ -822,6 +836,8 @@ p { margin: 0; }
       s.best = Math.max(s.best || 0, combined); s.combined = s.best;
       if (DEBUG) {
         const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + (redInfo.length ? " red=" + redInfo.join(" ") : "") + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text];
+        const ins = []; parts.forEach((p) => p.words.forEach((w) => { if ((w.PronunciationAssessment || {}).ErrorType === "Insertion") ins.push(w.Word); }));
+        if (ins.length) lines.push("PALABRAS DE MÁS: " + ins.join(", "));
         refWords.forEach((w) => {
           const pa = w.PronunciationAssessment || {};
           const br = ((pa.Feedback || {}).Prosody || {}).Break || {};
@@ -874,7 +890,7 @@ p { margin: 0; }
   // With several options chosen, a question is worth the average of their points.
   function pointsOf(i) {
     const sel = answers[i];
-    return sel.reduce((s, a) => s + QUESTIONS[i].opts[a][1], 0) / sel.length;
+    return sel.length ? sel.reduce((s, a) => s + QUESTIONS[i].opts[a][1], 0) / sel.length : 0;
   }
   function compute() {
     let raw = 0, bases = 0, ear = 0, earN = 0, reading = null, dictSum = 0, spkSum = 0, spkDone = 0;
