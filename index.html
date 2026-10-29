@@ -761,7 +761,7 @@ p { margin: 0; }
       // Small function words are naturally reduced by natives (you → yə, are → ər, flapped T in "what"),
       // and Azure marks those sounds down. For them only the average sound counts, not the weakest.
       const FUNC = new Set(["a", "an", "the", "to", "of", "for", "and", "are", "you", "it", "is", "at", "in", "on", "do", "i", "what", "that", "can", "have", "has", "was", "were", "be", "your", "my", "me", "him", "her", "them", "us"]);
-      const redIdx = new Set(); (q.reductions || []).forEach((rd) => rd.words.forEach((k) => redIdx.add(k)));
+      const redIdx = new Set(); (q.reductions || []).forEach((rd) => (rd.words || [rd.word]).forEach((k) => redIdx.add(k)));
       const wordScores = refWords.map((w, wi) => {
         const pa = w.PronunciationAssessment || {};
         const isFunc = FUNC.has(String(w.Word || "").toLowerCase().replace(/[^a-z']/g, "")) || redIdx.has(wi);
