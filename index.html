@@ -955,6 +955,9 @@ p { margin: 0; }
 
   // ---------- result ----------
   function startPhrase() { return "Hoy eres"; }
+  // The goal is where the next level starts (21, 41, 61, 81); a Leader is measured out of 100.
+  function goalOf(r) { return r.next ? r.next.min : 100; }
+  function scoreLabel(r) { return r.score + "/" + goalOf(r); }
 
   function renderResult() {
     const r = result, L = r.level;
@@ -963,7 +966,8 @@ p { margin: 0; }
     h.appendChild(lvl);
 
     const sl = $("r-score"); sl.textContent = "";
-    const st = document.createElement("strong"); st.textContent = r.score + "/100";
+    // Score shown against the goal of the next level (14/21), not out of 100.
+    const st = document.createElement("strong"); st.textContent = scoreLabel(r);
     sl.append("Tu puntaje: ", st, ". ");
     sl.append(r.next ? "Te faltan " + r.toNext + " puntos para ser " + r.next.name + "." : "¡Llegaste al nivel más alto!");
 
@@ -1097,8 +1101,8 @@ p { margin: 0; }
     });
 
     // score
-    ctx.fillStyle = C.tealDark; ctx.font = "600 76px " + D; ctx.fillText(r.score + "/100", X, 1185);
-    const sw = ctx.measureText(r.score + "/100").width;
+    ctx.fillStyle = C.tealDark; ctx.font = "600 76px " + D; ctx.fillText(scoreLabel(r), X, 1185);
+    const sw = ctx.measureText(scoreLabel(r)).width;
     ctx.fillStyle = C.ink; ctx.font = "700 30px " + B;
     const note = r.next ? "Te faltan " + r.toNext + " puntos para ser " + r.next.name : "¡Llegaste al nivel más alto!";
     const nl = wrapLines(ctx, note, IW - sw - 40);
@@ -1107,15 +1111,15 @@ p { margin: 0; }
     ctx.textAlign = "left";
     // Bar = total score out of 100, with a mark where each level starts (21, 41, 61, 81).
     rr(ctx, X, 1212, IW, 20, 10); ctx.fillStyle = C.pale; ctx.fill();
-    rr(ctx, X, 1212, Math.max(20, IW * Math.min(1, r.score / 100)), 20, 10); ctx.fillStyle = C.teal; ctx.fill();
-    [21, 41, 61, 81].forEach((m) => { ctx.fillStyle = C.white; ctx.fillRect(X + IW * m / 100 - 2, 1212, 4, 20); });
+    // Bar = how far the student is toward the next level's goal (14 of 21 = two thirds full).
+    rr(ctx, X, 1212, Math.max(20, IW * Math.min(1, r.score / goalOf(r))), 20, 10); ctx.fillStyle = C.teal; ctx.fill();
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
     ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, 1292);
 
     $("card").src = cv.toDataURL("image/png");
-    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5, puntaje " + r.score + " de 100.";
+    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5, puntaje " + scoreLabel(r) + ".";
     cardBlob = await new Promise((res) => cv.toBlob(res, "image/png"));
   }
 
