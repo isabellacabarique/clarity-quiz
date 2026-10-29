@@ -348,7 +348,7 @@ p { margin: 0; }
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]],
       reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }, { label: "to → tə", words: [4], maxMs: 120 }] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" },
-    { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", full: ["i am"], extra: ["am"] }, { label: "it's", full: ["it is", "it has"], extra: ["is", "has"] }] },
+    { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", links: [[0, 1]],
       reductions: [{ label: "what does → warəs", words: [0, 1], maxMs: 300 }, { label: "does → rəs", words: [1], maxMs: 140 }] }
   ];
@@ -815,11 +815,24 @@ p { margin: 0; }
         const heard = " " + text.toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z' ]/g, " ").replace(/\s+/g, " ") + " ";
         const inserted = [];
         parts.forEach((p) => p.words.forEach((w) => { if ((w.PronunciationAssessment || {}).ErrorType === "Insertion") inserted.push(String(w.Word || "").toLowerCase()); }));
+        // Azure often writes the contraction even when the student says the long form, so time and sound decide too:
+        // a long form ("I am") makes the word last longer than the student's average word and gets a very low vowel score.
+        const timed = refWords.filter((w) => typeof w.Duration === "number" && (w.PronunciationAssessment || {}).ErrorType !== "Omission");
+        const avgDur = timed.length ? timed.reduce((a, w) => a + w.Duration, 0) / timed.length : 0;
         q.contractions.forEach((c) => {
           redTotal++;
-          const longForm = c.full.some((f) => heard.includes(" " + f + " ")) || c.extra.some((x) => inserted.indexOf(x) !== -1);
+          let longForm = c.full.some((f) => heard.includes(" " + f + " ")) || c.extra.some((x) => inserted.indexOf(x) !== -1);
+          const w = refWords.length === sw.length ? refWords[c.word] : null;
+          let note = "";
+          if (w && typeof w.Duration === "number" && avgDur) {
+            const ratio = w.Duration / avgDur;
+            const ph = (w.Phonemes || []).map((x) => (x.PronunciationAssessment || {}).AccuracyScore).filter((v) => typeof v === "number");
+            const low = ph.length ? Math.min.apply(null, ph) : 100;
+            if (ratio > 1.0 || low < 60) longForm = true;
+            note = "(dur " + Math.round(ratio * 100) + "% del promedio, sonido más bajo " + Math.round(low) + ")";
+          }
           if (!longForm) redOk++;
-          redInfo.push(c.label + "=" + (longForm ? "forma larga" : "ok"));
+          redInfo.push(c.label + "=" + (longForm ? "forma larga" : "ok") + note);
         });
       }
       const red = redTotal ? redOk / redTotal : null;
