@@ -350,7 +350,7 @@ p { margin: 0; }
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" },
     { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", links: [[0, 1]],
-      reductions: [{ label: "what does → warəs", words: [0, 1], maxMs: 300 }, { label: "does → rəs", words: [1], maxMs: 140 }] }
+      reductions: [{ label: "T suave en what", word: 0, phoneme: "t", maxScore: 80 }, { label: "does → rəs", words: [1], maxMs: 140 }] }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
@@ -803,6 +803,15 @@ p { margin: 0; }
       if (q.reductions && refWords.length === sw.length) {
         q.reductions.forEach((rd) => {
           redTotal++;
+          if (rd.phoneme) {
+            const w = refWords[rd.word];
+            const ph = ((w && w.Phonemes) || []).filter((x) => String(x.Phoneme || "").toLowerCase() === rd.phoneme);
+            const sc = ph.length ? (ph[ph.length - 1].PronunciationAssessment || {}).AccuracyScore : null;
+            if (typeof sc !== "number") { redInfo.push(rd.label + "=?"); return; }
+            if (sc <= rd.maxScore) redOk++;
+            redInfo.push(rd.label + "=" + Math.round(sc) + "(max " + rd.maxScore + ")");
+            return;
+          }
           const ws = rd.words.map((k) => refWords[k]);
           if (ws.some((w) => typeof w.Offset !== "number" || (w.PronunciationAssessment || {}).ErrorType === "Omission")) { redInfo.push(rd.label + "=?"); return; }
           const last = ws[ws.length - 1];
