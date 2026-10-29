@@ -754,17 +754,21 @@ p { margin: 0; }
       parts.forEach((p) => p.words.forEach((w) => { const pa = w.PronunciationAssessment || {}; if (pa.ErrorType !== "Insertion") refWords.push(w); }));
       // Clarity, sound by sound: each word counts its average sound AND its weakest sound,
       // so one Spanish-style vowel ("pi:k" for "pick") pulls the word down.
+      // Small function words are naturally reduced by natives (you → yə, are → ər, flapped T in "what"),
+      // and Azure marks those sounds down. For them only the average sound counts, not the weakest.
+      const FUNC = new Set(["a", "an", "the", "to", "of", "for", "and", "are", "you", "it", "is", "at", "in", "on", "do", "i", "what", "that", "can", "have", "has", "was", "were", "be", "your", "my", "me", "him", "her", "them", "us"]);
       const wordScores = refWords.map((w) => {
         const pa = w.PronunciationAssessment || {};
+        const isFunc = FUNC.has(String(w.Word || "").toLowerCase().replace(/[^a-z']/g, ""));
         if (pa.ErrorType === "Omission") return 0;
         const ph = (w.Phonemes || []).map((x) => x.PronunciationAssessment && x.PronunciationAssessment.AccuracyScore).filter((v) => typeof v === "number");
         if (!ph.length) return typeof pa.AccuracyScore === "number" ? pa.AccuracyScore : 0;
         const mean = ph.reduce((a, b) => a + b, 0) / ph.length;
-        return 0.5 * mean + 0.5 * Math.min.apply(null, ph);
+        return isFunc ? mean : 0.5 * mean + 0.5 * Math.min.apply(null, ph);
       });
       const rawClar = wordScores.length ? wordScores.reduce((a, b) => a + b, 0) / wordScores.length : avg("acc") * 100;
       // Calibrated with real readings (Oct 2026): careless reading ~78, clean native-like ~96.
-      const clarity = Math.max(0, Math.min(1, (rawClar - 65) / 32)) * Math.min(1, g.ratio / 0.9);
+      const clarity = Math.max(0, Math.min(1, (rawClar - 65) / 30)) * Math.min(1, g.ratio / 0.9);
       // Linking: where a word ends in a consonant and the next starts with a vowel ("turn it off"),
       // a native joins them. A pause between them (> 80 ms) counts as not linked.
       const sw = q.sentence.split(" ");
