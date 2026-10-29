@@ -344,9 +344,9 @@ p { margin: 0; }
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", links: [[0, 1], [5, 6], [6, 7]] },
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here." },
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]],
-      reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }, { label: "to → tə", words: [4], maxMs: 160 }] },
+      reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }, { label: "to → tə", words: [4], maxMs: 120 }] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
@@ -757,9 +757,10 @@ p { margin: 0; }
       // Small function words are naturally reduced by natives (you → yə, are → ər, flapped T in "what"),
       // and Azure marks those sounds down. For them only the average sound counts, not the weakest.
       const FUNC = new Set(["a", "an", "the", "to", "of", "for", "and", "are", "you", "it", "is", "at", "in", "on", "do", "i", "what", "that", "can", "have", "has", "was", "were", "be", "your", "my", "me", "him", "her", "them", "us"]);
-      const wordScores = refWords.map((w) => {
+      const redIdx = new Set(); (q.reductions || []).forEach((rd) => rd.words.forEach((k) => redIdx.add(k)));
+      const wordScores = refWords.map((w, wi) => {
         const pa = w.PronunciationAssessment || {};
-        const isFunc = FUNC.has(String(w.Word || "").toLowerCase().replace(/[^a-z']/g, ""));
+        const isFunc = FUNC.has(String(w.Word || "").toLowerCase().replace(/[^a-z']/g, "")) || redIdx.has(wi);
         if (pa.ErrorType === "Omission") return 0;
         const ph = (w.Phonemes || []).map((x) => x.PronunciationAssessment && x.PronunciationAssessment.AccuracyScore).filter((v) => typeof v === "number");
         if (!ph.length) return typeof pa.AccuracyScore === "number" ? pa.AccuracyScore : 0;
