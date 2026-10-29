@@ -344,9 +344,9 @@ p { margin: 0; }
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", links: [[0, 1], [5, 6], [6, 7]] },
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }] },
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", reductions: [{ label: "wanna", words: [1, 2], maxMs: 330, tWord: 1, tMax: 80 }] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]],
-      reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }, { label: "to → tə", words: [4], maxMs: 120 }] },
+      reductions: [{ label: "wanna", words: [1, 2], maxMs: 330, tWord: 1, tMax: 80 }, { label: "to → tə", words: [4], maxMs: 120 }] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" },
     { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", links: [[0, 1]],
@@ -816,8 +816,15 @@ p { margin: 0; }
           if (ws.some((w) => typeof w.Offset !== "number" || (w.PronunciationAssessment || {}).ErrorType === "Omission")) { redInfo.push(rd.label + "=?"); return; }
           const last = ws[ws.length - 1];
           const ms = (last.Offset + (last.Duration || 0) - ws[0].Offset) / 10000;
-          if (ms <= rd.maxMs) redOk++;
-          redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ")");
+          // wanna: besides being short, the t of "want" has to disappear (low Azure score for that t)
+          let tOk = true, tNote = "";
+          if (rd.tWord != null) {
+            const tp = ((refWords[rd.tWord] || {}).Phonemes || []).filter((x) => String(x.Phoneme || "").toLowerCase() === "t");
+            const tSc = tp.length ? (tp[tp.length - 1].PronunciationAssessment || {}).AccuracyScore : null;
+            if (typeof tSc === "number") { tOk = tSc <= rd.tMax; tNote = " t=" + Math.round(tSc) + "(max " + rd.tMax + ")"; }
+          }
+          if (ms <= rd.maxMs && tOk) redOk++;
+          redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ")" + tNote);
         });
       }
       if (q.contractions) {
