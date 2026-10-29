@@ -349,7 +349,8 @@ p { margin: 0; }
       reductions: [{ label: "wanna", words: [1, 2], maxMs: 330 }, { label: "to → tə", words: [4], maxMs: 120 }] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" },
     { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", full: ["i am"], extra: ["am"] }, { label: "it's", full: ["it is", "it has"], extra: ["is", "has"] }] },
-    { type: "speak", dim: "Voz", sentence: "I don't think she'll be there.", contractions: [{ label: "don't", full: ["do not"], extra: ["not"] }, { label: "she'll", full: ["she will"], extra: ["will"] }] }
+    { type: "speak", dim: "Voz", sentence: "What does she mean?", links: [[0, 1]],
+      reductions: [{ label: "what does → warəs", words: [0, 1], maxMs: 300 }, { label: "does → rəs", words: [1], maxMs: 140 }] }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
