@@ -1167,6 +1167,22 @@ p { margin: 0; }
     if (k in map) choose(map[k]);
     else if (e.key === "Enter" && e.target.tagName !== "BUTTON") goNext();
   });
+
+  // Review shortcut for Isa: #resultado-1 … #resultado-5 opens a sample result for that level
+  // (score in the middle of the level). Students never see it unless they type it.
+  function previewFromHash() {
+    const m = /^#resultado-([1-5])$/.exec(location.hash);
+    if (!m) return;
+    const idx = Number(m[1]) - 1, level = LEVELS[idx], next = idx < 4 ? LEVELS[idx + 1] : null;
+    const score = next ? Math.round((level.min + next.min - 1) / 2) : 90;
+    result = { score, bases: idx >= 3 ? 7 : 3, earAvg: 1 + idx * 0.4, reading: 2, level, next, toNext: next ? next.min - score : 0,
+      progress: next ? (score - level.min) / (next.min - level.min) : 1 };
+    isRepeat = false;
+    renderResult();
+    show("result");
+  }
+  previewFromHash();
+  window.addEventListener("hashchange", previewFromHash);
 })();
 </script>
 </body>
