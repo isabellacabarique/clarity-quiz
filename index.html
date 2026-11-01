@@ -214,6 +214,43 @@ p { margin: 0; }
 .copied { color: var(--teal-dark); font-weight: 700; font-size: 15px; }
 .retake { display: flex; gap: 12px; flex-wrap: wrap; }
 
+
+/* Weekly calendar */
+.cal { display: grid; gap: 0; border-top: 2px solid var(--ink); }
+.cal-day { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.cal-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; min-width: 0; }
+.cal-day h4 { margin: 0; font: 600 18px/1.1 var(--font-display); }
+.cal-day h4 { padding-top: 8px; }
+.cal-day h4 small { display: block; font: 600 12px/1.4 var(--font-body); color: var(--ink-soft); margin-top: 3px; }
+.cal-b { border-radius: 12px; padding: 10px 11px; font-size: 13.5px; line-height: 1.35; font-weight: 600; color: #15302B; }
+.cal-b strong { font-weight: 800; }
+.cal-b em { display: block; font: 800 10.5px/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; font-style: normal; margin-bottom: 3px; }
+.cal-b.pf { background: #DCEFEA; } .cal-b.pf em { color: #2D7A72; }
+.cal-b.ra { background: #FBE8D8; } .cal-b.ra em { color: #B5561E; }
+.cal-b.ss { background: #DDE9F8; } .cal-b.ss em { color: #2F5D9A; }
+.cal-b.live { background: #FFE1D9; } .cal-b.live em { color: #C0402B; }
+.cal-note { font-size: 14px; color: var(--ink-soft); }
+@media (max-width: 520px) { .cal-day { grid-template-columns: minmax(0, 1fr); gap: 8px; } .cal-day h4 { padding-top: 0; } .cal-day h4 small { display: inline; margin-left: 6px; } }
+#print-sheet { display: none; }
+@media print {
+  body.print-mode > *:not(#print-sheet) { display: none !important; }
+  body.print-mode { background: #FFFFFF; }
+  body.print-mode #print-sheet { display: block; color: #15302B; font-family: var(--font-body); }
+  @page { margin: 14mm; }
+}
+.ps h1 { font: 600 26px/1.1 var(--font-display); margin: 0 0 4px; }
+.ps .sub { font-size: 13px; color: #3F5955; margin-bottom: 14px; }
+.ps .fields { display: flex; gap: 28px; font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+.ps .fields span { flex: 1; border-bottom: 1px solid #15302B; padding-bottom: 4px; }
+.ps table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.ps th, .ps td { border: 1px solid #B9E0DA; padding: 9px 10px; text-align: left; vertical-align: top; }
+.ps th { background: #EAF6F3; font-weight: 800; width: 16%; }
+.ps .ck { display: flex; gap: 8px; align-items: flex-start; margin: 3px 0; }
+.ps .ck i { flex: none; width: 13px; height: 13px; border: 1.5px solid #15302B; border-radius: 3px; margin-top: 2px; }
+.ps .notes { margin-top: 16px; font-size: 13.5px; font-weight: 600; }
+.ps .notes div { border-bottom: 1px solid #B9E0DA; height: 26px; }
+.ps .foot { margin-top: 14px; font-size: 12px; color: #3F5955; }
+
 /* Phones */
 @media (max-width: 560px) {
   body { font-size: 16px; }
@@ -334,6 +371,15 @@ p { margin: 0; }
           <p class="sign">Con cariño, Isa</p>
         </div>
 
+        <div class="panel cal-panel" id="cal-panel" hidden>
+          <h3>Tu semana en Clarity</h3>
+          <p class="hint">Este calendario está pensado para 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos.</p>
+          <div class="toggle" id="cal-tabs" role="group" aria-label="Etapa"></div>
+          <div class="cal" id="cal"></div>
+          <p class="cal-note" id="cal-note"></p>
+          <div class="save-row"><button class="btn" id="print-cl" type="button">Imprimir mi checklist semanal</button></div>
+        </div>
+
         <div class="retake"><button class="btn ghost" id="again">Volver a hacer el quiz</button></div>
 
         <div class="panel">
@@ -451,7 +497,7 @@ p { margin: 0; }
       phrase: "I understand English when I read it, but not when I hear it.",
       desc: "Ser Observer significa que entiendes el inglés cuando lo lees, pero cuando lo escuchas todavía se te escapa. Es lo más normal del mundo: tu oído nunca fue entrenado para los sonidos reales del inglés. Por ahora observas más de lo que participas y te atreves a hablar, y está bien. Desde aquí empieza todo.",
       challenge: "Tu reto más grande ahora es que tu oído reconozca las palabras que ya conoces. Cuando un nativo habla, esas palabras suenan distinto a como las aprendiste: se reducen, se pegan entre sí y algunos sonidos desaparecen. Por eso no las reconoces, aunque sí las sepas.",
-      week: "Cada semana, haz 2 lecciones de Pronunciation Foundation y 2 sesiones de Read Along With Me conmigo. Al principio solo escúchame y sigue el texto con la vista; cuando te sientas con confianza, lee en voz baja junto a mí.",
+      week: "Primer mes: cada semana, aprende un sonido del curso Pronunciation Foundation. Usa los entrenamientos auditivos y de práctica durante la semana y, al final, completa el reto y súbelo al feed para recibir retroalimentación. Cada día, lee 1 capítulo conmigo en Read Along With Me. Al principio solo escúchame y sigue el texto con la vista; cuando te sientas con confianza, lee en voz baja junto a mí. Si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo. A partir del día 30, reemplaza Read Along With Me por el curso Shadow the Scene. Es importante que combines dos programas, porque debes poner en práctica lo que vas aprendiendo en Pronunciation Foundation.", noTip: true,
       up: "Cuando termines los módulos de sonidos y reducciones, y empieces a ver series con subtítulos en inglés en lugar de español, vas a estar a un paso de ser Shy Speaker." },
     { n: 2, name: "Shy Speaker", icon: "🌱", art: "a", min: 21,
       phrase: "I'm starting to understand, but speaking still scares me.",
@@ -1091,12 +1137,12 @@ p { margin: 0; }
 
     $("r-path-title").textContent = "Lo que te recomiendo hacer ahora";
     const startBy = r.bases <= 5
-      ? (L.n === 1 ? "Te recomiendo empezar por Pronunciation Foundation, en orden: la iniciación, por qué el cerebro bloquea el inglés, las consonantes, las vocales, las reducciones y el linking. Ahí te explico todo desde la base." : "Te recomiendo empezar por Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
+      ? (L.n === 1 ? "Te recomiendo empezar por Pronunciation Foundation, en orden: la iniciación, en la que aprendes la diferencia entre pronunciación y acento; por qué tu cerebro bloquea el inglés; las vocales; las consonantes; las reducciones y los linking sounds. Ahí aprendes todo desde la base. Si un sonido es muy nuevo para ti, repite los entrenamientos para que tu cerebro tenga suficiente contacto con ese sonido." : "Te recomiendo empezar por Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
       : (L.n >= 4 ? "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene, con las escenas rápidas y los podcasts. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation." : "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation.");
     // Little or no speaking experience: "Lo evito" (Q8) or "Nunca" (Q9), or the two first levels.
     const lowSpeak = answers[qIndex("speak")].includes(0) || answers[qIndex("freq")].includes(0);
     let week = L.week;
-    if ((L.n <= 2 || lowSpeak) && week.indexOf("Read Along With Me") !== -1) {
+    if (!L.noTip && (L.n <= 2 || lowSpeak) && week.indexOf("Read Along With Me") !== -1) {
       week += " Y un consejo: si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video en Read Along With Me. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo.";
     }
     const items = [["Por dónde empezar", startBy], ["Tu semana", week], [r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
@@ -1112,6 +1158,7 @@ p { margin: 0; }
       li.append(b, s); ul.appendChild(li);
     });
 
+    calStage = 0; renderCal(L);
     $("msg").value = buildMessage();
     $("copied").textContent = "";
     store("clarity-quiz-last", String(r.score));
@@ -1251,6 +1298,65 @@ p { margin: 0; }
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   });
 
+
+  // ---------- weekly calendar (per level; only levels that have one show the panel) ----------
+  const CAL = {
+    1: {
+      stages: [
+        { key: "m1", label: "Días 1 a 30", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo." } },
+        { key: "m2", label: "Desde el día 30", practice: { cls: "ss", tag: "Shadow the Scene", txt: "Practica 1 escena repitiendo cada oración." } }
+      ],
+      days: [
+        { d: "Lunes", pf: ["Aprende", "Mira la lección del sonido de la semana."] },
+        { d: "Martes", pf: ["Entrena el oído", "Haz el entrenamiento auditivo del sonido."], live: true },
+        { d: "Miércoles", pf: ["Practica", "Haz el entrenamiento de práctica en voz alta."] },
+        { d: "Jueves", pf: ["Repasa", "Repite los entrenamientos auditivos y de práctica."] },
+        { d: "Viernes", pf: ["Reto", "Completa el reto del sonido y súbelo al feed para recibir retroalimentación."] }
+      ],
+      note: "Sábado y domingo: descansa o ponte al día con lo que te faltó en la semana."
+    }
+  };
+  let calStage = 0;
+  function renderCal(L) {
+    const plan = CAL[L.n], panel = $("cal-panel");
+    panel.hidden = !plan; if (!plan) return;
+    const tabs = $("cal-tabs"); tabs.textContent = "";
+    plan.stages.forEach((st, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = st.label;
+      b.setAttribute("aria-pressed", String(i === calStage));
+      b.addEventListener("click", () => { calStage = i; renderCal(L); });
+      tabs.appendChild(b);
+    });
+    const st = plan.stages[calStage], cal = $("cal"); cal.textContent = "";
+    const block = (cls, time, tag, txt, step) => { const d = document.createElement("div"); d.className = "cal-b " + cls; const e = document.createElement("em"); e.textContent = time + " · " + tag; d.appendChild(e); if (step) { const b = document.createElement("strong"); b.textContent = step + ": "; d.appendChild(b); } d.append(txt); return d; };
+    plan.days.forEach((day) => {
+      const col = document.createElement("div"); col.className = "cal-day";
+      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = "30 min"; h.appendChild(sm);
+      const bl = document.createElement("div"); bl.className = "cal-blocks";
+      bl.append(block("pf", "15 min", "Pronunciation Foundation", day.pf[1], day.pf[0]), block(st.practice.cls, "15 min", st.practice.tag, st.practice.txt));
+      if (day.live) bl.appendChild(block("live", "7:00 p. m.", "Clase en vivo", "Practicamos juntos y te doy feedback."));
+      col.append(h, bl);
+      cal.appendChild(col);
+    });
+    $("cal-note").textContent = plan.note;
+  }
+  function buildPrintSheet(L) {
+    const plan = CAL[L.n], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
+    const rows = plan.days.map((day) => "<tr><th>" + day.d + "</th><td>" + ck("Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1]) + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
+    $("print-sheet").innerHTML = '<div class="ps"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
+      '<div class="fields"><span>Semana del:</span><span>Sonido de la semana:</span></div><table>' + rows +
+      "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
+      '<div class="notes">Lo que más me costó esta semana:<div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos. Con cariño, Isa</p></div>';
+  }
+  $("print-cl").addEventListener("click", () => {
+    buildPrintSheet(result.level);
+    document.body.classList.add("print-mode");
+    const off = () => { document.body.classList.remove("print-mode"); window.removeEventListener("afterprint", off); };
+    window.addEventListener("afterprint", off);
+    window.print();
+  });
+
   // ---------- copy ----------
   $("copy").addEventListener("click", async () => {
     const t = $("msg").value;
@@ -1300,5 +1406,6 @@ p { margin: 0; }
   window.addEventListener("hashchange", previewFromHash);
 })();
 </script>
+<div id="print-sheet" aria-hidden="true"></div>
 </body>
 </html>
