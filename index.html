@@ -373,7 +373,7 @@ p { margin: 0; }
 
         <div class="panel cal-panel" id="cal-panel" hidden>
           <h3>Tu semana en Clarity</h3>
-          <p class="hint">Este calendario está pensado para 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos.</p>
+          <p class="hint" id="cal-hint">Este calendario está pensado para 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos.</p>
           <div class="toggle" id="cal-tabs" role="group" aria-label="Etapa"></div>
           <div class="cal" id="cal"></div>
           <p class="cal-note" id="cal-note"></p>
@@ -498,7 +498,7 @@ p { margin: 0; }
       desc: "Ser Observer significa que entiendes el inglés cuando lo lees, pero cuando lo escuchas todavía se te escapa. Es lo más normal del mundo: tu oído nunca fue entrenado para los sonidos reales del inglés. Por ahora observas más de lo que participas y te atreves a hablar, y está bien. Desde aquí empieza todo.",
       challenge: "Tu reto más grande ahora es que tu oído reconozca las palabras que ya conoces. Cuando un nativo habla, esas palabras suenan distinto a como las aprendiste: se reducen, se pegan entre sí y algunos sonidos desaparecen. Por eso no las reconoces, aunque sí las sepas.",
       week: "Primer mes: cada semana, aprende un sonido del curso Pronunciation Foundation. Usa los entrenamientos auditivos y de práctica durante la semana y, al final, completa el reto y súbelo al feed para recibir retroalimentación. Cada día, lee 1 capítulo conmigo en Read Along With Me. Al principio solo escúchame y sigue el texto con la vista; cuando te sientas con confianza, lee en voz baja junto a mí. Si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo. A partir del día 30, reemplaza Read Along With Me por el curso Shadow the Scene. Es importante que combines dos programas, porque debes poner en práctica lo que vas aprendiendo en Pronunciation Foundation.", noTip: true,
-      up: "Cuando termines los módulos de sonidos y reducciones, y empieces a ver series con subtítulos en inglés en lugar de español, vas a estar a un paso de ser Shy Speaker." },
+      up: "Cuando termines los módulos de Pronunciation Foundation, tu oído ya se habrá familiarizado con los sonidos del inglés real, tendrás más confianza para poner siempre los subtítulos en inglés y pasarás de entender algunas palabras sueltas a entender la idea general." },
     { n: 2, name: "Shy Speaker", icon: "🌱", art: "a", min: 21,
       phrase: "I'm starting to understand, but speaking still scares me.",
       desc: "Ser Shy Speaker significa que entiendes mucho más de lo que dices. Captas la idea general de lo que escuchas, pero cuando te toca hablar, la boca no responde igual de rápido que tu cabeza. Te entiendo perfectamente, y te prometo que ese bloqueo se puede soltar.",
@@ -1303,8 +1303,8 @@ p { margin: 0; }
   const CAL = {
     1: {
       stages: [
-        { key: "m1", label: "Días 1 a 30", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo." } },
-        { key: "m2", label: "Desde el día 30", practice: { cls: "ss", tag: "Shadow the Scene", txt: "Practica 1 escena repitiendo cada oración." } }
+        { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo." } },
+        { key: "m2", label: "Mes 2 · días 31 a 60", practice: { cls: "ss", tag: "Shadow the Scene", txt: "Practica 1 escena repitiendo cada oración." } }
       ],
       days: [
         { d: "Lunes", pf: ["Aprende", "Mira la lección del sonido de la semana."] },
@@ -1313,7 +1313,8 @@ p { margin: 0; }
         { d: "Jueves", pf: ["Repasa", "Repite los entrenamientos auditivos y de práctica."] },
         { d: "Viernes", pf: ["Reto", "Completa el reto del sonido y súbelo al feed para recibir retroalimentación."] }
       ],
-      note: "Sábado y domingo: descansa o ponte al día con lo que te faltó en la semana."
+      note: "Sábado y domingo: descansa o ponte al día con lo que te faltó en la semana.",
+      hint: "Este nivel está pensado para 2 meses, con 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos."
     }
   };
   let calStage = 0;
@@ -1339,6 +1340,7 @@ p { margin: 0; }
       cal.appendChild(col);
     });
     $("cal-note").textContent = plan.note;
+    if (plan.hint) $("cal-hint").textContent = plan.hint;
   }
   function buildPrintSheet(L) {
     const plan = CAL[L.n], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
