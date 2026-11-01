@@ -173,9 +173,9 @@ p { margin: 0; }
 .lvmap .t { min-width: 0; font-size: 15px; line-height: 1.35; }
 .lvmap .t b { display: block; font-family: var(--font-display); font-weight: 600; font-size: 16px; }
 .lvmap .tag { font: 700 11px/1 var(--font-body); letter-spacing: .06em; text-transform: uppercase; padding: 6px 8px; border-radius: 999px; white-space: nowrap; }
-.lvmap li.cur { background: #3F9C92; border-color: #3F9C92; color: #FFFFFF; }
-.lvmap li.cur .n { background: #FFFFFF; color: #2D7A72; }
-.lvmap li.cur .tag { background: #FF6A53; color: #FFFFFF; }
+.lvmap li.cur { color: #FFFFFF; }
+.lvmap .n { font-size: 18px; }
+.lvmap li.cur .tag { background: #FFFFFF; color: #15302B; }
 .lvmap li.next .tag { background: var(--teal-pale); color: var(--teal-dark); }
 .lvmap li.done { opacity: .7; }
 .personal { font-size: 18px; color: var(--ink-soft); max-width: 60ch; padding-left: 16px; border-left: 4px solid var(--coral); }
@@ -418,31 +418,31 @@ p { margin: 0; }
   }
 
   const LEVELS = [
-    { n: 1, name: "Observer", art: "an", min: 0,
+    { n: 1, name: "Observer", color: "#5E7A99", tint: "#E3EAF2", icon: "👀", art: "an", min: 0,
       phrase: "I understand English when I read it, but not when I hear it.",
       desc: "Ser Observer significa que entiendes el inglés cuando lo lees, pero cuando lo escuchas todavía se te escapa. Es lo más normal del mundo: tu oído nunca fue entrenado para los sonidos reales del inglés. Por ahora observas más de lo que participas, y está bien. Desde aquí empieza todo.",
       challenge: "Tu reto más grande ahora es que tu oído reconozca las palabras que ya conoces. Cuando un nativo habla, esas palabras suenan distinto a como las aprendiste: se reducen, se pegan entre sí y algunos sonidos desaparecen. Por eso no las reconoces, aunque sí las sepas.",
       week: "Cada semana, haz 2 lecciones de Pronunciation Foundation y 2 sesiones de Read Along With Me conmigo. Al principio solo escúchame y sigue el texto con la vista; cuando te sientas con confianza, lee en voz baja junto a mí.",
       up: "Cuando termines los módulos de sonidos y reducciones, y empieces a ver series con subtítulos en inglés en lugar de español, vas a estar a un paso de ser Shy Speaker." },
-    { n: 2, name: "Shy Speaker", art: "a", min: 21,
+    { n: 2, name: "Shy Speaker", color: "#4E9A5B", tint: "#E1F1E3", icon: "🌱", art: "a", min: 21,
       phrase: "I'm starting to understand, but speaking still scares me.",
       desc: "Ser Shy Speaker significa que entiendes mucho más de lo que dices. Captas la idea general de lo que escuchas, pero cuando te toca hablar, la boca no responde igual de rápido que tu cabeza. Te entiendo perfectamente, y te prometo que ese bloqueo se puede soltar.",
       challenge: "Tu reto más grande ahora es soltar la boca. Ya tienes el inglés adentro, pero el miedo a equivocarte o a quedarte en blanco te frena justo cuando te toca hablar. Necesitas empezar a usar tu voz en un espacio seguro, poco a poco, sin presión.",
       week: "Cada semana, haz 1 análisis de Shadow the Scene, 1 ejercicio de Listening Lab y 3 sesiones de Read Along With Me leyendo en voz alta conmigo. Leer en voz alta es la forma más segura de empezar a soltar la boca, sin que nadie te escuche.",
       up: "Envía tu primera nota de voz en el Telegram o habla una vez en la clase en vivo. Aunque sea una sola frase. Yo voy a estar ahí para celebrarlo contigo." },
-    { n: 3, name: "Brave Speaker", art: "a", min: 41,
+    { n: 3, name: "Brave Speaker", color: "#E07B2E", tint: "#FBE8D8", icon: "🔥", art: "a", min: 41,
       phrase: "I speak, even if I make mistakes.",
       desc: "Ser Brave Speaker significa que ya te atreves a hablar, y eso es lo más difícil. A veces todavía traduces del español, te trabas o cometes errores, pero no dejas que el miedo decida por ti. ¡Me encanta verte aquí!",
       challenge: "Tu reto más grande ahora es dejar de traducir. Ya hablas, pero muchas veces armas la frase en español primero y luego la pasas al inglés, y eso te hace ir lento y trabarte. Necesitas que las frases te salgan directo en inglés, como te salen en español.",
       week: "Cada semana, haz 2 escenas de Shadow the Scene repitiendo cada oración, 1 ejercicio de Listening Lab y 2 sesiones de Read Along With Me fijándote en el ritmo y la entonación. Y en la clase en vivo, pídeme feedback sobre algo concreto: para eso estoy.",
       up: "Empieza a decir frases cortas sin traducirlas primero del español, y pasa a ver series con subtítulos en inglés, o sin ellos. Vas mejor de lo que crees." },
-    { n: 4, name: "Fluent Speaker", art: "a", min: 61,
+    { n: 4, name: "Fluent Speaker", color: "#2F8A9E", tint: "#DCEFF3", icon: "🌊", art: "a", min: 61,
       phrase: "I understand real English and speak without translating.",
       desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
       challenge: "Tu reto más grande ahora es pulir los detalles: la entonación, el énfasis y esos sonidos que todavía delatan al español. También es momento de entender el inglés más rápido, el de las conversaciones reales entre nativos, sin ningún filtro.",
       week: "Cada semana, haz 2 escenas o podcasts de Shadow the Scene y los ejercicios más retadores de Listening Lab. En la clase en vivo trabajemos juntos la entonación, el énfasis y esos sonidos que todavía quieras afinar.",
       up: "Sigue escuchando inglés real sin subtítulos y habla en inglés siempre que puedas. Y empieza a compartir lo que ya sabes en la comunidad: responder los audios de otros también te hace crecer." },
-    { n: 5, name: "Leader", art: "a", min: 81,
+    { n: 5, name: "Leader", color: "#B8860B", tint: "#F6EBCB", icon: "⭐", art: "a", min: 81,
       phrase: "I speak with confidence and help others find their voice.",
       desc: "Ser Leader significa que hablas con total confianza y entiendes el inglés real sin esfuerzo. Llegaste al nivel más alto del camino Clarity, y ahora puedes ayudar a otros a encontrar su voz. ¡No sabes lo feliz que me hace ver esto!",
       challenge: "Tu reto ahora es mantener tu nivel y compartirlo. Seguir entrenando tu oído con contenido real para no perder lo que lograste, y acompañar a quienes van empezando: cada estudiante que llega quiere estar donde tú estás.",
@@ -981,7 +981,9 @@ p { margin: 0; }
       const li = document.createElement("li");
       const cur = lv.n === r.level.n, nxt = r.next && lv.n === r.next.n;
       li.className = cur ? "cur" : nxt ? "next" : lv.n < r.level.n ? "done" : "";
-      const n = document.createElement("span"); n.className = "n"; n.textContent = lv.n;
+      const n = document.createElement("span"); n.className = "n"; n.textContent = lv.icon; n.style.background = lv.tint;
+      if (cur) { li.style.background = lv.color; li.style.borderColor = lv.color; }
+      else li.style.borderLeft = "5px solid " + lv.color;
       const t = document.createElement("span"); t.className = "t";
       const b = document.createElement("b"); b.textContent = lv.name;
       t.append(b, LEVEL_SHORT[i]);
@@ -996,14 +998,15 @@ p { margin: 0; }
   function renderResult() {
     const r = result, L = r.level;
     const h = $("r-name"); h.textContent = startPhrase() + " ";
-    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = (L.art === "an" ? "un " : "un ") + L.name;
+    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = "un " + L.name + " " + L.icon; lvl.style.color = L.color;
     h.appendChild(lvl);
 
     const sl = $("r-score"); sl.textContent = "";
     // Progress shown as how far along the student is toward the next level, in percent.
     const lv = document.createElement("strong"); lv.textContent = "nivel " + L.n + " de 5";
+    lv.style.color = L.color;
     if (r.next) {
-      const st = document.createElement("strong"); st.textContent = progressPct(r) + "%";
+      const st = document.createElement("strong"); st.textContent = progressPct(r) + "%"; st.style.color = L.color;
       sl.append("Estás en el ", lv, ". Vas ", st, " del camino para subir al nivel " + r.next.n + ".");
     } else {
       sl.append("Estás en el ", lv, ": ¡el nivel más alto!");
@@ -1056,7 +1059,7 @@ p { margin: 0; }
     const r = result, L = r.level;
     const goal = r.next ? "Mi objetivo es llegar a ser " + r.next.name + " en los próximos 60 días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
-    return "I'm " + L.art + " " + L.name + "! " + goal + " ¡Vamos con toda! 💪";
+    return "I'm " + L.art + " " + L.name + " " + L.icon + "! " + goal + " ¡Vamos con toda! 💪";
   }
 
   // ---------- shareable card (canvas, brand colors) ----------
@@ -1104,10 +1107,12 @@ p { margin: 0; }
 
     // level name box
     const boxY = y - 10, boxH = 176;
-    rr(ctx, X, boxY, IW, boxH, 30); ctx.fillStyle = C.teal; ctx.fill();
+    rr(ctx, X, boxY, IW, boxH, 30); ctx.fillStyle = L.color; ctx.fill();
     let size = 118; ctx.font = "600 " + size + "px " + D;
-    while (ctx.measureText(L.name).width > IW - 96 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
+    while (ctx.measureText(L.name).width > IW - 96 - 130 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
     ctx.fillStyle = C.white; ctx.textBaseline = "middle"; ctx.fillText(L.name, X + 48, boxY + boxH / 2 + 6);
+    ctx.font = '96px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; ctx.textAlign = "right";
+    ctx.fillText(L.icon, X + IW - 40, boxY + boxH / 2 + 8); ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
 
     // ladder panel
@@ -1121,17 +1126,18 @@ p { margin: 0; }
       const x = X + pad + i * (colW + gap), h = hs[i], top = base - h;
       const isCur = i === L.n - 1, done = i < L.n - 1;
       rr(ctx, x, top, colW, h, 12);
-      ctx.fillStyle = isCur ? C.teal : done ? C.pale : C.mint; ctx.fill();
-      if (!isCur && !done) { ctx.lineWidth = 3; ctx.strokeStyle = C.line; ctx.stroke(); }
-      ctx.fillStyle = isCur ? C.white : C.tealDark; ctx.font = "600 38px " + D; ctx.textAlign = "center";
-      ctx.fillText(String(lv.n), x + colW / 2, top + 46);
+      ctx.fillStyle = isCur ? lv.color : lv.tint; ctx.fill();
+      if (!isCur) { ctx.lineWidth = 3; ctx.strokeStyle = lv.color + "55"; ctx.stroke(); }
+      ctx.textAlign = "center";
+      ctx.font = '40px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+      ctx.fillText(lv.icon, x + colW / 2, top + 50);
       ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "27px " + B;
       const parts = lv.name.split(" ");
       parts.forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 40 + j * 32));
       if (isCur) {
         // "Tú estás aquí" tag: exactly one column wide, sitting on top of the current bar with a pointer.
         const tagH = 72, ty = top - tagH - 16, cx = x + colW / 2;
-        rr(ctx, x, ty, colW, tagH, 16); ctx.fillStyle = C.coral; ctx.fill();
+        rr(ctx, x, ty, colW, tagH, 16); ctx.fillStyle = C.ink; ctx.fill();
         ctx.beginPath(); ctx.moveTo(cx - 12, ty + tagH); ctx.lineTo(cx + 12, ty + tagH); ctx.lineTo(cx, ty + tagH + 12); ctx.closePath(); ctx.fill();
         ctx.fillStyle = C.white; ctx.font = "800 24px " + B;
         ctx.fillText("Tú estás", cx, ty + 31); ctx.fillText("aquí", cx, ty + 59);
@@ -1140,7 +1146,7 @@ p { margin: 0; }
     });
 
     // score
-    ctx.fillStyle = C.tealDark; ctx.font = "600 76px " + D; ctx.fillText(scoreLabel(r), X, 1185);
+    ctx.fillStyle = L.color; ctx.font = "600 76px " + D; ctx.fillText(scoreLabel(r), X, 1185);
     const sw = ctx.measureText(scoreLabel(r)).width;
     ctx.fillStyle = C.ink; ctx.font = "700 30px " + B;
     const note = r.next ? "del camino para subir al nivel " + r.next.n : "";
@@ -1150,7 +1156,7 @@ p { margin: 0; }
     // Bar = total score out of 100, with a mark where each level starts (21, 41, 61, 81).
     rr(ctx, X, 1212, IW, 20, 10); ctx.fillStyle = C.pale; ctx.fill();
     // Bar = how far the student is toward the next level's goal (14 of 21 = two thirds full).
-    rr(ctx, X, 1212, Math.max(20, IW * progressPct(r) / 100), 20, 10); ctx.fillStyle = C.teal; ctx.fill();
+    rr(ctx, X, 1212, Math.max(20, IW * progressPct(r) / 100), 20, 10); ctx.fillStyle = L.color; ctx.fill();
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
