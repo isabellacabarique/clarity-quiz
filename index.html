@@ -368,7 +368,6 @@ p { margin: 0; }
         <div class="panel">
           <h3 id="r-path-title"></h3>
           <ul class="path" id="r-path"></ul>
-          <p class="sign">Con cariño, Isa</p>
         </div>
 
         <div class="panel cal-panel" id="cal-panel" hidden>
@@ -1349,7 +1348,7 @@ p { margin: 0; }
     $("print-sheet").innerHTML = '<div class="ps"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
       '<div class="fields"><span>Semana del:</span><span>Sonido de la semana:</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
-      '<div class="notes">Lo que más me costó esta semana:<div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos. Con cariño, Isa</p></div>';
+      '<div class="notes">Lo que más me costó esta semana:<div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
   }
   $("print-cl").addEventListener("click", () => {
     buildPrintSheet(result.level);
