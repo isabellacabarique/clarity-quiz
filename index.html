@@ -178,6 +178,11 @@ p { margin: 0; }
 .lvmap li.cur .tag { background: #FFFFFF; color: #15302B; }
 .lvmap li.next .tag { background: var(--teal-pale); color: var(--teal-dark); }
 .lvmap li.done { opacity: .7; }
+.lvprog { grid-column: 1 / -1; display: grid; gap: 6px; margin-top: 4px; }
+.lvbar { height: 30px; border-radius: 999px; background: rgba(255,255,255,.3); overflow: hidden; }
+.lvfill { height: 100%; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; min-width: 52px; transition: width .6s ease; }
+.lvfill span { font: 700 15px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.lvcap { font-size: 14px; font-weight: 600; color: #FFFFFF; margin: 0; }
 .personal { font-size: 18px; color: var(--ink-soft); max-width: 60ch; padding-left: 16px; border-left: 4px solid var(--coral); }
 .personal em { font-style: normal; font-weight: 700; color: var(--ink); }
 .section { display: grid; gap: 8px; }
@@ -989,6 +994,20 @@ p { margin: 0; }
       t.append(b, LEVEL_SHORT[i]);
       li.append(n, t);
       if (cur || nxt) { const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = cur ? "Tú estás aquí" : "Tu siguiente meta"; li.appendChild(tag); }
+      // Progress inside the current level: a bar with the percentage written on it, and what is left.
+      if (cur && r.next) {
+        const pct = progressPct(r);
+        const wrap = document.createElement("div"); wrap.className = "lvprog";
+        const bar = document.createElement("div"); bar.className = "lvbar";
+        bar.setAttribute("role", "progressbar"); bar.setAttribute("aria-valuemin", "0"); bar.setAttribute("aria-valuemax", "100"); bar.setAttribute("aria-valuenow", String(pct));
+        bar.setAttribute("aria-label", "Avance hacia el nivel " + r.next.n);
+        const fill = document.createElement("div"); fill.className = "lvfill"; fill.style.width = Math.max(pct, 12) + "%";
+        const lab = document.createElement("span"); lab.textContent = pct + "%"; lab.style.color = lv.color;
+        fill.appendChild(lab); bar.appendChild(fill);
+        const cap = document.createElement("p"); cap.className = "lvcap";
+        cap.textContent = "Te falta " + (100 - pct) + "% para subir al nivel " + r.next.n + ": " + r.next.name + " " + r.next.icon;
+        wrap.append(bar, cap); li.appendChild(wrap);
+      }
       ol.appendChild(li);
     });
   }
