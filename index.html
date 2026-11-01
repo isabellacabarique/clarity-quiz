@@ -449,7 +449,7 @@ p { margin: 0; }
   const LEVELS = [
     { n: 1, name: "Observer", icon: "👀", art: "an", min: 0,
       phrase: "I understand English when I read it, but not when I hear it.",
-      desc: "Ser Observer significa que entiendes el inglés cuando lo lees, pero cuando lo escuchas todavía se te escapa. Es lo más normal del mundo: tu oído nunca fue entrenado para los sonidos reales del inglés. Por ahora observas más de lo que participas, y está bien. Desde aquí empieza todo.",
+      desc: "Ser Observer significa que entiendes el inglés cuando lo lees, pero cuando lo escuchas todavía se te escapa. Es lo más normal del mundo: tu oído nunca fue entrenado para los sonidos reales del inglés. Por ahora observas más de lo que participas y te atreves a hablar, y está bien. Desde aquí empieza todo.",
       challenge: "Tu reto más grande ahora es que tu oído reconozca las palabras que ya conoces. Cuando un nativo habla, esas palabras suenan distinto a como las aprendiste: se reducen, se pegan entre sí y algunos sonidos desaparecen. Por eso no las reconoces, aunque sí las sepas.",
       week: "Cada semana, haz 2 lecciones de Pronunciation Foundation y 2 sesiones de Read Along With Me conmigo. Al principio solo escúchame y sigue el texto con la vista; cuando te sientas con confianza, lee en voz baja junto a mí.",
       up: "Cuando termines los módulos de sonidos y reducciones, y empieces a ver series con subtítulos en inglés en lugar de español, vas a estar a un paso de ser Shy Speaker." },
@@ -1076,14 +1076,16 @@ p { margin: 0; }
 
     const pi = $("r-intro"); pi.textContent = "";
     const dear = document.createElement("em"); dear.textContent = "my dear student";
-    pi.append("Ahora, ", dear, ", te voy a explicar tu resultado: qué significa ser " + L.name + ", cuál es tu reto más grande en este momento y cómo puedes empezar a trabajar desde hoy " + (r.next ? "para que logres ser " + r.next.name + "." : "para mantener tu nivel y seguir creciendo."));
+    pi.append("Ahora, ", dear, ", te voy a explicar tu resultado: qué significa ser " + L.name + ", cuál es tu reto más grande en este momento y cómo puedes empezar a trabajar desde hoy " + (r.next ? "para subir de nivel." : "para mantener tu nivel y seguir creciendo."));
 
     $("r-mean-title").textContent = "¿Qué significa ser " + L.name + "?";
     $("r-desc").textContent = L.desc;
 
     let ch = L.challenge;
     if (L.n <= 3 && r.reading !== null && r.reading >= 2 && r.earAvg < 2) {
-      ch += " Además, me contaste que entiendes bien cuando lees. Eso me confirma algo importante: no te falta vocabulario. Lo que vamos a trabajar es tu pronunciación y tu oído, para que reconozcas al escucharlas las palabras que ya conoces.";
+      ch += " Además, me contaste que entiendes bien cuando lees. Eso me confirma algo importante: no te falta vocabulario. " + (L.n === 1
+        ? "Quiero que empieces a entrenar tu oído y te acerques a los sonidos reales del inglés. Es importante que te familiarices con la forma en que el inglés se reduce, contrae y conecta porque debes soltar la necesidad de escuchar exactamente lo que lees. Llevas mucho tiempo conociendo el inglés a través de tus ojos. Es hora de que lo conozcas a través de tus oídos."
+        : "Lo que vamos a trabajar es tu pronunciación y tu oído, para que reconozcas al escucharlas las palabras que ya conoces.");
     }
     $("r-challenge").textContent = ch;
 
