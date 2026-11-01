@@ -8,20 +8,16 @@
 <meta name="description" content="Quiz de Clarity by teacher Isa: descubre qué tipo de speaker eres hoy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&family=Playfair+Display:ital@1&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap">
 <style>
-/* Minimal redesign that matches clarity.immersa.com.co: white page, Fredoka headings with a Playfair italic accent,
-   mono eyebrows with a coral dot, white cards with a hairline teal border, coral pill buttons. One centered column. */
+/* Layout: one focused column for the quiz; the result opens into two columns (shareable card left, explanation right). Palette and type follow clarity.immersa.com.co. */
 :root {
-  --bg: #FFFFFF;
-  --bg-soft: #F4FAF8;
-  --mint: #EAF6F3;
+  --bg: #EAF6F3;
+  --bg-deep: #DCF0EB;
   --surface: #FFFFFF;
   --ink: #15302B;
   --ink-soft: #3F5955;
-  --ink-faint: #7A938E;
   --line: #B9E0DA;
-  --hair: #E3F1EE;
   --teal: #3F9C92;
   --teal-dark: #2D7A72;
   --teal-pale: #CDEAE5;
@@ -29,124 +25,117 @@
   --coral-dark: #E5563F;
   --on-strong: #FFFFFF;
   --focus: #2D7A72;
-  --shadow: 0 18px 40px -20px rgba(21,48,43,.25);
   --font-display: "Fredoka", system-ui, sans-serif;
-  --font-serif: "Playfair Display", Georgia, serif;
   --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-brand: "Outfit", "Fredoka", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0F1F1C; --bg-soft: #13261F; --mint: #16302B; --surface: #142A25; --ink: #E6F4F1; --ink-soft: #A9C4BF; --ink-faint: #7F9A95;
-    --line: #2A4A44; --hair: #1E3833; --teal-dark: #7FD3C8; --teal-pale: #1D3A35; --coral: #FF7A65; --focus: #7FD3C8;
+    --bg: #0F1F1C; --bg-deep: #0B1916; --surface: #16302B; --ink: #E6F4F1; --ink-soft: #A9C4BF;
+    --line: #2A4A44; --teal-dark: #7FD3C8; --teal-pale: #1D3A35; --coral: #FF7A65; --coral-dark: #E5563F; --focus: #7FD3C8;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0F1F1C; --bg-soft: #13261F; --mint: #16302B; --surface: #142A25; --ink: #E6F4F1; --ink-soft: #A9C4BF; --ink-faint: #7F9A95;
-  --line: #2A4A44; --hair: #1E3833; --teal-dark: #7FD3C8; --teal-pale: #1D3A35; --coral: #FF7A65; --focus: #7FD3C8;
+  --bg: #0F1F1C; --bg-deep: #0B1916; --surface: #16302B; --ink: #E6F4F1; --ink-soft: #A9C4BF;
+  --line: #2A4A44; --teal-dark: #7FD3C8; --teal-pale: #1D3A35; --coral: #FF7A65; --coral-dark: #E5563F; --focus: #7FD3C8;
   color-scheme: dark;
 }
 html { -webkit-text-size-adjust: 100%; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 * { box-sizing: border-box; }
 img { max-width: 100%; }
 [hidden] { display: none !important; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+}
 .wrap {
-  max-width: 720px; margin: 0 auto; padding-block: 0 80px;
-  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
+  max-width: 1060px; margin: 0 auto;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.brand { display: flex; align-items: center; gap: 10px; padding: 26px 0; margin-bottom: 40px; border-bottom: 1px solid var(--hair); }
-.brand .dots { display: flex; gap: 4px; }
-.brand .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
-.brand .dots i:nth-child(2) { background: var(--coral); }
-.brand .dots i:nth-child(3) { background: var(--teal-dark); }
-.brand b { font-family: var(--font-brand); font-weight: 800; font-size: 22px; line-height: 1; letter-spacing: -.01em; }
-.brand span { color: var(--ink-faint); font-size: 12.5px; font-weight: 500; }
-h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.12; font-weight: 600; letter-spacing: -.01em; }
-h1 { font-size: clamp(34px, 6vw, 50px); }
-h2 { font-size: clamp(24px, 3.6vw, 32px); }
-h3 { font-size: 22px; }
-h1 em, h2 em, h3 em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--teal-dark); }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.brand b { font-family: var(--font-brand); font-weight: 800; letter-spacing: -.01em; font-size: 26px; line-height: 1; }
+.brand span { color: var(--ink-soft); font-size: 14px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; font-weight: 600; }
+h1 { font-size: clamp(34px, 6.4vw, 56px); }
+h2 { font-size: clamp(24px, 4vw, 34px); font-weight: 600; }
+h3 { font-size: 21px; }
 p { margin: 0; }
-.lede { color: var(--ink-soft); font-size: 18px; }
-.hint { color: var(--ink-faint); font-size: 14px; }
-.eyebrow, .chip {
-  font: 500 12.5px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--teal-dark);
-  display: inline-flex; align-items: center; gap: 8px; background: none; padding: 0;
-}
-.eyebrow::before, .chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--coral); }
+.lede { color: var(--ink-soft); max-width: 60ch; font-size: 18px; }
+.hint { color: var(--ink-soft); font-size: 14px; }
 .btn {
-  font: 700 16px/1 var(--font-body); border: 0; border-radius: 999px; cursor: pointer;
-  padding: 17px 30px; background: var(--coral); color: #FFF8F6;
-  box-shadow: 0 16px 30px -12px rgba(229,86,63,.55);
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: background .15s, transform .15s;
+  font: 700 17px/1 var(--font-body); border: 0; border-radius: 999px; cursor: pointer;
+  padding: 16px 26px; background: var(--coral-dark); color: var(--on-strong);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
 }
-.btn:hover { background: var(--coral-dark); }
-.btn.ghost { background: transparent; color: var(--teal-dark); box-shadow: inset 0 0 0 2px var(--line); }
-.btn.ghost:hover { background: var(--bg-soft); }
-.btn:disabled { opacity: .35; cursor: default; box-shadow: none; }
-.btn:disabled:hover { background: var(--coral); }
+.btn:hover { background: var(--coral); }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+.btn.ghost:hover { background: var(--surface); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn:disabled:hover { background: var(--coral-dark); }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
-/* Intro: centered, quiet */
-.intro { display: grid; gap: 34px; justify-items: center; text-align: center; padding-top: 24px; }
-.intro-top { display: grid; gap: 18px; justify-items: center; }
-.reflection { border: 0; padding: 0; }
-.motto { font-family: var(--font-serif); font-style: italic; font-size: clamp(18px, 2.4vw, 21px); line-height: 1.4; color: var(--teal-dark); text-wrap: balance; }
-.intro .lede { max-width: 46ch; }
-.meta { display: flex; gap: 8px 22px; flex-wrap: wrap; justify-content: center; font: 500 12px/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-top: 6px; }
+/* Intro */
+.intro { display: grid; gap: 28px; }
+.intro-top { display: grid; gap: 16px; max-width: 860px; min-width: 0; }
+.reflection { padding-left: 18px; border-left: 4px solid var(--coral); min-width: 0; }
+.motto { font-family: var(--font-display); font-weight: 500; font-size: clamp(19px, 2.6vw, 24px); line-height: 1.25; text-wrap: balance; color: var(--teal-dark); }
+@media (min-width: 900px) { .motto { white-space: nowrap; } }
+.meta { display: flex; gap: 6px 18px; flex-wrap: wrap; color: var(--ink-soft); font-size: 15px; }
 
 /* Question */
-.q-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-.count { font: 500 12.5px/1 var(--font-mono); letter-spacing: .08em; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
-.bar { height: 3px; background: var(--hair); border-radius: 99px; overflow: hidden; margin-bottom: 44px; }
-.bar > div { height: 100%; background: var(--teal); width: 0; transition: width .4s ease; }
-.question { display: grid; gap: 28px; }
-.q-title { display: grid; gap: 10px; }
-.options { display: grid; gap: 10px; }
+.q-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip { font: 700 12px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; padding: 7px 11px; border-radius: 999px; background: var(--teal-pale); color: var(--teal-dark); }
+.count { color: var(--ink-soft); font-size: 15px; font-variant-numeric: tabular-nums; }
+.bar { height: 8px; background: var(--teal-pale); border-radius: 99px; overflow: hidden; margin-bottom: 36px; }
+.bar > div { height: 100%; background: var(--teal); width: 0; transition: width .3s ease; }
+.question { max-width: 720px; display: grid; gap: 26px; }
+.q-title { display: grid; gap: 8px; }
+.options { display: grid; gap: 12px; }
 .opt {
   display: flex; gap: 14px; align-items: center; text-align: left; width: 100%;
-  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 18px;
-  padding: 17px 20px; font: 600 16.5px/1.4 var(--font-body); cursor: pointer;
-  transition: border-color .15s, background .15s, opacity .15s, box-shadow .15s;
+  background: var(--surface); color: var(--ink); border: 2px solid var(--line); border-radius: 16px;
+  padding: 16px 18px; font: 600 17px/1.35 var(--font-body); cursor: pointer;
+  transition: border-color .15s, background .15s, opacity .15s;
 }
-.opt:hover { border-color: var(--teal); box-shadow: var(--shadow); }
-.opt kbd { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 1px solid var(--line); color: var(--teal-dark); font: 500 12px var(--font-mono); }
-.opt.on { border-color: var(--teal); background: var(--bg-soft); box-shadow: inset 0 0 0 1px var(--teal); }
-.opt.on kbd { background: var(--teal); border-color: var(--teal); color: #FFFFFF; }
-.opt.off { opacity: .4; cursor: default; }
-.opt.off:hover { border-color: var(--line); box-shadow: none; }
-.q-nav { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; justify-content: space-between; }
+.opt:hover { border-color: #3F9C92; }
+.opt kbd { flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--teal-pale); color: var(--teal-dark); font: 600 15px var(--font-display); }
+.opt.on { border-color: #3F9C92; background: #3F9C92; color: #FFFFFF; }
+.opt.on kbd { background: #FFFFFF; color: #2D7A72; }
+.opt.off { opacity: .45; cursor: default; }
+.opt.off:hover { border-color: var(--line); }
+.q-nav { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.dict { display: grid; gap: 16px; }
+.dict { display: grid; gap: 14px; }
 .play-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.play { display: inline-flex; align-items: center; gap: 12px; border: 0; border-radius: 999px; cursor: pointer; padding: 10px 22px 10px 10px; background: var(--teal); color: #FFFFFF; font: 700 16px/1 var(--font-body); }
-.play:hover { background: var(--teal-dark); }
-.play:disabled { background: var(--hair); color: var(--ink-faint); cursor: default; }
+.play { display: inline-flex; align-items: center; gap: 12px; border: 0; border-radius: 999px; cursor: pointer; padding: 12px 22px 12px 12px; background: #3F9C92; color: #FFFFFF; font: 700 17px/1 var(--font-body); }
+.play:hover { background: #2D7A72; }
+.play:disabled { background: var(--line); color: var(--ink-soft); cursor: default; }
 .play-ic { width: 36px; height: 36px; border-radius: 50%; background: #FFFFFF; position: relative; flex: none; }
 .play-ic::after { content: ""; position: absolute; left: 14px; top: 10px; border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent #3F9C92; }
-.play:disabled .play-ic::after { border-left-color: var(--ink-faint); }
-.dict-in { width: 100%; font: 500 18px/1.5 var(--font-body); padding: 16px 18px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; }
-.dict-in:focus { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); outline: none; }
-.dict-in[readonly] { background: var(--bg-soft); }
-.linkbtn { justify-self: start; border: 0; background: none; padding: 2px 0; color: var(--ink-faint); font: 600 14px var(--font-body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.dict-res { display: grid; gap: 16px; background: var(--bg-soft); border-radius: 18px; padding: 22px; }
+.play:disabled .play-ic::after { border-left-color: var(--ink-soft); }
+.dict-in { width: 100%; font: 600 18px/1.45 var(--font-body); padding: 14px 16px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; }
+.dict-in:focus { border-color: #3F9C92; outline: none; }
+.dict-in[readonly] { background: var(--bg); }
+.linkbtn { justify-self: start; border: 0; background: none; padding: 2px 0; color: var(--ink-soft); font: 600 15px var(--font-body); text-decoration: underline; cursor: pointer; }
+.dict-res { display: grid; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; }
 .cmp { display: grid; gap: 6px; }
-.cmp-label { font: 500 11.5px/1.2 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+.cmp-label { font: 700 12px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
 .cmp.ok .cmp-label { color: var(--teal-dark); }
-.words { font: 600 18px/1.7 var(--font-body); }
+.words { font: 600 19px/1.7 var(--font-body); }
 .w { border-radius: 6px; padding: 1px 4px; }
 .w.hit { background: var(--teal-pale); color: var(--ink); }
 .w.miss { background: #FFE1D9; color: #8A2414; box-shadow: inset 0 -2px 0 #E5563F; }
-.w.extra { color: var(--ink-faint); text-decoration: line-through; text-decoration-color: #E5563F; }
-.w.empty { color: var(--ink-faint); font-weight: 500; font-style: italic; }
-.w.pre { color: var(--ink-faint); padding-left: 0; }
-.given-box { font: 600 clamp(19px, 3.2vw, 23px)/1.35 var(--font-display); border: 1px dashed var(--line); border-radius: 18px; padding: 14px 18px; }
+.w.extra { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: #E5563F; }
+.w.empty { color: var(--ink-soft); font-weight: 500; font-style: italic; }
+.w.pre { color: var(--ink-soft); padding-left: 0; }
+.given-box { font: 600 clamp(19px, 3.4vw, 24px)/1.35 var(--font-display); background: var(--surface); border: 2px dashed var(--line); border-radius: 16px; padding: 14px 18px; }
 .dict-score { font-weight: 700; }
-.speak { display: grid; gap: 16px; }
-.sentence { font: 600 clamp(22px, 4vw, 30px)/1.3 var(--font-display); background: var(--bg-soft); border-radius: 20px; padding: 24px 24px; text-wrap: balance; }
+.speak { display: grid; gap: 14px; }
+.sentence { font: 600 clamp(22px, 4vw, 30px)/1.3 var(--font-display); background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 18px 20px; text-wrap: balance; }
 .rec-ic { width: 36px; height: 36px; border-radius: 50%; background: #FFFFFF; position: relative; flex: none; }
 .rec-ic::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: #E5563F; }
 .rec.on { background: #E5563F; }
@@ -154,72 +143,75 @@ p { margin: 0; }
 @keyframes pulse { from { opacity: 1; } to { opacity: .45; } }
 .metrics { gap: 16px; }
 .metric { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: baseline; }
-.m-label { font: 500 11.5px/1.2 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
-.m-val { font: 600 26px/1 var(--font-display); color: var(--teal-dark); font-variant-numeric: tabular-nums; }
-.m-bar { grid-column: 1 / -1; height: 6px; border-radius: 99px; background: var(--teal-pale); overflow: hidden; }
-.m-bar > div { height: 100%; width: 0; background: var(--teal); border-radius: 99px; transition: width .4s ease; }
+.m-label { font: 700 13px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.m-val { font: 600 28px/1 var(--font-display); color: var(--teal-dark); font-variant-numeric: tabular-nums; }
+.m-bar { grid-column: 1 / -1; height: 10px; border-radius: 99px; background: var(--teal-pale); overflow: hidden; }
+.m-bar > div { height: 100%; width: 0; background: #3F9C92; border-radius: 99px; transition: width .4s ease; }
 .dbg { display: grid; gap: 8px; }
-.dbg textarea { width: 100%; font: 500 12px/1.4 var(--font-mono); padding: 10px; border-radius: 10px; border: 1px dashed var(--line); background: var(--surface); color: var(--ink); }
-.live { color: var(--ink-faint); font-style: italic; font-size: 17px; }
+.dbg textarea { width: 100%; font: 500 12px/1.4 ui-monospace, Menlo, monospace; padding: 10px; border-radius: 10px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink); }
+.live { color: var(--ink-soft); font-style: italic; font-size: 17px; }
 .sp-err { color: #B33A26; font-weight: 600; font-size: 15px; }
 .notes ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 
-/* Result: one calm column. The card is the hero; text below never repeats it. */
-.result { display: grid; gap: 56px; }
-.card-col { display: grid; gap: 16px; justify-items: center; text-align: center; }
-.card-img { width: 100%; max-width: 460px; aspect-ratio: 4 / 5; border-radius: 28px; display: block; background: var(--mint); box-shadow: var(--shadow); }
-.card-col .hint { max-width: 40ch; }
-.save-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: center; }
-.info { display: grid; gap: 0; min-width: 0; }
-.info > * { padding-block: 36px; border-top: 1px solid var(--hair); }
-.info > *:first-child { border-top: 0; padding-top: 0; }
+/* Result */
+.result { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 44px; align-items: start; }
+@media (max-width: 860px) { .result { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
+.card-col { display: grid; gap: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+@media (max-width: 860px) { .card-col { position: static; } }
+.card-img { width: 100%; max-width: 100%; aspect-ratio: 4 / 5; border-radius: 24px; display: block; background: var(--teal-pale); box-shadow: 0 18px 40px -20px rgba(21,48,43,.35); }
+.save-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.info { display: grid; gap: 26px; min-width: 0; }
 .headline { display: grid; gap: 14px; }
-.personal { font-family: var(--font-serif); font-style: italic; font-size: clamp(19px, 2.6vw, 22px); line-height: 1.5; color: var(--ink-soft); text-align: center; text-wrap: balance; max-width: 34em; margin: 0 auto; }
-.personal em, .personal strong, .personal b { font-family: var(--font-body); font-style: normal; font-weight: 700; color: var(--ink); font-size: .9em; }
-.section { display: grid; gap: 12px; }
-.section h3, .panel h3 { color: var(--ink); }
-.section p { color: var(--ink-soft); }
-.panel { background: var(--surface); display: grid; gap: 16px; min-width: 0; }
-.path { display: grid; gap: 0; margin: 4px 0 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-.path li { display: grid; gap: 6px; padding: 20px 22px; border-top: 1px solid var(--hair); }
-.path li:first-child { border-top: 0; }
-.path b { font: 500 11.5px/1.2 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--teal-dark); display: inline-flex; align-items: center; gap: 8px; }
-.path b::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--coral); }
-.path span { color: var(--ink-soft); }
-.sign { font-family: var(--font-serif); font-style: italic; font-size: 22px; color: var(--teal-dark); }
-.panel > p { color: var(--ink-soft); }
-.msg { width: 100%; min-height: 96px; resize: vertical; font: 500 16px/1.5 var(--font-body); padding: 16px 18px; border-radius: 18px; border: 1px solid var(--line); background: var(--bg-soft); color: var(--ink); }
+.eyebrow { font: 700 13px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--teal-dark); }
+.headline h1 { font-size: clamp(30px, 4.6vw, 44px); }
+.headline h1 .lvl { color: var(--teal-dark); display: inline; }
+.score-line { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.score-line strong { color: var(--teal-dark); }
+.personal { font-size: 18px; color: var(--ink-soft); max-width: 60ch; padding-left: 16px; border-left: 4px solid var(--coral); }
+.personal em { font-style: normal; font-weight: 700; color: var(--ink); }
+.section { display: grid; gap: 8px; }
+.section h3 { color: var(--ink); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: grid; gap: 14px; min-width: 0; }
+.path { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.path li { display: grid; gap: 2px; }
+.path b { font: 700 13px/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--teal-dark); }
+.sign { font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--teal-dark); }
+.toggle { display: inline-flex; background: var(--bg); border-radius: 999px; padding: 4px; gap: 4px; flex-wrap: wrap; }
+.toggle button { border: 0; background: transparent; color: var(--ink); font: 700 14px var(--font-body); padding: 9px 14px; border-radius: 999px; cursor: pointer; }
+.toggle button[aria-pressed="true"] { background: #3F9C92; color: #FFFFFF; }
+.prev { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; }
+.prev input { width: 90px; font: 600 16px var(--font-body); padding: 9px 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
+.msg { width: 100%; min-height: 96px; resize: vertical; font: 500 16px/1.5 var(--font-body); padding: 14px 16px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
 .copied { color: var(--teal-dark); font-weight: 700; font-size: 15px; }
-.retake { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.retake .btn { box-shadow: inset 0 0 0 2px var(--line); }
+.retake { display: flex; gap: 12px; flex-wrap: wrap; }
 
 /* Phones */
 @media (max-width: 560px) {
   body { font-size: 16px; }
-  .brand { padding: 18px 0; margin-bottom: 28px; }
-  .brand span { display: none; }
+  .wrap { padding-block: 20px 48px; }
+  .brand { margin-bottom: 22px; }
   h1 { font-size: clamp(30px, 9vw, 40px); }
   .question h2 { font-size: clamp(22px, 6.4vw, 28px); }
-  .bar { margin-bottom: 30px; }
-  .question { gap: 22px; }
-  .opt { padding: 15px 16px; font-size: 16px; gap: 12px; }
-  .q-nav .btn, .intro .btn, .save-row .btn { flex: 1 1 auto; }
-  .result { gap: 40px; }
-  .info > * { padding-block: 28px; }
-  .path li { padding: 18px; }
+  .bar { margin-bottom: 24px; }
+  .question { gap: 20px; }
+  .opt { padding: 14px; font-size: 16px; gap: 12px; }
+  .q-nav .btn, .intro .btn, .save-row .btn, .retake .btn { flex: 1 1 auto; }
+  .panel { padding: 18px; }
+  .toggle { display: flex; }
+  .toggle button { flex: 1 1 auto; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><b>Clarity</b><span>by teacher Isa</span></header>
+  <header class="brand"><b>Clarity</b><span>by teacher Isa</span></header>
 
   <!-- INTRO -->
   <section id="intro" class="intro">
     <div class="intro-top">
       <div class="reflection"><p class="motto">Para saber a dónde vas, primero tienes que saber dónde estás.</p></div>
-      <h1>¿Qué tipo de <em>speaker</em> eres hoy?</h1>
+      <h1>¿Qué tipo de speaker eres hoy?</h1>
       <p class="lede">Vamos a averiguarlo para definir juntos tu camino en Clarity. Responde las siguientes preguntas:</p>
       <div class="meta"><span id="meta-count">22 preguntas</span><span>8 minutos</span><span id="meta-mic">Necesitas micrófono</span><span>Repítelo cada 30 días</span></div>
     </div>
@@ -280,6 +272,8 @@ p { margin: 0; }
       </div>
       <div class="info">
         <div class="headline">
+          <h1 id="r-name"></h1>
+          <p class="score-line" id="r-score"></p>
           <p class="personal" id="r-intro"></p>
         </div>
 
@@ -289,7 +283,7 @@ p { margin: 0; }
         </div>
 
         <div class="section">
-          <h3>Tu <em>reto</em> más grande en este momento</h3>
+          <h3>Tu reto más grande en este momento</h3>
           <p id="r-challenge"></p>
         </div>
 
@@ -299,14 +293,14 @@ p { margin: 0; }
           <p class="sign">Con cariño, Isa</p>
         </div>
 
+        <div class="retake"><button class="btn ghost" id="again">Volver a hacer el quiz</button></div>
+
         <div class="panel">
-          <h3>¡Cuéntale a la <em>comunidad</em>!</h3>
+          <h3>¡Cuéntale a la comunidad!</h3>
           <p>¡Comparte tu resultado en la comunidad de Telegram! Copia este mensaje y pégalo junto con tu tarjeta.</p>
           <textarea id="msg" class="msg" aria-label="Mensaje para la comunidad"></textarea>
           <div class="save-row"><button class="btn" id="copy">Copiar mensaje</button><span class="copied" id="copied" aria-live="polite"></span></div>
         </div>
-
-        <div class="retake"><button class="btn ghost" id="again">Volver a hacer el quiz</button></div>
       </div>
     </div>
   </section>
@@ -412,31 +406,31 @@ p { margin: 0; }
   }
 
   const LEVELS = [
-    { n: 1, name: "Observer", color: "#5E7A99", tint: "#E3EAF2", icon: "👀", art: "an", min: 0,
+    { n: 1, name: "Observer", icon: "👀", art: "an", min: 0,
       phrase: "I understand English when I read it, but not when I hear it.",
       desc: "Ser Observer significa que entiendes el inglés cuando lo lees, pero cuando lo escuchas todavía se te escapa. Es lo más normal del mundo: tu oído nunca fue entrenado para los sonidos reales del inglés. Por ahora observas más de lo que participas, y está bien. Desde aquí empieza todo.",
       challenge: "Tu reto más grande ahora es que tu oído reconozca las palabras que ya conoces. Cuando un nativo habla, esas palabras suenan distinto a como las aprendiste: se reducen, se pegan entre sí y algunos sonidos desaparecen. Por eso no las reconoces, aunque sí las sepas.",
       week: "Cada semana, haz 2 lecciones de Pronunciation Foundation y 2 sesiones de Read Along With Me conmigo. Al principio solo escúchame y sigue el texto con la vista; cuando te sientas con confianza, lee en voz baja junto a mí.",
       up: "Cuando termines los módulos de sonidos y reducciones, y empieces a ver series con subtítulos en inglés en lugar de español, vas a estar a un paso de ser Shy Speaker." },
-    { n: 2, name: "Shy Speaker", color: "#4E9A5B", tint: "#E1F1E3", icon: "🌱", art: "a", min: 21,
+    { n: 2, name: "Shy Speaker", icon: "🌱", art: "a", min: 21,
       phrase: "I'm starting to understand, but speaking still scares me.",
       desc: "Ser Shy Speaker significa que entiendes mucho más de lo que dices. Captas la idea general de lo que escuchas, pero cuando te toca hablar, la boca no responde igual de rápido que tu cabeza. Te entiendo perfectamente, y te prometo que ese bloqueo se puede soltar.",
       challenge: "Tu reto más grande ahora es soltar la boca. Ya tienes el inglés adentro, pero el miedo a equivocarte o a quedarte en blanco te frena justo cuando te toca hablar. Necesitas empezar a usar tu voz en un espacio seguro, poco a poco, sin presión.",
       week: "Cada semana, haz 1 análisis de Shadow the Scene, 1 ejercicio de Listening Lab y 3 sesiones de Read Along With Me leyendo en voz alta conmigo. Leer en voz alta es la forma más segura de empezar a soltar la boca, sin que nadie te escuche.",
       up: "Envía tu primera nota de voz en el Telegram o habla una vez en la clase en vivo. Aunque sea una sola frase. Yo voy a estar ahí para celebrarlo contigo." },
-    { n: 3, name: "Brave Speaker", color: "#E07B2E", tint: "#FBE8D8", icon: "🔥", art: "a", min: 41,
+    { n: 3, name: "Brave Speaker", icon: "🔥", art: "a", min: 41,
       phrase: "I speak, even if I make mistakes.",
       desc: "Ser Brave Speaker significa que ya te atreves a hablar, y eso es lo más difícil. A veces todavía traduces del español, te trabas o cometes errores, pero no dejas que el miedo decida por ti. ¡Me encanta verte aquí!",
       challenge: "Tu reto más grande ahora es dejar de traducir. Ya hablas, pero muchas veces armas la frase en español primero y luego la pasas al inglés, y eso te hace ir lento y trabarte. Necesitas que las frases te salgan directo en inglés, como te salen en español.",
       week: "Cada semana, haz 2 escenas de Shadow the Scene repitiendo cada oración, 1 ejercicio de Listening Lab y 2 sesiones de Read Along With Me fijándote en el ritmo y la entonación. Y en la clase en vivo, pídeme feedback sobre algo concreto: para eso estoy.",
       up: "Empieza a decir frases cortas sin traducirlas primero del español, y pasa a ver series con subtítulos en inglés, o sin ellos. Vas mejor de lo que crees." },
-    { n: 4, name: "Fluent Speaker", color: "#2F8A9E", tint: "#DCEFF3", icon: "🌊", art: "a", min: 61,
+    { n: 4, name: "Fluent Speaker", icon: "🌊", art: "a", min: 61,
       phrase: "I understand real English and speak without translating.",
       desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
       challenge: "Tu reto más grande ahora es pulir los detalles: la entonación, el énfasis y esos sonidos que todavía delatan al español. También es momento de entender el inglés más rápido, el de las conversaciones reales entre nativos, sin ningún filtro.",
       week: "Cada semana, haz 2 escenas o podcasts de Shadow the Scene y los ejercicios más retadores de Listening Lab. En la clase en vivo trabajemos juntos la entonación, el énfasis y esos sonidos que todavía quieras afinar.",
       up: "Sigue escuchando inglés real sin subtítulos y habla en inglés siempre que puedas. Y empieza a compartir lo que ya sabes en la comunidad: responder los audios de otros también te hace crecer." },
-    { n: 5, name: "Leader", color: "#B8860B", tint: "#F6EBCB", icon: "⭐", art: "a", min: 81,
+    { n: 5, name: "Leader", icon: "⭐", art: "a", min: 81,
       phrase: "I speak with confidence and help others find their voice.",
       desc: "Ser Leader significa que hablas con total confianza y entiendes el inglés real sin esfuerzo. Llegaste al nivel más alto del camino Clarity, y ahora puedes ayudar a otros a encontrar su voz. ¡No sabes lo feliz que me hace ver esto!",
       challenge: "Tu reto ahora es mantener tu nivel y compartirlo. Seguir entrenando tu oído con contenido real para no perder lo que lograste, y acompañar a quienes van empezando: cada estudiante que llega quiere estar donde tú estás.",
@@ -962,55 +956,29 @@ p { margin: 0; }
   // ---------- result ----------
   function startPhrase() { return "Hoy eres"; }
   // The goal is where the next level starts (21, 41, 61, 81); a Leader is measured out of 100.
-  const LEVEL_SHORT = [
-    "Entiendes al leer, pero al escuchar todavía se te escapa.",
-    "Entiendes mucho más de lo que dices.",
-    "Ya te atreves a hablar, aunque a veces traduzcas.",
-    "Entiendes inglés real y hablas sin traducir.",
-    "Hablas con confianza y ayudas a otros a encontrar su voz."
-  ];
-  function renderLevelMap(r) {
-    const ol = $("r-map"); ol.textContent = "";
-    LEVELS.forEach((lv, i) => {
-      const li = document.createElement("li");
-      const cur = lv.n === r.level.n, nxt = r.next && lv.n === r.next.n;
-      li.className = cur ? "cur" : nxt ? "next" : lv.n < r.level.n ? "done" : "";
-      const n = document.createElement("span"); n.className = "n"; n.textContent = lv.icon; n.style.background = lv.tint;
-      if (cur) { li.style.background = lv.color; li.style.borderColor = lv.color; }
-      else li.style.borderLeft = "5px solid " + lv.color;
-      const t = document.createElement("span"); t.className = "t";
-      const b = document.createElement("b"); b.textContent = lv.name;
-      t.append(b, LEVEL_SHORT[i]);
-      li.append(n, t);
-      if (cur || nxt) { const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = cur ? "Tú estás aquí" : "Tu siguiente meta"; li.appendChild(tag); }
-      // Progress inside the current level: a bar with the percentage written on it, and what is left.
-      if (cur && r.next) {
-        const pct = progressPct(r);
-        const wrap = document.createElement("div"); wrap.className = "lvprog";
-        const bar = document.createElement("div"); bar.className = "lvbar";
-        bar.setAttribute("role", "progressbar"); bar.setAttribute("aria-valuemin", "0"); bar.setAttribute("aria-valuemax", "100"); bar.setAttribute("aria-valuenow", String(pct));
-        bar.setAttribute("aria-label", "Avance hacia el nivel " + r.next.n);
-        const fill = document.createElement("div"); fill.className = "lvfill"; fill.style.width = Math.max(pct, 12) + "%";
-        const lab = document.createElement("span"); lab.textContent = pct + "%"; lab.style.color = lv.color;
-        fill.appendChild(lab); bar.appendChild(fill);
-        const cap = document.createElement("p"); cap.className = "lvcap";
-        cap.textContent = "Te falta " + (100 - pct) + "% para subir al nivel " + r.next.n + ": " + r.next.name + " " + r.next.icon;
-        wrap.append(bar, cap); li.appendChild(wrap);
-      }
-      ol.appendChild(li);
-    });
-  }
   function progressPct(r) { return r.next ? Math.max(0, Math.min(99, Math.round(r.progress * 100))) : 100; }
   function scoreLabel(r) { return r.next ? progressPct(r) + "%" : "¡Nivel máximo!"; }
 
   function renderResult() {
     const r = result, L = r.level;
+    const h = $("r-name"); h.textContent = startPhrase() + " ";
+    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = (L.art === "an" ? "un " : "un ") + L.name;
+    h.appendChild(lvl);
+
+    const sl = $("r-score"); sl.textContent = "";
+    // Progress shown as how far along the student is toward the next level, in percent.
+    if (r.next) {
+      const st = document.createElement("strong"); st.textContent = progressPct(r) + "%";
+      sl.append("Vas ", st, " del camino para ser " + r.next.name + ".");
+    } else {
+      sl.append("¡Llegaste al nivel más alto!");
+    }
 
     const pi = $("r-intro"); pi.textContent = "";
     const dear = document.createElement("em"); dear.textContent = "my dear student";
     pi.append("Ahora, ", dear, ", te voy a explicar tu resultado: qué significa ser " + L.name + ", cuál es tu reto más grande en este momento y cómo puedes empezar a trabajar desde hoy " + (r.next ? "para que logres ser " + r.next.name + "." : "para mantener tu nivel y seguir creciendo."));
 
-    { const t = $("r-mean-title"); t.textContent = "¿Qué significa ser "; const e = document.createElement("em"); e.textContent = L.name; t.append(e, "?"); }
+    $("r-mean-title").textContent = "¿Qué significa ser " + L.name + "?";
     $("r-desc").textContent = L.desc;
 
     let ch = L.challenge;
@@ -1019,7 +987,7 @@ p { margin: 0; }
     }
     $("r-challenge").textContent = ch;
 
-    $("r-path-title").innerHTML = "Lo que te recomiendo <em>hacer ahora</em>";
+    $("r-path-title").textContent = "Lo que te recomiendo hacer ahora";
     const startBy = r.bases <= 5
       ? (L.n === 1 ? "Te recomiendo empezar por Pronunciation Foundation, en orden: la iniciación, por qué el cerebro bloquea el inglés, las consonantes, las vocales, las reducciones y el linking. Ahí te explico todo desde la base." : "Te recomiendo empezar por Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
       : (L.n >= 4 ? "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene, con las escenas rápidas y los podcasts. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation." : "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation.");
@@ -1052,7 +1020,7 @@ p { margin: 0; }
     const r = result, L = r.level;
     const goal = r.next ? "Mi objetivo es llegar a ser " + r.next.name + " en los próximos 60 días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
-    return "I'm " + L.art + " " + L.name + " " + L.icon + "! " + goal + " ¡Vamos con toda! 💪";
+    return "I'm " + L.art + " " + L.name + "! " + goal + " ¡Vamos con toda! 💪";
   }
 
   // ---------- shareable card (canvas, brand colors) ----------
@@ -1100,65 +1068,71 @@ p { margin: 0; }
 
     // level name box
     const boxY = y - 10, boxH = 176;
-    rr(ctx, X, boxY, IW, boxH, 30); ctx.fillStyle = L.color; ctx.fill();
+    rr(ctx, X, boxY, IW, boxH, 30); ctx.fillStyle = C.teal; ctx.fill();
     let size = 118; ctx.font = "600 " + size + "px " + D;
-    while (ctx.measureText(L.name).width > IW - 96 - 130 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
+    while (ctx.measureText(L.name).width > IW - 96 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
     ctx.fillStyle = C.white; ctx.textBaseline = "middle"; ctx.fillText(L.name, X + 48, boxY + boxH / 2 + 6);
-    ctx.font = '96px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; ctx.textAlign = "right";
-    ctx.fillText(L.icon, X + IW - 40, boxY + boxH / 2 + 8); ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
 
-    // level list: the same map the student needs, all inside the card (no duplicate on the page)
+    // ladder panel (white): bars + the progress box, all in one panel
+    y = boxY + boxH;
+    const pY = y + 44, pH = 1262 - pY;
+    rr(ctx, X, pY, IW, pH, 28); ctx.fillStyle = C.white; ctx.fill();
+    const pad = 36, gap = 18, colW = (IW - pad * 2 - gap * 4) / 5, base = pY + pH - 268;
+    const maxH = base - (pY + 112), minH = Math.min(70, maxH * 0.3);
+    const hs = [0, 1, 2, 3, 4].map((k) => minH + (maxH - minH) * k / 4);
     const EM = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-    y = boxY + boxH + 36;
-    const gapR = 14, rowH = 104;
     LEVELS.forEach((lv, i) => {
-      const isCur = i === L.n - 1, isNext = r.next && lv.n === r.next.n;
-      const tagTxt = isCur ? "TÚ ESTÁS AQUÍ" : isNext ? "TU SIGUIENTE META" : "";
-      ctx.font = "800 20px " + B; const tagW = tagTxt ? ctx.measureText(tagTxt).width + 36 : 0;
-      const tx = X + 112, tMax = IW - 112 - 28 - (tagW ? tagW + 16 : 0);
-      ctx.font = "500 26px " + B; const dl = wrapLines(ctx, LEVEL_SHORT[i], tMax);
-      let h = Math.max(rowH, 46 + dl.length * 32 + 20);
-      if (isCur && r.next) h += 124;
-      rr(ctx, X, y, IW, h, 22); ctx.fillStyle = isCur ? lv.color : C.white; ctx.fill();
-      if (!isCur) {
-        ctx.save(); rr(ctx, X, y, IW, h, 22); ctx.clip(); ctx.fillStyle = lv.color; ctx.fillRect(X, y, 7, h); ctx.restore();
-        ctx.lineWidth = 2; ctx.strokeStyle = C.line; rr(ctx, X, y, IW, h, 22); ctx.stroke();
+      const x = X + pad + i * (colW + gap), h = hs[i], top = base - h;
+      const isCur = i === L.n - 1, done = i < L.n - 1, isNext = r.next && lv.n === r.next.n;
+      rr(ctx, x, top, colW, h, 12);
+      ctx.fillStyle = isCur ? C.teal : done ? C.pale : C.mint; ctx.fill();
+      if (!isCur && !done) { ctx.lineWidth = 3; ctx.strokeStyle = C.line; ctx.stroke(); }
+      ctx.textAlign = "center";
+      if (isCur) {
+        ctx.textBaseline = "middle"; ctx.font = "40px " + EM; ctx.fillStyle = C.ink;
+        ctx.fillText(lv.icon, x + colW / 2, top + Math.min(h / 2, 40)); ctx.textBaseline = "alphabetic";
+      } else {
+        ctx.fillStyle = C.tealDark; ctx.font = "600 38px " + D; ctx.fillText(String(lv.n), x + colW / 2, top + 46);
       }
-      const top = y + 16, headH = Math.max(rowH, 46 + dl.length * 32 + 20) - 32;
-      // emoji badge
-      rr(ctx, X + 28, top + headH / 2 - 32, 64, 64, 16); ctx.fillStyle = isCur ? "rgba(255,255,255,.85)" : lv.tint; ctx.fill();
-      ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "38px " + EM; ctx.fillStyle = C.ink;
-      ctx.fillText(lv.icon, X + 60, top + headH / 2 + 2);
-      ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
-      const tTop = top + headH / 2 - (30 + dl.length * 32) / 2;
-      ctx.fillStyle = isCur ? C.white : C.ink; ctx.font = "600 32px " + D; ctx.fillText(lv.name, tx, tTop + 28);
-      ctx.font = "500 26px " + B; dl.forEach((ln, j) => ctx.fillText(ln, tx, tTop + 28 + 34 + j * 32));
-      if (tagTxt) {
-        const tw = tagW, th = 40, tgx = X + IW - 24 - tw, tgy = top + headH / 2 - th / 2;
-        rr(ctx, tgx, tgy, tw, th, 20); ctx.fillStyle = isCur ? C.white : C.pale; ctx.fill();
-        ctx.fillStyle = isCur ? C.ink : C.tealDark; ctx.font = "800 20px " + B; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(tagTxt, tgx + tw / 2, tgy + th / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "27px " + B;
+      const parts = lv.name.split(" ");
+      parts.forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 40 + j * 32));
+      if (isCur) {
+        // "Estás aquí" tag: one column wide, on top of the current bar with a pointer.
+        const tagH = 56, ty = top - tagH - 16, cx = x + colW / 2;
+        rr(ctx, x, ty, colW, tagH, 16); ctx.fillStyle = C.coral; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx - 12, ty + tagH); ctx.lineTo(cx + 12, ty + tagH); ctx.lineTo(cx, ty + tagH + 12); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = C.white; ctx.font = "800 25px " + B; ctx.textBaseline = "middle";
+        ctx.fillText("Estás aquí", cx, ty + tagH / 2 + 1); ctx.textBaseline = "alphabetic";
       }
-      if (isCur && r.next) {
-        const pct = progressPct(r), by = top + headH + 18, bh = 50, bx = X + 24, bw2 = IW - 48;
-        rr(ctx, bx, by, bw2, bh, 25); ctx.fillStyle = "rgba(255,255,255,.28)"; ctx.fill();
-        const fw = Math.max(bw2 * Math.max(pct, 12) / 100, 90);
-        rr(ctx, bx, by, fw, bh, 25); ctx.fillStyle = C.white; ctx.fill();
-        ctx.fillStyle = lv.color; ctx.font = "600 30px " + D; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-        ctx.fillText(pct + "%", bx + fw - 18, by + bh / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = C.white; ctx.font = "700 25px " + B;
-        ctx.fillText("Te falta " + (100 - pct) + "% para subir al nivel " + r.next.n + ": " + r.next.name + " " + r.next.icon, bx, by + bh + 40);
+      if (isNext) {
+        // small "Tu siguiente meta" pill above the next bar
+        ctx.font = "800 15px " + B; const t = "TU SIGUIENTE META", tw = Math.min(colW + 30, ctx.measureText(t).width + 22), th = 30, ty = top - th - 14, cx = x + colW / 2;
+        rr(ctx, cx - tw / 2, ty, tw, th, 15); ctx.fillStyle = C.pale; ctx.fill();
+        ctx.fillStyle = C.tealDark; ctx.textBaseline = "middle"; ctx.fillText(t, cx, ty + th / 2 + 1); ctx.textBaseline = "alphabetic";
       }
-      y += h + gapR;
+      ctx.textAlign = "left";
     });
+
+    // progress box, inside the white panel
+    const gx = X + 24, gw = IW - 48, gy = base + 104, gh = pY + pH - 24 - gy;
+    rr(ctx, gx, gy, gw, gh, 20); ctx.fillStyle = C.teal; ctx.fill();
+    const pct = progressPct(r), px_ = gx + 20, pw_ = gw - 40, py_ = gy + 20, ph_ = 50;
+    rr(ctx, px_, py_, pw_, ph_, 25); ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.fill();
+    const fw = Math.max(pw_ * pct / 100, 100);
+    rr(ctx, px_, py_, fw, ph_, 25); ctx.fillStyle = C.white; ctx.fill();
+    ctx.fillStyle = C.tealDark; ctx.font = "600 30px " + D; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.fillText(pct + "%", px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = C.white; ctx.font = "700 26px " + B;
+    ctx.fillText(r.next ? "Te falta " + (100 - pct) + "% para subir al nivel " + r.next.n + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
-    ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, Math.min(H - 40, y + 34));
+    ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, 1310);
 
     $("card").src = cv.toDataURL("image/png");
-    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5. " + (r.next ? "Va " + progressPct(r) + "% del camino para subir al nivel " + r.next.n + "." : "Nivel máximo.");
+    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5. " + (r.next ? "Va " + progressPct(r) + "% del camino para ser " + r.next.name + "." : "Nivel máximo.");
     cardBlob = await new Promise((res) => cv.toBlob(res, "image/png"));
   }
 
