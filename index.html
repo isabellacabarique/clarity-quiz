@@ -168,13 +168,17 @@ p { margin: 0; }
 .score-line { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .score-line strong { color: var(--teal-dark); }
 .lvmap { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 6px; }
-.lvmap li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
-.lvmap .n { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font: 600 16px var(--font-display); background: var(--teal-pale); color: var(--teal-dark); }
+.lvmap li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.lvmap .n { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 600 16px var(--font-display); background: var(--teal-pale); color: var(--teal-dark); }
 .lvmap .t { min-width: 0; font-size: 15px; line-height: 1.35; }
 .lvmap .t b { display: block; font-family: var(--font-display); font-weight: 600; font-size: 16px; }
 .lvmap .tag { font: 700 11px/1 var(--font-body); letter-spacing: .06em; text-transform: uppercase; padding: 6px 8px; border-radius: 999px; white-space: nowrap; }
 .lvmap li.cur { color: #FFFFFF; }
 .lvmap .n { font-size: 18px; }
+.face-wrap { display: inline-flex; vertical-align: middle; }
+.face { display: block; }
+.headline h1 .lvl .face-wrap { margin-left: 4px; vertical-align: -6px; }
+.lvmap li.cur .n { background: #FFFFFF !important; }
 .lvmap li.cur .tag { background: #FFFFFF; color: #15302B; }
 .lvmap li.next .tag { background: var(--teal-pale); color: var(--teal-dark); }
 .lvmap li.done { opacity: .7; }
@@ -973,6 +977,62 @@ p { margin: 0; }
   // ---------- result ----------
   function startPhrase() { return "Hoy eres"; }
   // The goal is where the next level starts (21, 41, 61, 81); a Leader is measured out of 100.
+  // ---------- level faces: original line drawings with a gradient stroke, one expression per level ----------
+  // Each shape: [path, "s"] = stroked line, [path, "f"] = filled, [path, "b"] = soft filled (blush). 100x100 box.
+  const C0 = "M50 10 a40 40 0 1 0 0.01 0";
+  const FACES = {
+    // Observer: very big, wide-open eyes, raised brows, tiny mouth: watching and taking it all in
+    1: { g: ["#5E7A99", "#8FB4E8"], shapes: [[C0, "s"],
+      ["M35 46 m-10.5 0 a10.5 10.5 0 1 0 21 0 a10.5 10.5 0 1 0 -21 0", "s"], ["M65 46 m-10.5 0 a10.5 10.5 0 1 0 21 0 a10.5 10.5 0 1 0 -21 0", "s"],
+      ["M36 47 m-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0", "f"], ["M64 47 m-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0", "f"],
+      ["M27 28 Q35 23 43 27", "s"], ["M57 27 Q65 23 73 28", "s"], ["M46 70 Q50 71.5 54 70", "s"]] },
+    // Shy Speaker: eyes looking down, blushing cheeks, small closed smile
+    2: { g: ["#3F9A5B", "#A6D96A"], shapes: [[C0, "s"],
+      ["M29 45 Q36 51 43 45", "s"], ["M57 45 Q64 51 71 45", "s"],
+      ["M22 59 a7.5 4.5 0 1 0 15 0 a7.5 4.5 0 1 0 -15 0", "b"], ["M63 59 a7.5 4.5 0 1 0 15 0 a7.5 4.5 0 1 0 -15 0", "b"],
+      ["M45 66 Q50 69.5 55 66", "s"]] },
+    // Brave Speaker: confident brows, open mouth already talking, speech lines coming out
+    3: { g: ["#E0592E", "#F7B23B"], shapes: [[C0, "s"],
+      ["M28 35 Q35 31 43 35", "s"], ["M57 35 Q65 31 72 35", "s"],
+      ["M36 47 m-4.5 0 a4.5 4.5 0 1 0 9 0 a4.5 4.5 0 1 0 -9 0", "f"], ["M64 47 m-4.5 0 a4.5 4.5 0 1 0 9 0 a4.5 4.5 0 1 0 -9 0", "f"],
+      ["M41 63 Q50 58 59 63 Q60 75 50 76 Q40 75 41 63 Z", "f"],
+      ["M94 56 L99 54", "s"], ["M94 64 L100 65", "s"], ["M92 72 L97 76", "s"]] },
+    // Fluent Speaker: relaxed happy eyes, big smile, sound waves flowing out of the mouth
+    4: { g: ["#1F7A9E", "#5ED1C9"], shapes: [[C0, "s"],
+      ["M29 46 Q36 38 43 46", "s"], ["M57 46 Q64 38 71 46", "s"],
+      ["M33 58 Q50 80 67 58 Z", "f"],
+      ["M91 58 Q95 64 91 70", "s"], ["M97 53 Q103 64 97 75", "s"]] },
+    // Leader: crown on top, confident smile, kind eyes
+    5: { g: ["#B8860B", "#F5D45A"], shapes: [[C0, "s"],
+      ["M31 21 L34 5 L43 14 L50 2 L57 14 L66 5 L69 21 Z", "f"],
+      ["M36 47 m-4.5 0 a4.5 4.5 0 1 0 9 0 a4.5 4.5 0 1 0 -9 0", "f"], ["M64 47 m-4.5 0 a4.5 4.5 0 1 0 9 0 a4.5 4.5 0 1 0 -9 0", "f"],
+      ["M29 38 Q36 34 43 37", "s"], ["M57 37 Q64 34 71 38", "s"],
+      ["M33 60 Q50 77 67 60", "s"]] }
+  };
+  let faceUid = 0;
+  function faceSVG(n, px) {
+    const f = FACES[n], id = "fg" + n + "-" + (++faceUid);
+    const parts = f.shapes.map(([d, k]) => k === "s"
+      ? '<path d="' + d + '" fill="none" stroke="url(#' + id + ')" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'
+      : '<path d="' + d + '" fill="url(#' + id + ')"' + (k === "b" ? ' opacity=".35"' : "") + "/>").join("");
+    return '<svg class="face" viewBox="0 0 104 100" overflow="visible" width="' + px + '" height="' + px + '" aria-hidden="true"><defs><linearGradient id="' + id +
+      '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + f.g[0] + '"/><stop offset="1" stop-color="' + f.g[1] + '"/></linearGradient></defs>' + parts + "</svg>";
+  }
+  function faceEl(n, px) { const t = document.createElement("span"); t.className = "face-wrap"; t.innerHTML = faceSVG(n, px); return t; }
+  function drawFace(ctx, n, x, y, size, backdrop) {
+    const f = FACES[n];
+    ctx.save();
+    if (backdrop) { ctx.beginPath(); ctx.arc(x + size / 2, y + size / 2, size * 0.56, 0, Math.PI * 2); ctx.fillStyle = backdrop; ctx.fill(); }
+    ctx.translate(x, y); ctx.scale(size / 100, size / 100);
+    const g = ctx.createLinearGradient(0, 0, 100, 100); g.addColorStop(0, f.g[0]); g.addColorStop(1, f.g[1]);
+    ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    f.shapes.forEach(([d, k]) => {
+      const p = new Path2D(d);
+      if (k === "s") { ctx.strokeStyle = g; ctx.stroke(p); }
+      else { ctx.globalAlpha = k === "b" ? 0.35 : 1; ctx.fillStyle = g; ctx.fill(p); ctx.globalAlpha = 1; }
+    });
+    ctx.restore();
+  }
   const LEVEL_SHORT = [
     "Entiendes al leer, pero al escuchar todavía se te escapa.",
     "Entiendes mucho más de lo que dices.",
@@ -986,7 +1046,7 @@ p { margin: 0; }
       const li = document.createElement("li");
       const cur = lv.n === r.level.n, nxt = r.next && lv.n === r.next.n;
       li.className = cur ? "cur" : nxt ? "next" : lv.n < r.level.n ? "done" : "";
-      const n = document.createElement("span"); n.className = "n"; n.textContent = lv.icon; n.style.background = lv.tint;
+      const n = document.createElement("span"); n.className = "n"; n.appendChild(faceEl(lv.n, 36)); n.style.background = lv.tint;
       if (cur) { li.style.background = lv.color; li.style.borderColor = lv.color; }
       else li.style.borderLeft = "5px solid " + lv.color;
       const t = document.createElement("span"); t.className = "t";
@@ -1005,7 +1065,7 @@ p { margin: 0; }
         const lab = document.createElement("span"); lab.textContent = pct + "%"; lab.style.color = lv.color;
         fill.appendChild(lab); bar.appendChild(fill);
         const cap = document.createElement("p"); cap.className = "lvcap";
-        cap.textContent = "Te falta " + (100 - pct) + "% para subir al nivel " + r.next.n + ": " + r.next.name + " " + r.next.icon;
+        cap.textContent = "Te falta " + (100 - pct) + "% para subir al nivel " + r.next.n + ": " + r.next.name;
         wrap.append(bar, cap); li.appendChild(wrap);
       }
       ol.appendChild(li);
@@ -1017,7 +1077,7 @@ p { margin: 0; }
   function renderResult() {
     const r = result, L = r.level;
     const h = $("r-name"); h.textContent = startPhrase() + " ";
-    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = "un " + L.name + " " + L.icon; lvl.style.color = L.color;
+    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = "un " + L.name + " "; lvl.style.color = L.color; lvl.appendChild(faceEl(L.n, 52));
     h.appendChild(lvl);
 
     const sl = $("r-score"); sl.textContent = "";
@@ -1078,7 +1138,7 @@ p { margin: 0; }
     const r = result, L = r.level;
     const goal = r.next ? "Mi objetivo es llegar a ser " + r.next.name + " en los próximos 60 días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
-    return "I'm " + L.art + " " + L.name + " " + L.icon + "! " + goal + " ¡Vamos con toda! 💪";
+    return "I'm " + L.art + " " + L.name + "! " + goal + " ¡Vamos con toda! 💪";
   }
 
   // ---------- shareable card (canvas, brand colors) ----------
@@ -1130,8 +1190,7 @@ p { margin: 0; }
     let size = 118; ctx.font = "600 " + size + "px " + D;
     while (ctx.measureText(L.name).width > IW - 96 - 130 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
     ctx.fillStyle = C.white; ctx.textBaseline = "middle"; ctx.fillText(L.name, X + 48, boxY + boxH / 2 + 6);
-    ctx.font = '96px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; ctx.textAlign = "right";
-    ctx.fillText(L.icon, X + IW - 40, boxY + boxH / 2 + 8); ctx.textAlign = "left";
+    drawFace(ctx, L.n, X + IW - 40 - 112, boxY + (boxH - 112) / 2, 112, C.white);
     ctx.textBaseline = "alphabetic";
 
     // ladder panel
@@ -1148,8 +1207,7 @@ p { margin: 0; }
       ctx.fillStyle = isCur ? lv.color : lv.tint; ctx.fill();
       if (!isCur) { ctx.lineWidth = 3; ctx.strokeStyle = lv.color + "55"; ctx.stroke(); }
       ctx.textAlign = "center";
-      ctx.font = '40px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-      ctx.fillText(lv.icon, x + colW / 2, top + 50);
+      drawFace(ctx, lv.n, x + colW / 2 - 24, top + 14, 48, C.white);
       ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "27px " + B;
       const parts = lv.name.split(" ");
       parts.forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 40 + j * 32));
