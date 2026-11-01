@@ -957,6 +957,7 @@ p { margin: 0; }
   function startPhrase() { return "Hoy eres"; }
   // The goal is where the next level starts (21, 41, 61, 81); a Leader is measured out of 100.
   function progressPct(r) { return r.next ? Math.max(0, Math.min(99, Math.round(r.progress * 100))) : 100; }
+  function ptsTxt(n) { return n + (n === 1 ? " punto" : " puntos"); }
   function scoreLabel(r) { return r.next ? progressPct(r) + "%" : "¡Nivel máximo!"; }
 
   function renderResult() {
@@ -968,8 +969,9 @@ p { margin: 0; }
     const sl = $("r-score"); sl.textContent = "";
     // Progress shown as how far along the student is toward the next level, in percent.
     if (r.next) {
-      const st = document.createElement("strong"); st.textContent = progressPct(r) + "%";
-      sl.append("Vas ", st, " del camino para ser " + r.next.name + ".");
+      const st = document.createElement("strong"); st.textContent = ptsTxt(r.score);
+      const tn = document.createElement("strong"); tn.textContent = ptsTxt(r.toNext);
+      sl.append("Tienes ", st, ". Te ", r.toNext === 1 ? "falta " : "faltan ", tn, " para ser " + r.next.name + ".");
     } else {
       sl.append("¡Llegaste al nivel más alto!");
     }
@@ -1118,21 +1120,21 @@ p { margin: 0; }
     // progress box, inside the white panel
     const gx = X + 24, gw = IW - 48, gy = base + 104, gh = pY + pH - 24 - gy;
     rr(ctx, gx, gy, gw, gh, 20); ctx.fillStyle = C.teal; ctx.fill();
-    const pct = progressPct(r), px_ = gx + 20, pw_ = gw - 40, py_ = gy + 20, ph_ = 50;
+    const pct = r.next ? Math.max(0, Math.min(100, r.score / r.next.min * 100)) : 100, px_ = gx + 20, pw_ = gw - 40, py_ = gy + 20, ph_ = 50;
     rr(ctx, px_, py_, pw_, ph_, 25); ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.fill();
-    const fw = Math.max(pw_ * pct / 100, 100);
+    const fw = Math.max(pw_ * pct / 100, 170);
     rr(ctx, px_, py_, fw, ph_, 25); ctx.fillStyle = C.white; ctx.fill();
     ctx.fillStyle = C.tealDark; ctx.font = "600 30px " + D; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    ctx.fillText(pct + "%", px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ctx.fillText(ptsTxt(r.score), px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
     ctx.fillStyle = C.white; ctx.font = "700 26px " + B;
-    ctx.fillText(r.next ? "Te falta " + (100 - pct) + "% para subir al nivel " + r.next.n + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
+    ctx.fillText(r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + r.next.n + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
     ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, 1310);
 
     $("card").src = cv.toDataURL("image/png");
-    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5. " + (r.next ? "Va " + progressPct(r) + "% del camino para ser " + r.next.name + "." : "Nivel máximo.");
+    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5. " + (r.next ? "Tiene " + ptsTxt(r.score) + "; le faltan " + ptsTxt(r.toNext) + " para ser " + r.next.name + "." : "Nivel máximo.");
     cardBlob = await new Promise((res) => cv.toBlob(res, "image/png"));
   }
 
