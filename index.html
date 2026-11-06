@@ -251,6 +251,8 @@ p { margin: 0; }
 .ps .notes div { border-bottom: 1px solid #B9E0DA; height: 26px; }
 .ps .foot { margin-top: 14px; font-size: 12px; color: #3F5955; }
 
+.roadmap { font-size: 17px; color: var(--ink-soft); }
+
 /* Phones */
 @media (max-width: 560px) {
   body { font-size: 16px; }
@@ -367,6 +369,7 @@ p { margin: 0; }
 
         <div class="panel">
           <h3 id="r-path-title"></h3>
+          <p class="roadmap" id="r-roadmap"></p>
           <ul class="path" id="r-path"></ul>
         </div>
 
@@ -1135,6 +1138,14 @@ p { margin: 0; }
     $("r-challenge").textContent = ch;
 
     $("r-path-title").textContent = "Lo que te recomiendo hacer ahora";
+    const DREAM = {
+      1: "entender el inglés cuando lo escuchas, no solo cuando lo lees",
+      2: "empezar a hablar inglés sin miedo a bloquearte",
+      3: "hablar inglés sin traducir en tu cabeza",
+      4: "hablar inglés con la confianza y la naturalidad de un nativo",
+      5: "seguir creciendo y ayudar a otros a encontrar su voz"
+    };
+    $("r-roadmap").textContent = "Este es tu roadmap. Quiero darte claridad: que entiendas exactamente qué tiene que pasar y qué va a requerir de ti para que puedas " + DREAM[L.n] + (r.next ? " y llegar al nivel " + r.next.n : "") + ", y que eso deje de ser solo un sueño y se convierta en tu realidad.";
     const startBy = r.bases <= 5
       ? (L.n === 1 ? "Te recomiendo empezar por Pronunciation Foundation, en orden: la iniciación, en la que aprendes la diferencia entre pronunciación y acento; por qué tu cerebro bloquea el inglés; las vocales; las consonantes; las reducciones y los linking sounds. Ahí aprendes todo desde la base. Si un sonido es muy nuevo para ti, repite los entrenamientos para que tu cerebro tenga suficiente contacto con ese sonido." : "Te recomiendo empezar por Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
       : (L.n >= 4 ? "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene, con las escenas rápidas y los podcasts. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation." : "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation.");
