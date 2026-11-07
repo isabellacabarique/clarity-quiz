@@ -243,6 +243,7 @@ p { margin: 0; }
 .cal-b.pf { background: #DCEFEA; } .cal-b.pf em { color: #2D7A72; }
 .cal-b.ra { background: #FBE8D8; } .cal-b.ra em { color: #B5561E; }
 .cal-b.ss { background: #DDE9F8; } .cal-b.ss em { color: #2F5D9A; }
+.cal-b.imm { background: #E6F0DA; } .cal-b.imm em { color: #4E7A2A; }
 .cal-b.bonus { background: #ECE4F7; } .cal-b.bonus em { color: #6A4BA0; }
 .cal-b.clive { background: #FFE1D9; } .cal-b.clive em { color: #C0402B; }
 .cal-note { font-size: 14px; color: var(--ink-soft); }
@@ -1196,7 +1197,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     };
     setRich($("r-roadmap"), (L.n === 1 && !vocabObs) ? "Este es tu roadmap. Quiero que tengas claro el camino: qué vas a trabajar, en qué orden y qué va a requerir de ti para que tu oído empiece a reconocer el inglés real y llegues al nivel 2." : "Este es tu roadmap. Quiero darte claridad: que entiendas exactamente qué tiene que pasar y qué va a requerir de ti para que puedas " + (vocabObs ? OBS_VOCAB.dream : DREAM[L.n]) + (vocabObs ? " y llegar a ser Observer Alpha" : r.next ? " y llegar al nivel " + r.next.n : "") + ", y que eso deje de ser solo un sueño y se convierta en tu realidad.");
     const startBy = r.bases <= 5
-      ? (L.n === 1 ? "Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo empezar por el curso Pronunciation Foundation, en orden: la iniciación, en la que aprendes la diferencia entre pronunciación y acento; por qué tu cerebro bloquea el inglés; las vocales; las consonantes; las reducciones y los linking sounds. Ahí aprendes todo desde la base. Si un sonido es muy nuevo para ti, repite los entrenamientos para que tu cerebro tenga suficiente contacto con ese sonido. Cada semana, aprende y practica un sonido de ese curso. Dale tiempo a tu cerebro para asimilar lo que vas aprendiendo. Usa los entrenamientos auditivos y de práctica durante la semana y, al final, completa el reto y súbelo al feed para recibir retroalimentación.\n\nCada día, lee 1 capítulo conmigo en Read Along With Me. Solo escúchame y sigue el texto con la vista. Intenta escuchar los nuevos sonidos que vas aprendiendo en Pronunciation Foundation. Si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo.\n\nDespués de haber trabajado en estos programas durante 30 días, reemplaza Read Along With Me por el curso Shadow the Scene. En este punto es importante que combines los dos programas, porque debes poner en práctica lo que vas aprendiendo en el curso Pronunciation Foundation. Dentro de Shadow the Scene, el ejercicio más importante es el Listening Lab, donde vas a hacer ejercicios de listening: eso es lo que realmente va a entrenar tu oído.\n\nNo olvides hacer tu inmersión diaria. Es importante que escuches inglés todos los días: sin esa inmersión, tu cerebro nunca va a tener suficiente contacto con el inglés para lograr entenderlo." : "Te recomiendo empezar por el curso Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
+      ? (L.n === 1 ? "Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo empezar por el curso Pronunciation Foundation, en orden: la iniciación, en la que aprendes la diferencia entre pronunciación y acento; por qué tu cerebro bloquea el inglés; las vocales; las consonantes; las reducciones y los linking sounds. Ahí aprendes todo desde la base. Si un sonido es muy nuevo para ti, repite los entrenamientos para que tu cerebro tenga suficiente contacto con ese sonido. Cada semana, aprende y practica un sonido de ese curso. Dale tiempo a tu cerebro para asimilar lo que vas aprendiendo. Usa los entrenamientos auditivos y de práctica durante la semana y, al final, completa el reto y súbelo al feed para recibir retroalimentación.\n\nCada día, lee 1 capítulo conmigo en Read Along With Me. Solo escúchame y sigue el texto con la vista. Intenta escuchar los nuevos sonidos que vas aprendiendo en Pronunciation Foundation. Si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo.\n\nDespués de haber trabajado en estos programas durante 30 días, agrega el curso Shadow the Scene: sus lecciones duran entre 30 y 40 minutos, así que alterna. Lunes, miércoles y viernes haz Shadow the Scene; martes y jueves sigue con Read Along With Me. En este punto es importante que combines los programas, porque debes poner en práctica lo que vas aprendiendo en el curso Pronunciation Foundation. Dentro de Shadow the Scene, el ejercicio más importante es el Listening Lab, donde vas a hacer ejercicios de listening: eso es lo que realmente va a entrenar tu oído.\n\nNo olvides hacer tu inmersión diaria. Es importante que escuches inglés todos los días: sin esa inmersión, tu cerebro nunca va a tener suficiente contacto con el inglés para lograr entenderlo." : "Te recomiendo empezar por el curso Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
       : (L.n >= 4 ? "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene, con las escenas rápidas y los podcasts. Si algún sonido te genera dudas, repásalo en el curso Pronunciation Foundation." : "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene. Si algún sonido te genera dudas, repásalo en el curso Pronunciation Foundation.");
     // Little or no speaking experience: "Lo evito" (Q8) or "Nunca" (Q9), or the two first levels.
     const lowSpeak = answers[qIndex("speak")].includes(0) || answers[qIndex("freq")].includes(0);
@@ -1378,12 +1379,15 @@ strong.course { font-weight: 800; color: var(--ink); }
   const CAL = {
     1: {
       stages: [
-        { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo." } },
-        { key: "m2", label: "Mes 2 · días 31 a 60", practice: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab." } }
+        { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo.", min: 10 } },
+        { key: "m2", label: "Mes 2 · días 31 a 60", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo.", min: 10 },
+          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Completa la lección del día."], live: d === "Martes",
+            prac: (d === "Martes" || d === "Jueves") ? null : { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } })) }
       ],
       days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Completa la lección del día."], live: d === "Martes" })),
-      note: "Sábado y domingo: descansa o ponte al día con lo que te faltó en la semana.",
-      hint: "Este nivel está pensado para 2 meses, con 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos."
+      weekend: { tag: "Inmersión", txt: "Ve videos, escucha podcasts o mira una serie en inglés." },
+      note: "",
+      hint: "Este nivel está pensado para 2 meses. Si puedes invertir más tiempo, aumenta los tiempos."
     },
     // Observer who still doesn't understand when reading: vocabulary first.
     "1v": {
@@ -1438,24 +1442,34 @@ strong.course { font-weight: 800; color: var(--ink); }
     const block = (cls, time, tag, txt, step) => { const d = document.createElement("div"); d.className = "cal-b " + cls; const e = document.createElement("em"); e.textContent = time + " · " + tag; d.appendChild(e); if (step) { const b = document.createElement("strong"); b.textContent = step + ": "; d.appendChild(b); } if (txt) d.append(txt); else d.classList.add("bare"); return d; };
     (st.days || plan.days).forEach((day) => {
       const col = document.createElement("div"); col.className = "cal-day";
-      const pfMin = day.pf[4] || 15, tot = pfMin + 15;
-      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = tot + " min"; h.appendChild(sm);
+      const pfMin = day.pf[4] || 15, pr = day.prac || st.practice;
+      const prTxt = pr.range ? pr.range[0] + "–" + pr.range[1] + " min" : (pr.min || 15) + " min";
+      const tot = pr.range ? (pfMin + pr.range[0]) + "–" + (pfMin + pr.range[1]) + " min" : (pfMin + (pr.min || 15)) + " min";
+      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = tot; h.appendChild(sm);
       const bl = document.createElement("div"); bl.className = "cal-blocks";
-      bl.append(block(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]), block(st.practice.cls, "15 min", st.practice.tag, st.practice.txt));
+      bl.append(block(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]), block(pr.cls, prTxt, pr.tag, pr.txt));
       if (day.live) bl.appendChild(block("clive", "7:00 p. m.", "Clase en vivo", "Practicamos juntos y te doy feedback."));
       col.append(h, bl);
       cal.appendChild(col);
     });
-    $("cal-note").textContent = plan.note;
+    if (plan.weekend) {
+      const col = document.createElement("div"); col.className = "cal-day";
+      const h = document.createElement("h4"); h.textContent = "Sábado y domingo";
+      const bl = document.createElement("div"); bl.className = "cal-blocks";
+      bl.appendChild(block("imm", "Fin de semana", plan.weekend.tag, plan.weekend.txt));
+      col.append(h, bl); cal.appendChild(col);
+    }
+    $("cal-note").textContent = plan.note || "";
+    $("cal-note").hidden = !plan.note;
     $("cal-hint").textContent = plan.hint || "Este calendario está pensado para 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos.";
   }
   function buildPrintSheet(L) {
     const plan = CAL[calKey], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
-    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
-    $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
+    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) + ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
+    $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(st.label) + "</p>" +
       '<div class="fields"><span>Semana del:</span></div><table>' + rows +
-      "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
+      "<tr><th>Fin de semana</th><td>" + ck(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : "Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
       '<div class="notes">Lo que más me costó esta semana:<div></div><div></div><div></div></div><div class="notes">Cómo puedo hacer que la siguiente semana sea mejor:<div></div><div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
   }
   $("print-cl").addEventListener("click", () => {
