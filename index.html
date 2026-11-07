@@ -447,10 +447,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     <h2 id="pop-title">Guarda tu resultado y tu plan</h2>
     <p>Este es tu punto de partida y tu camino en Clarity. Guarda tu tarjeta e imprime tu checklist semanal para que no los pierdas.</p>
     <div class="pop-actions">
-      <button class="btn" type="button" id="pop-save">Guardar mi tarjeta</button>
-      <button class="btn ghost" type="button" id="pop-print">Imprimir mi checklist</button>
+      <button class="btn" type="button" id="pop-close">Entendido</button>
     </div>
-    <button class="pop-close" type="button" id="pop-close">Ya lo guardé, ver mi resultado</button>
     <p class="pop-quote">«Quien tiene un plan, toma acción masiva y ve resultados.»</p>
   </div>
 </div>
@@ -1281,7 +1279,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("copied").textContent = "";
     store("clarity-quiz-last", String(r.score));
     drawCard();
-    setTimeout(() => { $("pop-print").hidden = $("cal-panel").hidden; $("save-pop").hidden = false; $("pop-save").focus(); }, 900);
+    setTimeout(() => { $("save-pop").hidden = false; $("pop-close").focus(); }, 900);
   }
 
   function buildMessage() {
@@ -1567,8 +1565,6 @@ strong.course { font-weight: 800; color: var(--ink); }
   $("pop-close").addEventListener("click", closePop);
   $("save-pop").addEventListener("click", (e) => { if (e.target === $("save-pop")) closePop(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("save-pop").hidden) closePop(); });
-  $("pop-save").addEventListener("click", () => { $("save").click(); });
-  $("pop-print").addEventListener("click", () => { closePop(); if (!$("cal-panel").hidden) $("print-cl").click(); else $("cal-panel").scrollIntoView({ behavior: "smooth" }); });
 
   // ---------- copy ----------
   $("copy").addEventListener("click", async () => {
