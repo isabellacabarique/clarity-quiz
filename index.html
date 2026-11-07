@@ -1377,7 +1377,7 @@ strong.course { font-weight: 800; color: var(--ink); }
             { d: "Viernes", pf: ["BONUS", "Taller 10 errores que debes evitar (segunda mitad).", "Taller BONUS", "bonus", 40] }
           ] },
         { key: "w2", label: "Desde la semana 2", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo y repasa su PDF de vocabulario." },
-          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", ""], live: d === "Martes" })) }
+          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Completa la lección del día."], live: d === "Martes" })) }
       ],
       days: [
         { d: "Lunes", pf: ["Aprende", "Mira la lección de la semana. En la semana 2, empieza por la iniciación."] },
@@ -1432,7 +1432,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function buildPrintSheet(L) {
     const plan = CAL[calKey], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
-    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation, 15 min") + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
+    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
     $("print-sheet").innerHTML = '<div class="ps"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
       '<div class="fields"><span>Semana del:</span><span>' + (calKey === "1v" ? "Palabras nuevas que aprendí:" : "Sonido de la semana:") + '</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
