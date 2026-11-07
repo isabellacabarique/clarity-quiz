@@ -265,8 +265,8 @@ p { margin: 0; }
 .pp h3 { font: 700 13px/1.2 var(--font-body); margin: 12px 0 6px; }
 .pp p { margin: 0 0 6px; white-space: pre-line; }
 .pp-week { margin: 4px 0 10px; }
-.pp-keep { break-inside: avoid; page-break-inside: avoid; }
-.pp-keep h3 { margin-top: 14px; }
+.pp-stage { break-inside: avoid; page-break-inside: avoid; }
+.pp-stage h3 { margin-top: 14px; }
 .pp-week .cal-day { page-break-inside: avoid; break-inside: avoid; grid-template-columns: 30mm minmax(0, 1fr); padding: 8px 0; }
 .pp-week .cal-blocks { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .pp-week .cal-b { font-size: 11.5px; padding: 8px 9px; }
@@ -1609,7 +1609,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         const stageTitle = plan.stages.length > 1 ? "<h3>" + esc(st.label) + "</h3>" : "";
         let firstDay = true;
         const blk = (cls, time, tag, text, step) => '<div class="cal-b ' + cls + '"><em>' + esc(time + " · " + tag) + "</em>" + (step ? "<strong>" + esc(step) + ": </strong>" : "") + esc(text || "") + "</div>";
-        h += '<div class="cal pp-week">';
+        h += '<div class="pp-stage"><div class="cal pp-week">';
         (st.days || plan.days).forEach((day) => {
           const pfMin = day.pf ? (day.pf[4] || 15) : 0, pr = day.prac === false ? null : (day.prac || st.practice);
           const lo = pr ? (pr.range ? pr.range[0] : (pr.min || 15)) : 0, hi = pr ? (pr.range ? pr.range[1] : lo) : 0;
@@ -1622,11 +1622,11 @@ strong.course { font-weight: 800; color: var(--ink); }
           if (day.live) bl += blk("clive", "7:00 p. m. · 1 h", "Clase en vivo", "Practicamos juntos y te doy feedback.");
           const dayHtml = '<div class="cal-day"><h4>' + esc(day.d) + "<small>" + esc(head) + '</small></h4><div class="cal-blocks">' + bl + "</div></div>";
           // keep the stage title together with its first day so it never sits alone at the bottom of a page
-          h += firstDay ? '<div class="pp-keep">' + stageTitle + dayHtml + "</div>" : dayHtml;
+          h += (firstDay ? stageTitle : "") + dayHtml;
           firstDay = false;
         });
         if (plan.weekend) h += '<div class="cal-day"><h4>Sábado y domingo</h4><div class="cal-blocks">' + blk("imm", "Fin de semana", plan.weekend.tag, plan.weekend.txt) + "</div></div>";
-        h += "</div>";
+        h += "</div></div>";
         if (plan.note) h += "<p>" + esc(plan.note) + "</p>";
       });
     }
