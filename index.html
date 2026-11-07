@@ -1132,10 +1132,13 @@ strong.course { font-weight: 800; color: var(--ink); }
       else if (part) el.appendChild(document.createTextNode(part));
     });
   }
+  // Observer who still needs vocabulary gets a sub-name on the page only (the card keeps "Observer").
+  function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 1; }
+  function pageName(r) { return isVocabObs(r) ? "Observer Alpha" : r.level.name; }
   function renderResult() {
-    const r = result, L = r.level;
+    const r = result, L = r.level, NM = pageName(r);
     const h = $("r-name"); h.textContent = startPhrase() + " ";
-    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = "un " + L.name + " "; lvl.appendChild(faceEl(L.n, 52));
+    const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = "un " + NM + " "; lvl.appendChild(faceEl(L.n, 52));
     h.appendChild(lvl);
 
     const sl = $("r-score"); sl.textContent = "";
@@ -1150,11 +1153,11 @@ strong.course { font-weight: 800; color: var(--ink); }
 
     const pi = $("r-intro"); pi.textContent = "";
     const dear = document.createElement("em"); dear.textContent = "my dear student";
-    pi.append("Ahora, ", dear, ", te voy a explicar tu resultado: qué significa ser " + L.name + ", cuál es tu reto más grande en este momento y cómo puedes empezar a trabajar desde hoy " + (r.next ? "para subir de nivel." : "para mantener tu nivel y seguir creciendo."));
+    pi.append("Ahora, ", dear, ", te voy a explicar tu resultado: qué significa ser " + NM + ", cuál es tu reto más grande en este momento y cómo puedes empezar a trabajar desde hoy " + (r.next ? "para subir de nivel." : "para mantener tu nivel y seguir creciendo."));
 
-    $("r-mean-title").textContent = "¿Qué significa ser " + L.name + "?";
+    $("r-mean-title").textContent = "¿Qué significa ser " + NM + "?";
     // Two kinds of Observer (the student never sees this): one understands when reading, the other still needs vocabulary.
-    const vocabObs = L.n === 1 && r.reading !== null && r.reading <= 1;
+    const vocabObs = isVocabObs(r);
     setRich($("r-desc"), vocabObs ? OBS_VOCAB.desc : L.desc);
 
     let ch = vocabObs ? OBS_VOCAB.challenge : L.challenge;
@@ -1217,7 +1220,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const days = (L.n === 1 && r.reading !== null && r.reading <= 1) ? 90 : 60;
     const goal = r.next ? "Mi objetivo es llegar al nivel " + r.next.n + " en los próximos " + days + " días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
-    return "I'm " + L.art + " " + L.name + "! " + goal + " ¡Vamos con toda! 💪";
+    return "I'm " + L.art + " " + pageName(r) + "! " + goal + " ¡Vamos con toda! 💪";
   }
 
   // ---------- shareable card (canvas, brand colors) ----------
@@ -1391,7 +1394,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   };
   let calKey = 1;
   const OBS_VOCAB = {
-    desc: "Ser Observer significa que todavía estás conociendo el inglés desde afuera. Aún no te has involucrado mucho con el idioma y, cuando lees o escuchas, se te escapan muchas palabras porque no las conoces. Por eso te cuesta seguir la idea y que el inglés tenga sentido para ti. Es normal: nadie entiende un idioma sin conocer sus palabras. Por eso es lo primero que vamos a construir: tu vocabulario.",
+    desc: "Ser Observer Alpha significa que todavía estás conociendo el inglés desde afuera. Aún no te has involucrado mucho con el idioma y, cuando lees o escuchas, se te escapan muchas palabras porque no las conoces. Por eso te cuesta seguir la idea y que el inglés tenga sentido para ti. Es normal: nadie entiende un idioma sin conocer sus palabras. Por eso es lo primero que vamos a construir: tu vocabulario.",
     challenge: "Tu reto más grande ahora es construir tu vocabulario. Para poder hablar inglés con confianza, el primer paso es conocer el inglés: conocer sus palabras. Si no sabes qué significa una palabra, no te sirve de mucho saber cómo se pronuncia. Tu cerebro necesita significado antes de dar el salto a la fluidez. Por eso es importante que entiendas el inglés a través de tus ojos, al leer subtítulos o textos, y que de la mano entrenemos tu oído, para que reconozcas esas palabras no solo cuando las lees, sino también cuando las escuchas.\n\nY algo importante: no te preocupes por estudiar gramática. La gramática no te ayuda a entender el inglés; lo que te ayuda es entender las palabras que las personas usan al hablar. Estudiar gramática solo te crea bloqueos y limita tu fluidez. Tú concéntrate en construir tu vocabulario y en entender cada vez más. Te lo digo porque es uno de los errores más comunes de los adultos que están en el momento en el que tú estás, y no quiero que caigas en ese hueco.",
     dream: "entender cada vez más el inglés, primero cuando lo lees y luego cuando lo escuchas",
     items: [
