@@ -1243,7 +1243,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function buildMessage() {
     const r = result, L = r.level;
     const goal = isVocabObs(r) ? "Mi objetivo es llegar a ser Observer Alpha en los próximos 90 días."
-      : r.next ? "Mi objetivo es llegar al nivel " + r.next.n + " en los próximos 60 días."
+      : r.next ? "Mi objetivo es llegar al nivel " + r.next.n + " en los próximos " + (L.n === 1 ? 90 : 60) + " días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
     return "I'm " + L.art + " " + pageName(r) + "! " + goal + " ¡Vamos con toda! 💪";
   }
@@ -1380,7 +1380,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     1: {
       stages: [
         { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo.", min: 10 } },
-        { key: "m2", label: "Mes 2 · días 31 a 60", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo.", min: 10 },
+        { key: "m2", label: "Meses 2 y 3 · días 31 a 90", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo.", min: 10 },
           days: [
             { d: "Lunes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } },
             { d: "Martes", pf: ["", "Completa la lección del día."], prac: false, live: true },
@@ -1392,7 +1392,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Completa la lección del día."], live: d === "Martes" })),
       weekend: { tag: "Inmersión", txt: "Ve videos, escucha podcasts o mira una serie en inglés." },
       note: "",
-      hint: "Este nivel está pensado para 2 meses. Si puedes invertir más tiempo, aumenta los tiempos."
+      hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos."
     },
     // Observer who still doesn't understand when reading: vocabulary first.
     "1v": {
