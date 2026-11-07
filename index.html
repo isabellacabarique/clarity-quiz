@@ -1369,16 +1369,16 @@ strong.course { font-weight: 800; color: var(--ink); }
       stages: [
         { key: "w1", label: "Semana 1", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo y repasa su PDF de vocabulario." },
           days: [
-            { d: "Lunes", pf: ["BONUS", "Qué es la inmersión y cómo hacerla.", "Video lección BONUS", "bonus"] },
-            { d: "Martes", pf: ["BONUS", "Cómo aprender vocabulario correctamente.", "Video lección BONUS", "bonus"], live: true },
-            { d: "Miércoles", pf: ["BONUS", "Cómo aprender inglés con series y películas.", "Video lección BONUS", "bonus"] },
-            { d: "Jueves", pf: ["BONUS", "Taller 10 errores que debes evitar.", "Video lección BONUS", "bonus"] },
-            { d: "Viernes", pf: ["Empieza", "Mira la iniciación del curso Pronunciation Foundation."] }
+            { d: "Lunes", pf: ["BONUS", "Qué es la inmersión y cómo hacerla.", "Video lección BONUS", "bonus", 13] },
+            { d: "Martes", pf: ["BONUS", "Cómo aprender vocabulario correctamente.", "Video lección BONUS", "bonus", 17], live: true },
+            { d: "Miércoles", pf: ["BONUS", "Cómo aprender inglés con series y películas.", "Video lección BONUS", "bonus", 16] },
+            { d: "Jueves", pf: ["BONUS", "Taller 10 errores que debes evitar (primera mitad).", "Taller BONUS", "bonus", 40] },
+            { d: "Viernes", pf: ["BONUS", "Taller 10 errores que debes evitar (segunda mitad).", "Taller BONUS", "bonus", 40] }
           ] },
         { key: "w2", label: "Desde la semana 2", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo y repasa su PDF de vocabulario." } }
       ],
       days: [
-        { d: "Lunes", pf: ["Aprende", "Mira la lección del sonido de la semana."] },
+        { d: "Lunes", pf: ["Aprende", "Mira la lección de la semana. En la semana 2, empieza por la iniciación."] },
         { d: "Martes", pf: ["Entrena el oído", "Haz el entrenamiento auditivo del sonido."], live: true },
         { d: "Miércoles", pf: ["Practica", "Haz el entrenamiento de práctica en voz alta."] },
         { d: "Jueves", pf: ["Repasa", "Repite los entrenamientos auditivos y de práctica."] },
@@ -1420,9 +1420,10 @@ Sigue este plan hasta que puedas seguir la idea sin perderte cuando consumas con
     const block = (cls, time, tag, txt, step) => { const d = document.createElement("div"); d.className = "cal-b " + cls; const e = document.createElement("em"); e.textContent = time + " · " + tag; d.appendChild(e); if (step) { const b = document.createElement("strong"); b.textContent = step + ": "; d.appendChild(b); } d.append(txt); return d; };
     (st.days || plan.days).forEach((day) => {
       const col = document.createElement("div"); col.className = "cal-day";
-      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = "30 min"; h.appendChild(sm);
+      const pfMin = day.pf[4] || 15, tot = pfMin + 15;
+      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = tot + " min"; h.appendChild(sm);
       const bl = document.createElement("div"); bl.className = "cal-blocks";
-      bl.append(block(day.pf[3] || "pf", "15 min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]), block(st.practice.cls, "15 min", st.practice.tag, st.practice.txt));
+      bl.append(block(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]), block(st.practice.cls, "15 min", st.practice.tag, st.practice.txt));
       if (day.live) bl.appendChild(block("clive", "7:00 p. m.", "Clase en vivo", "Practicamos juntos y te doy feedback."));
       col.append(h, bl);
       cal.appendChild(col);
