@@ -1473,7 +1473,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function buildPrintSheet(L) {
     const plan = CAL[calKey], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
-    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt)) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
+    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt)) + (day.live ? ck("Clase en vivo, 7:00 p. m. (hora Colombia)") : "") + "</td></tr>").join("");
     $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(st.label) + "</p>" +
       '<div class="fields"><span>Semana del:</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : "Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
