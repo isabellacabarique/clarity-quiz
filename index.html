@@ -1497,11 +1497,11 @@ strong.course { font-weight: 800; color: var(--ink); }
       const lo = pr ? (pr.range ? pr.range[0] : (pr.min || 15)) : 0, hi = pr ? (pr.range ? pr.range[1] : lo) : 0;
       const prTxt = pr ? (pr.range ? lo + "–" + hi + " min" : lo + " min") : "";
       const tot = lo === hi ? (pfMin + lo) + " min" : (pfMin + lo) + "–" + (pfMin + hi) + " min";
-      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = tot; h.appendChild(sm);
+      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = tot + (day.live ? " + clase 1 h" : ""); h.appendChild(sm);
       const bl = document.createElement("div"); bl.className = "cal-blocks";
       if (day.pf) bl.appendChild(block(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]));
       if (pr) bl.appendChild(block(pr.cls, prTxt, pr.tag, pr.txt));
-      if (day.live) bl.appendChild(block("clive", "7:00 p. m.", "Clase en vivo", "Practicamos juntos y te doy feedback."));
+      if (day.live) bl.appendChild(block("clive", "7:00 p. m. · 1 h", "Clase en vivo", "Practicamos juntos y te doy feedback."));
       col.append(h, bl);
       cal.appendChild(col);
     });
