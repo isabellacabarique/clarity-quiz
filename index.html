@@ -1304,37 +1304,36 @@ strong.course { font-weight: 800; color: var(--ink); }
     y = boxY + boxH;
     const pY = y + 44, pH = 1262 - pY;
     rr(ctx, X, pY, IW, pH, 28); ctx.fillStyle = C.white; ctx.fill();
-    const pad = 36, gap = 18, colW = (IW - pad * 2 - gap * 4) / 5, base = pY + pH - 268;
+    // Six columns: the two kinds of Observer, then levels 2-5.
+    const COLS = [{ n: 1, num: "1", name: "Observer" }, { n: 1, num: "1+", name: "Observer Alpha" }]
+      .concat(LEVELS.slice(1).map((lv) => ({ n: lv.n, num: String(lv.n), name: lv.name })));
+    const curIdx = L.n === 1 ? (isVocabObs(r) ? 0 : 1) : L.n;
+    const NC = COLS.length, pad = 30, gap = 14, colW = (IW - pad * 2 - gap * (NC - 1)) / NC, base = pY + pH - 268;
     const maxH = base - (pY + 112), minH = Math.min(70, maxH * 0.3);
-    const hs = [0, 1, 2, 3, 4].map((k) => minH + (maxH - minH) * k / 4);
-    const EM = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-    LEVELS.forEach((lv, i) => {
-      const x = X + pad + i * (colW + gap), h = hs[i], top = base - h;
-      const isCur = i === L.n - 1, done = i < L.n - 1, isNext = r.next && lv.n === r.next.n && !isVocabObs(r);
+    COLS.forEach((col, i) => {
+      const x = X + pad + i * (colW + gap), h = minH + (maxH - minH) * i / (NC - 1), top = base - h;
+      const isCur = i === curIdx, done = i < curIdx, isNext = i === curIdx + 1;
       rr(ctx, x, top, colW, h, 12);
       ctx.fillStyle = isCur ? C.teal : done ? C.pale : C.mint; ctx.fill();
       if (!isCur && !done) { ctx.lineWidth = 3; ctx.strokeStyle = C.line; ctx.stroke(); }
       ctx.textAlign = "center";
       if (isCur) {
-        const fs = 46; drawFace(ctx, lv.n, x + colW / 2 - fs / 2, top + Math.min(h / 2, 42) - fs / 2, fs, C.white);
+        const fs = 44; drawFace(ctx, col.n, x + colW / 2 - fs / 2, top + Math.min(h / 2, 40) - fs / 2, fs, C.white);
       } else {
-        ctx.fillStyle = C.tealDark; ctx.font = "600 38px " + D; ctx.fillText(String(lv.n), x + colW / 2, top + 46);
+        ctx.fillStyle = C.tealDark; ctx.font = "600 34px " + D; ctx.fillText(col.num, x + colW / 2, top + 44);
       }
-      ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "27px " + B;
-      const parts = (isCur ? pageName(r) : lv.name).split(" ");
-      parts.forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 40 + j * 32));
+      ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "24px " + B;
+      col.name.split(" ").forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 38 + j * 29));
       if (isCur) {
-        // "Estás aquí" tag: one column wide, on top of the current bar with a pointer.
-        const tagH = 56, ty = top - tagH - 16, cx = x + colW / 2;
-        rr(ctx, x, ty, colW, tagH, 16); ctx.fillStyle = C.coral; ctx.fill();
-        ctx.beginPath(); ctx.moveTo(cx - 12, ty + tagH); ctx.lineTo(cx + 12, ty + tagH); ctx.lineTo(cx, ty + tagH + 12); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = C.white; ctx.font = "800 25px " + B; ctx.textBaseline = "middle";
+        const tagH = 50, ty = top - tagH - 14, cx = x + colW / 2;
+        rr(ctx, x - 6, ty, colW + 12, tagH, 14); ctx.fillStyle = C.coral; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx - 11, ty + tagH); ctx.lineTo(cx + 11, ty + tagH); ctx.lineTo(cx, ty + tagH + 11); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = C.white; ctx.font = "800 21px " + B; ctx.textBaseline = "middle";
         ctx.fillText("Estás aquí", cx, ty + tagH / 2 + 1); ctx.textBaseline = "alphabetic";
       }
       if (isNext) {
-        // small "Tu siguiente meta" pill above the next bar
-        ctx.font = "800 15px " + B; const t = "TU SIGUIENTE META", tw = Math.min(colW + 30, ctx.measureText(t).width + 22), th = 30, ty = top - th - 14, cx = x + colW / 2;
-        rr(ctx, cx - tw / 2, ty, tw, th, 15); ctx.fillStyle = C.pale; ctx.fill();
+        ctx.font = "800 13px " + B; const t = "TU SIGUIENTE META", tw = Math.min(colW + 24, ctx.measureText(t).width + 18), th = 28, ty = top - th - 12, cx = x + colW / 2;
+        rr(ctx, cx - tw / 2, ty, tw, th, 14); ctx.fillStyle = C.pale; ctx.fill();
         ctx.fillStyle = C.tealDark; ctx.textBaseline = "middle"; ctx.fillText(t, cx, ty + th / 2 + 1); ctx.textBaseline = "alphabetic";
       }
       ctx.textAlign = "left";
