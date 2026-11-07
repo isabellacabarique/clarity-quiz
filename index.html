@@ -254,6 +254,7 @@ p { margin: 0; }
   body.print-mode #print-sheet { display: block; color: #15302B; font-family: var(--font-body); }
   @page { margin: 14mm; }
 }
+.ps-logo { display: block; height: 22px; width: auto; margin-bottom: 18px; }
 .ps h1 { font: 600 26px/1.1 var(--font-display); margin: 0 0 4px; }
 .ps .sub { font-size: 13px; color: #3F5955; margin-bottom: 14px; }
 .ps .fields { display: flex; gap: 28px; font-size: 14px; font-weight: 600; margin-bottom: 14px; }
@@ -1451,7 +1452,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const plan = CAL[calKey], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
     const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
-    $("print-sheet").innerHTML = '<div class="ps"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
+    $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
       '<div class="fields"><span>Semana del:</span><span>' + (calKey === "1v" ? "Palabras nuevas que aprendí:" : "Sonido de la semana:") + '</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
       '<div class="notes">Lo que más me costó esta semana:<div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
@@ -1461,7 +1462,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     document.body.classList.add("print-mode");
     const off = () => { document.body.classList.remove("print-mode"); window.removeEventListener("afterprint", off); };
     window.addEventListener("afterprint", off);
-    window.print();
+    const logo = $("print-sheet").querySelector("img");
+    if (logo && !logo.complete) { logo.onload = logo.onerror = () => window.print(); } else window.print();
   });
 
   // ---------- copy ----------
@@ -1514,5 +1516,6 @@ strong.course { font-weight: 800; color: var(--ink); }
 })();
 </script>
 <div id="print-sheet" aria-hidden="true"></div>
+<link rel="preload" as="image" href="img/immersa-logo.png">
 </body>
 </html>
