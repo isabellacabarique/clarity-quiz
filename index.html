@@ -1482,8 +1482,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     const plan = CAL[calKey], panel = $("cal-panel");
     panel.hidden = !plan; if (!plan) return;
     const cp = $("cal-path"), alpha = calKey === 1 || calKey === "1b";
-    cp.hidden = !alpha; cp.textContent = "";
-    if (alpha) PATH_LABELS.forEach((t, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.setAttribute("aria-pressed", String(i === calPath)); b.addEventListener("click", () => setPath(i)); cp.appendChild(b); });
+    cp.hidden = true; cp.textContent = ""; // the path is chosen in the roadmap tabs above
+    if (false) PATH_LABELS.forEach((t, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.setAttribute("aria-pressed", String(i === calPath)); b.addEventListener("click", () => setPath(i)); cp.appendChild(b); });
     const tabs = $("cal-tabs"); tabs.textContent = ""; tabs.hidden = plan.stages.length < 2;
     plan.stages.forEach((st, i) => {
       const b = document.createElement("button"); b.type = "button"; b.textContent = st.label;
