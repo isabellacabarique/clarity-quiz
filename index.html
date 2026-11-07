@@ -258,14 +258,16 @@ p { margin: 0; }
   @page { margin: 14mm; }
 }
 .ps { display: flex; flex-direction: column; height: 266mm; overflow: hidden; }
-.pp { font-family: var(--font-body); color: #15302B; font-size: 12.5px; line-height: 1.5; }
+.pp { font-family: var(--font-body); color: #15302B; font-size: 13px; line-height: 1.55; }
+.pp p, .pp li { orphans: 3; widows: 3; }
 .pp h1 { font: 600 28px/1.1 var(--font-display); margin: 0 0 4px; }
 .pp h2 { font: 600 17px/1.2 var(--font-display); margin: 18px 0 6px; color: #2D7A72; page-break-after: avoid; }
 .pp h3 { font: 700 13px/1.2 var(--font-body); margin: 12px 0 6px; }
 .pp p { margin: 0 0 6px; white-space: pre-line; }
-.pp-card { display: block; width: 62mm; margin: 6px auto 4px; border-radius: 10px; }
+.pp-card { display: block; width: 100mm; margin: 10px auto 8px; border-radius: 12px; }
 .pp-steps { margin: 6px 0 0; padding-left: 20px; }
-.pp-steps li { margin-bottom: 10px; page-break-inside: avoid; }
+.pp-steps li { margin-bottom: 10px; }
+.pp-steps b { page-break-after: avoid; break-after: avoid; }
 .pp-steps b { display: block; font-size: 13.5px; }
 .pp-steps ul { margin: 4px 0 0; padding-left: 18px; }
 .pp-cal { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 6px; page-break-inside: avoid; }
