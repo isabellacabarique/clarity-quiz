@@ -101,7 +101,8 @@ p { margin: 0; }
 .stairs li:nth-child(4) { margin-bottom: 54px; }
 .stairs li:nth-child(5) { margin-bottom: 72px; background: var(--teal-pale); border-color: var(--teal-pale); }
 .face-wrap { display: inline-flex; vertical-align: middle; }
-.lvl .face-wrap { margin-left: 2px; vertical-align: -6px; }
+.lvl .face-wrap { margin-left: 2px; vertical-align: -0.15em; }
+.lvl .face-wrap svg { width: 1.15em; height: 1.15em; }
 .stairs .em { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); margin-bottom: 6px; }
 .stairs li:nth-child(5) .em { background: var(--surface); }
 .stairs .lv { font: 700 11.5px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--teal-dark); }
@@ -192,7 +193,8 @@ p { margin: 0; }
 .info { display: grid; gap: 26px; min-width: 0; }
 .headline { display: grid; gap: 14px; }
 .eyebrow { font: 700 13px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--teal-dark); }
-.headline h1 { font-size: clamp(30px, 4.6vw, 44px); }
+.headline { min-width: 0; }
+.headline h1 { font-size: clamp(30px, 4.6vw, 44px); white-space: nowrap; text-wrap: nowrap; min-width: 0; max-width: 100%; overflow: hidden; }
 .headline h1 .lvl { color: var(--teal-dark); display: inline; }
 .score-line { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .score-line strong { color: var(--teal-dark); }
@@ -1135,8 +1137,17 @@ strong.course { font-weight: 800; color: var(--ink); }
   // Observer who still needs vocabulary gets a sub-name on the page only (the card keeps "Observer").
   function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 1; }
   function pageName(r) { return isVocabObs(r) ? "Observer Alpha" : r.level.name; }
+  // Keep "Hoy eres un …" on one line: shrink the title until it fits its column.
+  function fitTitle() {
+    const h = $("r-name"); if (!h || !h.offsetParent) return;
+    h.style.fontSize = "";
+    let size = parseFloat(getComputedStyle(h).fontSize);
+    while (h.scrollWidth > h.clientWidth + 1 && size > 18) { size -= 1; h.style.fontSize = size + "px"; }
+  }
+  window.addEventListener("resize", fitTitle);
   function renderResult() {
     const r = result, L = r.level, NM = pageName(r);
+    requestAnimationFrame(() => requestAnimationFrame(fitTitle));
     const h = $("r-name"); h.textContent = startPhrase() + " ";
     const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = "un " + NM + " "; lvl.appendChild(faceEl(L.n, 52));
     h.appendChild(lvl);
@@ -1270,8 +1281,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     const boxY = y - 10, boxH = 176;
     rr(ctx, X, boxY, IW, boxH, 30); ctx.fillStyle = C.teal; ctx.fill();
     let size = 118; ctx.font = "600 " + size + "px " + D;
-    while (ctx.measureText(L.name).width > IW - 96 - 130 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
-    ctx.fillStyle = C.white; ctx.textBaseline = "middle"; ctx.fillText(L.name, X + 48, boxY + boxH / 2 + 6);
+    while (ctx.measureText(pageName(r)).width > IW - 96 - 130 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
+    ctx.fillStyle = C.white; ctx.textBaseline = "middle"; ctx.fillText(pageName(r), X + 48, boxY + boxH / 2 + 6);
     drawFace(ctx, L.n, X + IW - 40 - 104, boxY + (boxH - 104) / 2, 104, C.white);
     ctx.textBaseline = "alphabetic";
 
