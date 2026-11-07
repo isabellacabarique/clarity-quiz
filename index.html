@@ -258,6 +258,20 @@ p { margin: 0; }
   @page { margin: 14mm; }
 }
 .ps { display: flex; flex-direction: column; height: 266mm; overflow: hidden; }
+.pp { font-family: var(--font-body); color: #15302B; font-size: 12.5px; line-height: 1.5; }
+.pp h1 { font: 600 28px/1.1 var(--font-display); margin: 0 0 4px; }
+.pp h2 { font: 600 17px/1.2 var(--font-display); margin: 18px 0 6px; color: #2D7A72; page-break-after: avoid; }
+.pp h3 { font: 700 13px/1.2 var(--font-body); margin: 12px 0 6px; }
+.pp p { margin: 0 0 6px; white-space: pre-line; }
+.pp-card { display: block; width: 62mm; margin: 6px auto 4px; border-radius: 10px; }
+.pp-steps { margin: 6px 0 0; padding-left: 20px; }
+.pp-steps li { margin-bottom: 10px; page-break-inside: avoid; }
+.pp-steps b { display: block; font-size: 13.5px; }
+.pp-steps ul { margin: 4px 0 0; padding-left: 18px; }
+.pp-cal { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 6px; page-break-inside: avoid; }
+.pp-cal th, .pp-cal td { border: 1px solid #B9E0DA; padding: 5px 8px; text-align: left; vertical-align: top; }
+.pp-cal th { background: #EAF6F3; width: 18%; }
+.pp + .ps, .ps + .ps { page-break-before: always; break-before: page; }
 .ps-logo { display: block; height: 22px; width: auto; align-self: flex-start; margin-bottom: 14px; }
 .ps h1 { font: 600 28px/1.1 var(--font-display); margin: 0 0 4px; }
 .ps .sub { font-size: 13px; color: #3F5955; margin-bottom: 12px; }
@@ -394,7 +408,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     <div class="result">
       <div class="card-col">
         <img id="card" class="card-img" alt="Tu tarjeta de resultado de Clarity">
-        <div class="save-row"><button class="btn" id="save" hidden>Guardar imagen</button></div>
+        <div class="save-row"><button class="btn" id="save" hidden>Guardar imagen</button><button class="btn ghost" id="save-plan" type="button">Guardar mi plan en PDF</button></div>
+        <p class="hint">Al guardar tu plan se abre la ventana de impresión: elige «Guardar como PDF».</p>
         <p class="hint" id="save-hint">Toma un pantallazo de tu tarjeta, o mantén presionada la imagen para guardarla.</p>
       </div>
       <div class="info">
@@ -427,7 +442,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           <div class="toggle" id="cal-tabs" role="group" aria-label="Etapa"></div>
           <div class="cal" id="cal"></div>
           <p class="cal-note" id="cal-note"></p>
-          <div class="save-row"><button class="btn" id="print-cl" type="button">Imprimir mi checklist semanal</button></div>
+          <div class="save-row"><button class="btn" id="print-cl" type="button">Guardar mi plan en PDF</button></div>
         </div>
 
 
@@ -445,7 +460,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 <div class="pop" id="save-pop" role="dialog" aria-modal="true" aria-labelledby="pop-title" hidden>
   <div class="pop-card">
     <h2 id="pop-title">Guarda tu resultado, plan e imprime tu checklist semanal</h2>
-    <p>Este es tu camino en Clarity. Guarda tu tarjeta e imprime tu checklist semanal para que no los pierdas.</p>
+    <p>Este es tu camino en Clarity. Guarda tu tarjeta y descarga tu plan en PDF (incluye tu roadmap, tu calendario y tu checklist semanal) para que no los pierdas.</p>
     <div class="pop-actions">
       <button class="btn" type="button" id="pop-close">Entendido</button>
     </div>
@@ -1542,23 +1557,70 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("cal-note").hidden = !plan.note;
     $("cal-hint").textContent = plan.hint || "Este calendario está pensado para 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos.";
   }
-  function buildPrintSheet(L) {
-    const plan = CAL[calKey], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  function checklistHTML(stageIdx) {
+    const plan = CAL[calKey], st = plan.stages[stageIdx], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
     const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt)) + (plan.daily ? ck(plan.daily.tag + ": " + plan.daily.txt) : "") + (day.live ? ck("Clase en vivo, 7:00 p. m. (hora Colombia)") : "") + "</td></tr>").join("");
-    $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(st.label) + "</p>" +
+    return '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(st.label) + "</p>" +
       '<div class="fields"><span>Semana del:</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : "Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
       '<div class="notes">Lo que más me costó esta semana:<div></div><div></div><div></div></div><div class="notes">Cómo puedo hacer que la siguiente semana sea mejor:<div></div><div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
   }
-  $("print-cl").addEventListener("click", () => {
-    buildPrintSheet(result.level);
+  // Full plan as a printable document (the student saves it as PDF): result texts, roadmap, calendar and checklists.
+  function planHTML() {
+    const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    const txt = (el) => (el ? esc(el.textContent.trim()) : "");
+    const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
+    let h = '<div class="pp"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy">' +
+      '<h1>Mi plan en Clarity</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(date) + "</p>" +
+      '<img class="pp-card" src="' + $("card").src + '" alt="">' +
+      "<h2>" + txt($("r-mean-title")) + "</h2><p>" + txt($("r-desc")) + "</p>" +
+      "<h2>Tu reto más grande en este momento</h2><p>" + txt($("r-challenge")) + "</p>" +
+      "<h2>Tu roadmap</h2><p>" + txt($("r-roadmap")) + "</p><ol class=\"pp-steps\">";
+    [...$("r-path").children].forEach((li) => {
+      const title = li.querySelector(":scope > b"), span = li.querySelector(":scope > span");
+      let body = txt(span);
+      const tabs = li.querySelector("[data-path-tabs]");
+      if (tabs) {
+        const on = tabs.querySelector('[aria-pressed="true"]');
+        body = (on ? "<strong>Tu camino: " + esc(on.textContent) + "</strong><br>" : "") + txt(li.querySelector("[data-path-box] p"));
+      }
+      const chips = [...li.querySelectorAll(".chips li")].map((c) => "<li>" + esc(c.textContent) + "</li>").join("");
+      h += "<li><b>" + txt(title) + "</b><p>" + body + "</p>" + (chips ? "<ul>" + chips + "</ul>" : "") + "</li>";
+    });
+    h += "</ol>";
+    const plan = CAL[calKey];
+    if (plan) {
+      h += "<h2>Tu semana en Clarity</h2><p>" + txt($("cal-hint")) + "</p>";
+      plan.stages.forEach((st) => {
+        if (plan.stages.length > 1) h += "<h3>" + esc(st.label) + "</h3>";
+        h += '<table class="pp-cal">';
+        (st.days || plan.days).forEach((day) => {
+          const items = [];
+          if (day.pf) items.push((day.pf[2] || "Pronunciation Foundation") + ": " + day.pf[1]);
+          if (day.prac !== false) { const pr = day.prac || st.practice; items.push(pr.tag + ": " + pr.txt); }
+          if (plan.daily) items.push(plan.daily.tag + ": " + plan.daily.txt);
+          if (day.live) items.push("Clase en vivo, 7:00 p. m. (hora Colombia)");
+          h += "<tr><th>" + day.d + "</th><td>" + items.map(esc).join("<br>") + "</td></tr>";
+        });
+        h += "<tr><th>Fin de semana</th><td>" + esc(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : (plan.note || "Descansa o ponte al día con lo que te faltó")) + "</td></tr></table>";
+      });
+    }
+    h += "</div>";
+    if (plan) plan.stages.forEach((_, i) => { h += checklistHTML(i); });
+    return h;
+  }
+  function savePlan() {
+    $("print-sheet").innerHTML = planHTML();
     document.body.classList.add("print-mode");
     const off = () => { document.body.classList.remove("print-mode"); window.removeEventListener("afterprint", off); };
     window.addEventListener("afterprint", off);
-    const logo = $("print-sheet").querySelector("img");
-    if (logo && !logo.complete) { logo.onload = logo.onerror = () => window.print(); } else window.print();
-  });
+    const imgs = [...$("print-sheet").querySelectorAll("img")].filter((i) => !i.complete);
+    if (!imgs.length) return window.print();
+    let left = imgs.length; imgs.forEach((i) => { i.onload = i.onerror = () => { if (--left === 0) window.print(); }; });
+  }
+  $("print-cl").addEventListener("click", savePlan);
+  $("save-plan").addEventListener("click", savePlan);
 
   // ---------- save reminder pop-up ----------
   const closePop = () => { $("save-pop").hidden = true; };
