@@ -1321,7 +1321,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         ctx.fillStyle = C.tealDark; ctx.font = "600 38px " + D; ctx.fillText(String(lv.n), x + colW / 2, top + 46);
       }
       ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "27px " + B;
-      const parts = lv.name.split(" ");
+      const parts = (isCur ? pageName(r) : lv.name).split(" ");
       parts.forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 40 + j * 32));
       if (isCur) {
         // "Estás aquí" tag: one column wide, on top of the current bar with a pointer.
