@@ -290,8 +290,8 @@ strong.course { font-weight: 800; color: var(--ink); }
 
 /* Save reminder pop-up */
 .pop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(21,48,43,.55); }
-.pop-card { width: min(100%, 460px); background: var(--surface, #FFFFFF); border-radius: 24px; padding: 30px 26px 22px; display: grid; gap: 14px; text-align: center; box-shadow: 0 30px 60px -20px rgba(21,48,43,.5); }
-.pop-quote { margin: 0; font: 600 20px/1.35 var(--font-display); color: var(--teal-dark); padding: 0 6px 14px; border-bottom: 1px solid var(--line); }
+.pop-card { width: min(100%, 460px); background: var(--surface, #FFFFFF); border-radius: 24px; padding: 30px 26px 18px; display: grid; gap: 14px; text-align: center; box-shadow: 0 30px 60px -20px rgba(21,48,43,.5); }
+.pop-quote { margin: 0; font: italic 500 13.5px/1.4 var(--font-body); color: var(--teal-dark); padding-top: 12px; border-top: 1px solid var(--line); }
 .pop-card h2 { margin: 4px 0 0; font-size: 24px; }
 .pop-card > p { margin: 0; color: var(--ink-soft); }
 .pop-actions { display: grid; gap: 10px; margin-top: 6px; }
@@ -444,14 +444,14 @@ strong.course { font-weight: 800; color: var(--ink); }
 
 <div class="pop" id="save-pop" role="dialog" aria-modal="true" aria-labelledby="pop-title" hidden>
   <div class="pop-card">
-    <p class="pop-quote">«Quien tiene un plan, toma acción masiva y ve resultados.»</p>
     <h2 id="pop-title">Guarda tu resultado y tu plan</h2>
-    <p>Este es tu punto de partida y tu camino en Clarity. Guarda tu tarjeta e imprime tu checklist semanal para que no los pierdas y puedas volver a ellos cada semana.</p>
+    <p>Este es tu punto de partida y tu camino en Clarity. Guarda tu tarjeta e imprime tu checklist semanal para que no los pierdas.</p>
     <div class="pop-actions">
       <button class="btn" type="button" id="pop-save">Guardar mi tarjeta</button>
       <button class="btn ghost" type="button" id="pop-print">Imprimir mi checklist</button>
     </div>
     <button class="pop-close" type="button" id="pop-close">Ya lo guardé, ver mi resultado</button>
+    <p class="pop-quote">«Quien tiene un plan, toma acción masiva y ve resultados.»</p>
   </div>
 </div>
 <script>
