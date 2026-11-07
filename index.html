@@ -288,6 +288,17 @@ strong.course { font-weight: 800; color: var(--ink); }
 .opt2 p { margin: 0; color: var(--ink-soft); white-space: pre-line; }
 .opt2 p:empty { display: none; }
 
+/* Save reminder pop-up */
+.pop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(21,48,43,.55); }
+.pop-card { width: min(100%, 460px); background: var(--surface, #FFFFFF); border-radius: 24px; padding: 30px 26px 22px; display: grid; gap: 14px; text-align: center; box-shadow: 0 30px 60px -20px rgba(21,48,43,.5); }
+.pop-quote { margin: 0; font: 600 20px/1.35 var(--font-display); color: var(--teal-dark); padding: 0 6px 14px; border-bottom: 1px solid var(--line); }
+.pop-card h2 { margin: 4px 0 0; font-size: 24px; }
+.pop-card > p { margin: 0; color: var(--ink-soft); }
+.pop-actions { display: grid; gap: 10px; margin-top: 6px; }
+.pop-actions .btn { width: 100%; }
+.pop-close { border: 0; background: none; color: var(--ink-soft); font: 600 14px var(--font-body); text-decoration: underline; cursor: pointer; padding: 6px; }
+@media print { .pop { display: none !important; } }
+
 /* Phones */
 @media (max-width: 560px) {
   body { font-size: 16px; }
@@ -431,6 +442,18 @@ strong.course { font-weight: 800; color: var(--ink); }
   </section>
 </div>
 
+<div class="pop" id="save-pop" role="dialog" aria-modal="true" aria-labelledby="pop-title" hidden>
+  <div class="pop-card">
+    <p class="pop-quote">«Quien tiene un plan, toma acción masiva y ve resultados.»</p>
+    <h2 id="pop-title">Guarda tu resultado y tu plan</h2>
+    <p>Este es tu punto de partida y tu camino en Clarity. Guarda tu tarjeta e imprime tu checklist semanal para que no los pierdas y puedas volver a ellos cada semana.</p>
+    <div class="pop-actions">
+      <button class="btn" type="button" id="pop-save">Guardar mi tarjeta</button>
+      <button class="btn ghost" type="button" id="pop-print">Imprimir mi checklist</button>
+    </div>
+    <button class="pop-close" type="button" id="pop-close">Ya lo guardé, ver mi resultado</button>
+  </div>
+</div>
 <script>
 (function () {
   "use strict";
@@ -1258,6 +1281,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("copied").textContent = "";
     store("clarity-quiz-last", String(r.score));
     drawCard();
+    setTimeout(() => { $("pop-print").hidden = $("cal-panel").hidden; $("save-pop").hidden = false; $("pop-save").focus(); }, 900);
   }
 
   function buildMessage() {
@@ -1537,6 +1561,14 @@ strong.course { font-weight: 800; color: var(--ink); }
     const logo = $("print-sheet").querySelector("img");
     if (logo && !logo.complete) { logo.onload = logo.onerror = () => window.print(); } else window.print();
   });
+
+  // ---------- save reminder pop-up ----------
+  const closePop = () => { $("save-pop").hidden = true; };
+  $("pop-close").addEventListener("click", closePop);
+  $("save-pop").addEventListener("click", (e) => { if (e.target === $("save-pop")) closePop(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("save-pop").hidden) closePop(); });
+  $("pop-save").addEventListener("click", () => { $("save").click(); });
+  $("pop-print").addEventListener("click", () => { closePop(); if (!$("cal-panel").hidden) $("print-cl").click(); else $("cal-panel").scrollIntoView({ behavior: "smooth" }); });
 
   // ---------- copy ----------
   $("copy").addEventListener("click", async () => {
