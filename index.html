@@ -1402,13 +1402,13 @@ strong.course { font-weight: 800; color: var(--ink); }
         { key: "m2", label: "Meses 2 y 3 · días 31 a 90", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo.", min: 10 },
           days: [
             { d: "Lunes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } },
-            { d: "Martes", pf: ["", "Completa la lección del día."], prac: false, live: true },
+            { d: "Martes", pf: ["", "Revisa la lección del día."], prac: false, live: true },
             { d: "Miércoles", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } },
-            { d: "Jueves", pf: ["", "Completa la lección del día."], prac: false },
+            { d: "Jueves", pf: ["", "Revisa la lección del día."], prac: false },
             { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } }
           ] }
       ],
-      days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Completa la lección del día."], live: d === "Martes" })),
+      days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Revisa la lección del día."], live: d === "Martes" })),
       weekend: { tag: "Inmersión", txt: "Ve videos, escucha podcasts o mira una serie en inglés." },
       note: "",
       hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos."
@@ -1421,7 +1421,7 @@ strong.course { font-weight: 800; color: var(--ink); }
             { d: "Lunes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } },
             { d: "Martes", pf: null, live: true },
             { d: "Miércoles", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } },
-            { d: "Jueves", pf: ["Repaso", "Si lo necesitas, repasa un sonido o tema que aún no reconoces."] },
+            { d: "Jueves", pf: ["", "Revisa la lección del día."] },
             { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", txt: "Completa una lección + Listening Lab.", range: [30, 40] } }
           ] }
       ],
@@ -1441,14 +1441,14 @@ strong.course { font-weight: 800; color: var(--ink); }
             { d: "Viernes", pf: ["BONUS", "Taller 10 errores que debes evitar (segunda mitad).", "Taller BONUS", "bonus", 40] }
           ] },
         { key: "w2", label: "Desde la semana 2", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo y repasa su PDF de vocabulario." },
-          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", d === "Viernes" ? "Completa la lección del día. Si terminaste un sonido, completa su reto y súbelo al feed para recibir retroalimentación." : "Completa la lección del día."], live: d === "Martes" })) }
+          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Revisa la lección del día."], live: d === "Martes" })) }
       ],
       days: [
-        { d: "Lunes", pf: ["Aprende", "Mira la lección de la semana. En la semana 2, empieza por la iniciación."] },
-        { d: "Martes", pf: ["Entrena el oído", "Haz el entrenamiento auditivo del sonido."], live: true },
-        { d: "Miércoles", pf: ["Practica", "Haz el entrenamiento de práctica en voz alta."] },
-        { d: "Jueves", pf: ["Repasa", "Repite los entrenamientos auditivos y de práctica."] },
-        { d: "Viernes", pf: ["Reto", "Completa el reto del sonido y súbelo al feed para recibir retroalimentación."] }
+        { d: "Lunes", pf: ["", "Revisa la lección del día."] },
+        { d: "Martes", pf: ["", "Revisa la lección del día."], live: true },
+        { d: "Miércoles", pf: ["", "Revisa la lección del día."] },
+        { d: "Jueves", pf: ["", "Revisa la lección del día."] },
+        { d: "Viernes", pf: ["", "Revisa la lección del día."] }
       ],
       note: "Sábado y domingo: descansa, ponte al día o lee un capítulo más si te provoca.",
       hint: "Este calendario está pensado para que alcances tu meta de llegar a ser Observer Alpha en 90 días. Para conseguirlo, debes invertir un mínimo de 30 minutos al día a tu práctica de vocabulario y 30 minutos a tu inmersión, 5 días a la semana.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección «Qué es la inmersión y cómo hacerla». Y tu tiempo de práctica de vocabulario no tiene que ser sentarte a traducir palabras 30 minutos: puedes distribuir ese tiempo durante el día mientras conectas con el inglés. Revisa la video lección BONUS «Cómo aprender vocabulario correctamente» para que sepas cómo hacer este proceso.\n\nSigue este plan hasta que puedas seguir la idea sin perderte cuando consumas contenido en inglés; ahí vuelve a hacer el quiz. Si puedes invertir más tiempo, aumenta los tiempos."
