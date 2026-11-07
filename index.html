@@ -256,6 +256,8 @@ p { margin: 0; }
 
 #r-challenge { white-space: pre-line; }
 
+strong.course { font-weight: 800; color: var(--ink); }
+
 /* Phones */
 @media (max-width: 560px) {
   body { font-size: 16px; }
@@ -1109,6 +1111,15 @@ p { margin: 0; }
   function ptsTxt(n) { return n + (n === 1 ? " punto" : " puntos"); }
   function scoreLabel(r) { return r.next ? progressPct(r) + "%" : "¡Nivel máximo!"; }
 
+  // Course names in bold wherever they appear in result text.
+  const COURSES = /(Pronunciation Foundation|Read Along With Me|Shadow the Scene|Listening Lab)/gi;
+  function setRich(el, text) {
+    el.textContent = "";
+    String(text).split(COURSES).forEach((part, i) => {
+      if (i % 2) { const b = document.createElement("strong"); b.className = "course"; b.textContent = part; el.appendChild(b); }
+      else if (part) el.appendChild(document.createTextNode(part));
+    });
+  }
   function renderResult() {
     const r = result, L = r.level;
     const h = $("r-name"); h.textContent = startPhrase() + " ";
@@ -1132,7 +1143,7 @@ p { margin: 0; }
     $("r-mean-title").textContent = "¿Qué significa ser " + L.name + "?";
     // Two kinds of Observer (the student never sees this): one understands when reading, the other still needs vocabulary.
     const vocabObs = L.n === 1 && r.reading !== null && r.reading <= 1;
-    $("r-desc").textContent = vocabObs ? OBS_VOCAB.desc : L.desc;
+    setRich($("r-desc"), vocabObs ? OBS_VOCAB.desc : L.desc);
 
     let ch = vocabObs ? OBS_VOCAB.challenge : L.challenge;
     if (L.n >= 2 && L.n <= 3 && r.reading !== null && r.reading >= 2 && r.earAvg < 2) {
@@ -1140,7 +1151,7 @@ p { margin: 0; }
         ? "Quiero que empieces a entrenar tu oído y te acerques a los sonidos reales del inglés. Es importante que te familiarices con la forma en que el inglés se reduce, contrae y conecta porque debes soltar la necesidad de escuchar exactamente lo que lees. Llevas mucho tiempo conociendo el inglés a través de tus ojos. Es hora de que lo conozcas a través de tus oídos."
         : "Lo que vamos a trabajar es tu pronunciación y tu oído, para que reconozcas al escucharlas las palabras que ya conoces.");
     }
-    $("r-challenge").textContent = ch;
+    setRich($("r-challenge"), ch);
 
     $("r-path-title").textContent = "Lo que te recomiendo hacer ahora";
     const DREAM = {
@@ -1150,7 +1161,7 @@ p { margin: 0; }
       4: "hablar inglés con la confianza y la naturalidad de un nativo",
       5: "seguir creciendo y ayudar a otros a encontrar su voz"
     };
-    $("r-roadmap").textContent = "Este es tu roadmap. Quiero darte claridad: que entiendas exactamente qué tiene que pasar y qué va a requerir de ti para que puedas " + (vocabObs ? OBS_VOCAB.dream : DREAM[L.n]) + (r.next ? " y llegar al nivel " + r.next.n : "") + ", y que eso deje de ser solo un sueño y se convierta en tu realidad.";
+    setRich($("r-roadmap"), "Este es tu roadmap. Quiero darte claridad: que entiendas exactamente qué tiene que pasar y qué va a requerir de ti para que puedas " + (vocabObs ? OBS_VOCAB.dream : DREAM[L.n]) + (r.next ? " y llegar al nivel " + r.next.n : "") + ", y que eso deje de ser solo un sueño y se convierta en tu realidad.");
     const startBy = r.bases <= 5
       ? (L.n === 1 ? "Te recomiendo empezar por Pronunciation Foundation, en orden: la iniciación, en la que aprendes la diferencia entre pronunciación y acento; por qué tu cerebro bloquea el inglés; las vocales; las consonantes; las reducciones y los linking sounds. Ahí aprendes todo desde la base. Si un sonido es muy nuevo para ti, repite los entrenamientos para que tu cerebro tenga suficiente contacto con ese sonido." : "Te recomiendo empezar por Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
       : (L.n >= 4 ? "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene, con las escenas rápidas y los podcasts. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation." : "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene. Si algún sonido te genera dudas, repásalo en Pronunciation Foundation.");
@@ -1170,7 +1181,7 @@ p { margin: 0; }
     items.forEach(([k, v]) => {
       const li = document.createElement("li");
       const b = document.createElement("b"); b.textContent = k;
-      const s = document.createElement("span"); s.textContent = v;
+      const s = document.createElement("span"); setRich(s, v);
       li.append(b, s); ul.appendChild(li);
     });
 
