@@ -1309,7 +1309,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const EM = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
     LEVELS.forEach((lv, i) => {
       const x = X + pad + i * (colW + gap), h = hs[i], top = base - h;
-      const isCur = i === L.n - 1, done = i < L.n - 1, isNext = r.next && lv.n === r.next.n;
+      const isCur = i === L.n - 1, done = i < L.n - 1, isNext = r.next && lv.n === r.next.n && !isVocabObs(r);
       rr(ctx, x, top, colW, h, 12);
       ctx.fillStyle = isCur ? C.teal : done ? C.pale : C.mint; ctx.fill();
       if (!isCur && !done) { ctx.lineWidth = 3; ctx.strokeStyle = C.line; ctx.stroke(); }
@@ -1349,7 +1349,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     ctx.fillStyle = C.tealDark; ctx.font = "600 30px " + D; ctx.textAlign = "right"; ctx.textBaseline = "middle";
     ctx.fillText(ptsTxt(r.score), px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
     ctx.fillStyle = C.white; ctx.font = "700 26px " + B;
-    ctx.fillText(r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + r.next.n + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
+    ctx.fillText(isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + r.next.n + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
