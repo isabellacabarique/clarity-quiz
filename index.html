@@ -8,7 +8,7 @@
 <meta name="description" content="Quiz de Clarity by teacher Isa: descubre qué tipo de speaker eres hoy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&family=Montserrat:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout: one focused column for the quiz; the result opens into two columns (shareable card left, explanation right). Palette and type follow clarity.immersa.com.co. */
 :root {
@@ -258,7 +258,7 @@ p { margin: 0; }
   @page { size: A4; margin: 12mm; }
 }
 .ps { display: flex; flex-direction: column; height: 238mm; page-break-inside: avoid; break-inside: avoid; }
-.pp { font-family: Candara, "Candara Regular", var(--font-body); color: #15302B; font-size: 13px; line-height: 1.55; }
+.pp { font-family: "Montserrat", var(--font-body); color: #15302B; font-size: 13px; line-height: 1.55; }
 .pp p, .pp li { orphans: 3; widows: 3; }
 .pp h1 { font: 600 28px/1.1 var(--font-display); margin: 0 0 4px; }
 .pp h2 { font: 600 17px/1.2 var(--font-display); margin: 18px 0 6px; color: #2D7A72; page-break-after: avoid; }
@@ -312,8 +312,8 @@ strong.course { font-weight: 800; color: var(--ink); }
 .opt2 p { margin: 0; color: var(--ink-soft); white-space: pre-line; }
 .opt2 p:empty { display: none; }
 
-/* Plan PDF and checklist use Candara (falls back to Manrope where it is not installed) */
-#print-sheet, #print-sheet h1, #print-sheet h2, #print-sheet h3, #print-sheet table, #print-sheet .pp-steps b { font-family: Candara, "Candara Regular", var(--font-body) !important; }
+/* Plan PDF and checklist use Montserrat */
+#print-sheet, #print-sheet h1, #print-sheet h2, #print-sheet h3, #print-sheet h4, #print-sheet table, #print-sheet .pp-steps b, #print-sheet .cal-b, #print-sheet .cal-b em, #print-sheet small { font-family: "Montserrat", var(--font-body) !important; }
 
 /* Save reminder pop-up */
 .pop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(21,48,43,.55); }
