@@ -201,9 +201,21 @@ p { margin: 0; }
 .section { display: grid; gap: 8px; }
 .section h3 { color: var(--ink); }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: grid; gap: 14px; min-width: 0; }
-.path { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
-.path li { display: grid; gap: 2px; }
-.path b { font: 700 13px/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--teal-dark); }
+/* Roadmap as a vertical timeline: numbered stops joined by a line */
+.path { display: grid; gap: 0; margin: 4px 0 0; padding: 0; list-style: none; counter-reset: step; }
+.path li { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 16px; padding-bottom: 26px; counter-increment: step; }
+.path li:last-child { padding-bottom: 0; }
+.path li::before { content: counter(step); grid-row: 1 / span 3; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--teal); color: #FFFFFF; font: 600 20px/1 var(--font-display); position: relative; z-index: 1; }
+.path li::after { content: ""; position: absolute; left: 21px; top: 44px; bottom: 0; width: 2px; background: var(--line); }
+.path li:last-child::after { display: none; }
+.path li.step-live::before { content: "★"; background: var(--coral); font-size: 18px; }
+.path li.goal::before { content: "⚑"; background: var(--ink); font-size: 18px; }
+.path b { font: 600 19px/1.25 var(--font-display); color: var(--ink); padding-top: 9px; margin-bottom: 6px; }
+.path span { color: var(--ink-soft); }
+.path .chips { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+.path .chips li { display: flex; gap: 10px; align-items: center; padding: 10px 14px !important; border-radius: 12px; background: #ECE4F7; color: #15302B; font-weight: 700; font-size: 15px; grid-template-columns: none; counter-increment: none; }
+.path .chips li::before { content: "▶"; width: auto; height: auto; background: none; color: #6A4BA0; font-size: 11px; grid-row: auto; }
+.path .chips li::after { display: none; }
 .sign { font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--teal-dark); }
 .toggle { display: inline-flex; background: var(--bg); border-radius: 999px; padding: 4px; gap: 4px; flex-wrap: wrap; }
 .toggle button { border: 0; background: transparent; color: var(--ink); font: 700 14px var(--font-body); padding: 9px 14px; border-radius: 999px; cursor: pointer; }
@@ -252,7 +264,7 @@ p { margin: 0; }
 .ps .notes div { border-bottom: 1px solid #B9E0DA; height: 26px; }
 .ps .foot { margin-top: 14px; font-size: 12px; color: #3F5955; }
 
-.roadmap { font-size: 17px; color: var(--ink-soft); }
+.roadmap { font-size: 17px; color: var(--ink); background: var(--bg-soft, #EAF6F3); border-left: 4px solid var(--teal); border-radius: 0 14px 14px 0; padding: 14px 18px; }
 
 #r-challenge { white-space: pre-line; }
 
@@ -1153,7 +1165,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     }
     setRich($("r-challenge"), ch);
 
-    $("r-path-title").textContent = "Lo que te recomiendo hacer ahora";
+    $("r-path-title").textContent = "Tu roadmap";
     const DREAM = {
       1: "entender el inglés cuando lo escuchas, no solo cuando lo lees",
       2: "empezar a hablar inglés sin miedo a bloquearte",
@@ -1181,8 +1193,16 @@ strong.course { font-weight: 800; color: var(--ink); }
     items.forEach(([k, v]) => {
       const li = document.createElement("li");
       const b = document.createElement("b"); b.textContent = k;
-      const s = document.createElement("span"); setRich(s, v);
-      li.append(b, s); ul.appendChild(li);
+      const s = document.createElement("span"); setRich(s, v && v.text ? v.text : v);
+      li.append(b, s);
+      if (v && v.list) {
+        const cl = document.createElement("ul"); cl.className = "chips";
+        v.list.forEach((t) => { const c = document.createElement("li"); c.textContent = t; cl.appendChild(c); });
+        li.appendChild(cl);
+      }
+      if (k === "Nos vemos los martes") li.classList.add("step-live");
+      if (k === "Tu meta para subir" || k === "Cuándo volver a hacer el quiz" || k === "Tu rol") li.classList.add("goal");
+      ul.appendChild(li);
     });
 
     calStage = 0; calKey = vocabObs ? "1v" : L.n; renderCal(L);
@@ -1373,7 +1393,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     challenge: "Tu reto más grande ahora es construir tu vocabulario. Para poder hablar inglés con confianza, el primer paso es conocer el inglés: conocer sus palabras. Si no sabes qué significa una palabra, no te sirve de mucho saber cómo se pronuncia. Tu cerebro necesita significado antes de dar el salto a la fluidez. Por eso es importante que entiendas el inglés a través de tus ojos, al leer subtítulos o textos, y que de la mano entrenemos tu oído, para que reconozcas esas palabras no solo cuando las lees, sino también cuando las escuchas.\n\nY algo importante: no te preocupes por estudiar gramática. La gramática no te ayuda a entender el inglés; lo que te ayuda es entender las palabras que las personas usan al hablar. Estudiar gramática solo te crea bloqueos y limita tu fluidez. Tú concéntrate en construir tu vocabulario y en entender cada vez más. Te lo digo porque es uno de los errores más comunes de los adultos que están en el momento en el que tú estás, y no quiero que caigas en ese hueco.",
     dream: "entender cada vez más el inglés, primero cuando lo lees y luego cuando lo escuchas",
     items: [
-      ["Por dónde empezar", "Empieza por el curso Pronunciation Foundation, para reconocer las bases de los sonidos del inglés y entender por qué las palabras que aprendes suenan como suenan. Y mira estas video lecciones BONUS: «Qué es la inmersión y cómo hacerla», «Cómo aprender vocabulario correctamente», «Cómo aprender inglés con series y películas» y el «Taller 10 errores que debes evitar». Te van a llevar por el camino correcto y te van a ayudar a evitar errores que veo a muchos estudiantes cometer, que les quitan tiempo valioso y retrasan su aprendizaje."],
+      ["Empieza con el curso Pronunciation Foundation", "Para reconocer las bases de los sonidos del inglés y entender por qué las palabras que aprendes suenan como suenan."],
+      ["Mira estas video lecciones BONUS", { text: "Te van a llevar por el camino correcto y te van a ayudar a evitar errores que veo a muchos estudiantes cometer, que les quitan tiempo valioso y retrasan su aprendizaje.", list: ["Qué es la inmersión y cómo hacerla", "Cómo aprender vocabulario correctamente", "Cómo aprender inglés con series y películas", "Taller 10 errores que debes evitar"] }],
       ["Tu inmersión diaria", "Explora el curso Read Along With Me, en el que leemos libros e historias juntos. Úsalo como tu inmersión de todos los días: los capítulos son muy cortos, así que puedes leer uno diario. Es muy importante que uses el PDF de vocabulario que acompaña cada capítulo; recuerda que tu foco es aumentar la cantidad de palabras que conoces en inglés. A medida que leas, vas a entender cada vez más. No te obsesiones con entenderlo todo: obsesiónate con entender la idea general y poder seguir la historia. Diseñé estas historias para estudiantes, así que no es como leer un libro largo y pesado: son capítulos fáciles de digerir e historias entretenidas de seguir."],
       ["Cuándo volver a hacer el quiz", "Cuando sientas que ya puedes seguir la idea de los capítulos sin perderte, porque ya conoces muchas más palabras, vuelve a hacer este quiz y te daré el siguiente paso."],
       ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]
