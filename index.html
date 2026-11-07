@@ -236,6 +236,7 @@ p { margin: 0; }
 .cal-day h4 small { display: block; font: 600 12px/1.4 var(--font-body); color: var(--ink-soft); margin-top: 3px; }
 .cal-b { border-radius: 12px; padding: 10px 11px; font-size: 13.5px; line-height: 1.35; font-weight: 600; color: #15302B; }
 .cal-b strong { font-weight: 800; }
+.cal-b.bare em { margin-bottom: 0; }
 .cal-b em { display: block; font: 800 10.5px/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; font-style: normal; margin-bottom: 3px; }
 .cal-b.pf { background: #DCEFEA; } .cal-b.pf em { color: #2D7A72; }
 .cal-b.ra { background: #FBE8D8; } .cal-b.ra em { color: #B5561E; }
@@ -1375,7 +1376,8 @@ strong.course { font-weight: 800; color: var(--ink); }
             { d: "Jueves", pf: ["BONUS", "Taller 10 errores que debes evitar (primera mitad).", "Taller BONUS", "bonus", 40] },
             { d: "Viernes", pf: ["BONUS", "Taller 10 errores que debes evitar (segunda mitad).", "Taller BONUS", "bonus", 40] }
           ] },
-        { key: "w2", label: "Desde la semana 2", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo y repasa su PDF de vocabulario." } }
+        { key: "w2", label: "Desde la semana 2", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo y repasa su PDF de vocabulario." },
+          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", ""], live: d === "Martes" })) }
       ],
       days: [
         { d: "Lunes", pf: ["Aprende", "Mira la lección de la semana. En la semana 2, empieza por la iniciación."] },
@@ -1394,7 +1396,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     challenge: "Tu reto más grande ahora es construir tu vocabulario. Para poder hablar inglés con confianza, el primer paso es conocer el inglés: conocer sus palabras. Si no sabes qué significa una palabra, no te sirve de mucho saber cómo se pronuncia. Tu cerebro necesita significado antes de dar el salto a la fluidez. Por eso es importante que entiendas el inglés a través de tus ojos, al leer subtítulos o textos, y que de la mano entrenemos tu oído, para que reconozcas esas palabras no solo cuando las lees, sino también cuando las escuchas.\n\nY algo importante: no te preocupes por estudiar gramática. La gramática no te ayuda a entender el inglés; lo que te ayuda es entender las palabras que las personas usan al hablar. Estudiar gramática solo te crea bloqueos y limita tu fluidez. Tú concéntrate en construir tu vocabulario y en entender cada vez más. Te lo digo porque es uno de los errores más comunes de los adultos que están en el momento en el que tú estás, y no quiero que caigas en ese hueco.",
     dream: "entender cada vez más el inglés, primero cuando lo lees y luego cuando lo escuchas",
     items: [
-      ["Empieza con el curso Pronunciation Foundation", "Para reconocer las bases de los sonidos del inglés y entender por qué las palabras que aprendes suenan como suenan."],
+      ["Empieza con el curso Pronunciation Foundation", "Para reconocer las bases de los sonidos del inglés y entender por qué las palabras que aprendes suenan como suenan. Hazlo en orden: el curso está diseñado para que completes los módulos uno tras otro, en el orden en que aparecen."],
       ["Mira estas video lecciones BONUS", { text: "Las encuentras en el módulo BONUS del curso Clarity (Primeros pasos). Te van a llevar por el camino correcto y te van a ayudar a evitar errores que veo a muchos estudiantes cometer, que les quitan tiempo valioso y retrasan su aprendizaje.", list: ["Qué es la inmersión y cómo hacerla", "Cómo aprender vocabulario correctamente", "Cómo aprender inglés con series y películas", "Taller 10 errores que debes evitar"] }],
       ["Tu inmersión diaria", "Explora el curso Read Along With Me, en el que leemos libros e historias juntos. Úsalo como tu inmersión de todos los días: los capítulos son muy cortos, así que puedes leer uno diario. Es muy importante que uses el PDF de vocabulario que acompaña cada capítulo; recuerda que tu foco es aumentar la cantidad de palabras que conoces en inglés. A medida que leas, vas a entender cada vez más. No te obsesiones con entenderlo todo: obsesiónate con entender la idea general y poder seguir la historia. Diseñé estas historias para estudiantes, así que no es como leer un libro largo y pesado: son capítulos fáciles de digerir e historias entretenidas de seguir."],
       ["Cuándo volver a hacer el quiz", "Cuando sientas que ya puedes seguir la idea de los capítulos sin perderte, porque ya conoces muchas más palabras, vuelve a hacer este quiz y te daré el siguiente paso."],
@@ -1413,7 +1415,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       tabs.appendChild(b);
     });
     const st = plan.stages[calStage], cal = $("cal"); cal.textContent = "";
-    const block = (cls, time, tag, txt, step) => { const d = document.createElement("div"); d.className = "cal-b " + cls; const e = document.createElement("em"); e.textContent = time + " · " + tag; d.appendChild(e); if (step) { const b = document.createElement("strong"); b.textContent = step + ": "; d.appendChild(b); } d.append(txt); return d; };
+    const block = (cls, time, tag, txt, step) => { const d = document.createElement("div"); d.className = "cal-b " + cls; const e = document.createElement("em"); e.textContent = time + " · " + tag; d.appendChild(e); if (step) { const b = document.createElement("strong"); b.textContent = step + ": "; d.appendChild(b); } if (txt) d.append(txt); else d.classList.add("bare"); return d; };
     (st.days || plan.days).forEach((day) => {
       const col = document.createElement("div"); col.className = "cal-day";
       const pfMin = day.pf[4] || 15, tot = pfMin + 15;
@@ -1430,7 +1432,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function buildPrintSheet(L) {
     const plan = CAL[calKey], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
-    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1]) + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
+    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation, 15 min") + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
     $("print-sheet").innerHTML = '<div class="ps"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
       '<div class="fields"><span>Semana del:</span><span>' + (calKey === "1v" ? "Palabras nuevas que aprendí:" : "Sonido de la semana:") + '</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
