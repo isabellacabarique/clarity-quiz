@@ -257,19 +257,19 @@ p { margin: 0; }
   body.print-mode #print-sheet { display: block; color: #15302B; font-family: var(--font-body); }
   @page { margin: 14mm; }
 }
-.ps { display: flex; flex-direction: column; height: 266mm; }
-.ps-logo { display: block; height: 26px; width: auto; align-self: flex-start; margin-bottom: 22px; }
-.ps h1 { font: 600 34px/1.1 var(--font-display); margin: 0 0 6px; }
-.ps .sub { font-size: 14px; color: #3F5955; margin-bottom: 18px; }
-.ps .fields { display: flex; gap: 28px; font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+.ps { display: flex; flex-direction: column; height: 266mm; overflow: hidden; }
+.ps-logo { display: block; height: 22px; width: auto; align-self: flex-start; margin-bottom: 14px; }
+.ps h1 { font: 600 28px/1.1 var(--font-display); margin: 0 0 4px; }
+.ps .sub { font-size: 13px; color: #3F5955; margin-bottom: 12px; }
+.ps .fields { display: flex; gap: 28px; font-size: 15px; font-weight: 700; margin-bottom: 12px; }
 .ps .fields span { flex: 1; border-bottom: 1.5px solid #15302B; padding-bottom: 6px; }
-.ps table { width: 100%; border-collapse: collapse; font-size: 15.5px; flex: 1; }
-.ps th, .ps td { border: 1px solid #B9E0DA; padding: 10px 14px; text-align: left; vertical-align: middle; }
-.ps th { background: #EAF6F3; font-weight: 800; font-size: 16px; width: 17%; }
-.ps .ck { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0; line-height: 1.35; }
-.ps .ck i { flex: none; width: 17px; height: 17px; border: 1.8px solid #15302B; border-radius: 4px; margin-top: 1px; }
-.ps .notes { margin-top: 20px; font-size: 16px; font-weight: 700; }
-.ps .notes div { border-bottom: 1px solid #B9E0DA; height: 34px; }
+.ps table { width: 100%; border-collapse: collapse; font-size: 14px; flex: 1; }
+.ps th, .ps td { border: 1px solid #B9E0DA; padding: 6px 12px; text-align: left; vertical-align: middle; }
+.ps th { background: #EAF6F3; font-weight: 800; font-size: 14.5px; width: 16%; }
+.ps .ck { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0; line-height: 1.3; }
+.ps .ck i { flex: none; width: 15px; height: 15px; border: 1.8px solid #15302B; border-radius: 4px; margin-top: 1px; }
+.ps .notes { margin-top: 14px; font-size: 14.5px; font-weight: 700; }
+.ps .notes div { border-bottom: 1px solid #B9E0DA; height: 28px; }
 .ps .foot { margin-top: 14px; font-size: 13px; color: #3F5955; }
 
 .roadmap { font-size: 17px; color: var(--ink); background: var(--bg-soft, #EAF6F3); border-left: 4px solid var(--teal); border-radius: 0 14px 14px 0; padding: 14px 18px; }
