@@ -1409,9 +1409,10 @@ strong.course { font-weight: 800; color: var(--ink); }
           ] }
       ],
       days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Revisa la lección del día."], live: d === "Martes" })),
-      weekend: { tag: "Inmersión", txt: "Ve videos, escucha podcasts o mira una serie en inglés." },
+      weekend: { tag: "Inmersión", txt: "Ve series, películas o escucha podcasts en inglés." },
+      daily: { tag: "Inmersión", txt: "Ve series, películas o escucha podcasts en inglés.", min: 30 },
       note: "",
-      hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos."
+      hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección «Qué es la inmersión y cómo hacerla»."
     },
     // Observer Alpha who already knows the pronunciation basics (or comes from Observer): Shadow the Scene first.
     "1b": {
@@ -1426,8 +1427,9 @@ strong.course { font-weight: 800; color: var(--ink); }
           ] }
       ],
       weekend: { tag: "Inmersión", txt: "Ve series, películas o escucha podcasts en inglés." },
+      daily: { tag: "Inmersión", txt: "Ve series, películas o escucha podcasts en inglés.", min: 30 },
       note: "",
-      hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos."
+      hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección «Qué es la inmersión y cómo hacerla»."
     },
     // Observer who still doesn't understand when reading: vocabulary first.
     "1v": {
@@ -1496,11 +1498,13 @@ strong.course { font-weight: 800; color: var(--ink); }
       const pfMin = day.pf ? (day.pf[4] || 15) : 0, pr = day.prac === false ? null : (day.prac || st.practice);
       const lo = pr ? (pr.range ? pr.range[0] : (pr.min || 15)) : 0, hi = pr ? (pr.range ? pr.range[1] : lo) : 0;
       const prTxt = pr ? (pr.range ? lo + "–" + hi + " min" : lo + " min") : "";
-      const tot = lo === hi ? (pfMin + lo) + " min" : (pfMin + lo) + "–" + (pfMin + hi) + " min";
+      const im = plan.daily ? plan.daily.min : 0;
+      const tot = lo === hi ? (pfMin + lo + im) + " min" : (pfMin + lo + im) + "–" + (pfMin + hi + im) + " min";
       const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = tot + (day.live ? " + clase 1 h" : ""); h.appendChild(sm);
       const bl = document.createElement("div"); bl.className = "cal-blocks";
       if (day.pf) bl.appendChild(block(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]));
       if (pr) bl.appendChild(block(pr.cls, prTxt, pr.tag, pr.txt));
+      if (plan.daily) bl.appendChild(block("imm", plan.daily.min + " min", plan.daily.tag, plan.daily.txt));
       if (day.live) bl.appendChild(block("clive", "7:00 p. m. · 1 h", "Clase en vivo", "Practicamos juntos y te doy feedback."));
       col.append(h, bl);
       cal.appendChild(col);
@@ -1519,7 +1523,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function buildPrintSheet(L) {
     const plan = CAL[calKey], st = plan.stages[calStage], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
-    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt)) + (day.live ? ck("Clase en vivo, 7:00 p. m. (hora Colombia)") : "") + "</td></tr>").join("");
+    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt)) + (plan.daily ? ck(plan.daily.tag + ": " + plan.daily.txt) : "") + (day.live ? ck("Clase en vivo, 7:00 p. m. (hora Colombia)") : "") + "</td></tr>").join("");
     $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(st.label) + "</p>" +
       '<div class="fields"><span>Semana del:</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : "Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
