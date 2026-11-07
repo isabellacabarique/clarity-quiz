@@ -254,19 +254,20 @@ p { margin: 0; }
   body.print-mode #print-sheet { display: block; color: #15302B; font-family: var(--font-body); }
   @page { margin: 14mm; }
 }
-.ps-logo { display: block; height: 22px; width: auto; margin-bottom: 18px; }
-.ps h1 { font: 600 26px/1.1 var(--font-display); margin: 0 0 4px; }
-.ps .sub { font-size: 13px; color: #3F5955; margin-bottom: 14px; }
-.ps .fields { display: flex; gap: 28px; font-size: 14px; font-weight: 600; margin-bottom: 14px; }
-.ps .fields span { flex: 1; border-bottom: 1px solid #15302B; padding-bottom: 4px; }
-.ps table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.ps th, .ps td { border: 1px solid #B9E0DA; padding: 9px 10px; text-align: left; vertical-align: top; }
-.ps th { background: #EAF6F3; font-weight: 800; width: 16%; }
-.ps .ck { display: flex; gap: 8px; align-items: flex-start; margin: 3px 0; }
-.ps .ck i { flex: none; width: 13px; height: 13px; border: 1.5px solid #15302B; border-radius: 3px; margin-top: 2px; }
-.ps .notes { margin-top: 16px; font-size: 13.5px; font-weight: 600; }
-.ps .notes div { border-bottom: 1px solid #B9E0DA; height: 26px; }
-.ps .foot { margin-top: 14px; font-size: 12px; color: #3F5955; }
+.ps { display: flex; flex-direction: column; height: 266mm; }
+.ps-logo { display: block; height: 26px; width: auto; align-self: flex-start; margin-bottom: 22px; }
+.ps h1 { font: 600 34px/1.1 var(--font-display); margin: 0 0 6px; }
+.ps .sub { font-size: 14px; color: #3F5955; margin-bottom: 18px; }
+.ps .fields { display: flex; gap: 28px; font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+.ps .fields span { flex: 1; border-bottom: 1.5px solid #15302B; padding-bottom: 6px; }
+.ps table { width: 100%; border-collapse: collapse; font-size: 15.5px; flex: 1; }
+.ps th, .ps td { border: 1px solid #B9E0DA; padding: 10px 14px; text-align: left; vertical-align: middle; }
+.ps th { background: #EAF6F3; font-weight: 800; font-size: 16px; width: 17%; }
+.ps .ck { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0; line-height: 1.35; }
+.ps .ck i { flex: none; width: 17px; height: 17px; border: 1.8px solid #15302B; border-radius: 4px; margin-top: 1px; }
+.ps .notes { margin-top: 20px; font-size: 16px; font-weight: 700; }
+.ps .notes div { border-bottom: 1px solid #B9E0DA; height: 34px; }
+.ps .foot { margin-top: 14px; font-size: 13px; color: #3F5955; }
 
 .roadmap { font-size: 17px; color: var(--ink); background: var(--bg-soft, #EAF6F3); border-left: 4px solid var(--teal); border-radius: 0 14px 14px 0; padding: 14px 18px; }
 
@@ -1453,9 +1454,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
     const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) + ck(st.practice.tag + ": " + st.practice.txt) + (day.live ? ck("Clase en vivo, 7:00 p. m.") : "") + "</td></tr>").join("");
     $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
-      '<div class="fields"><span>Semana del:</span><span>' + (calKey === "1v" ? "Palabras nuevas que aprendí:" : "Sonido de la semana:") + '</span></div><table>' + rows +
+      '<div class="fields"><span>Semana del:</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
-      '<div class="notes">Lo que más me costó esta semana:<div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
+      '<div class="notes">Lo que más me costó esta semana:<div></div><div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
   }
   $("print-cl").addEventListener("click", () => {
     buildPrintSheet(result.level);
