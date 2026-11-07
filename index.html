@@ -89,22 +89,24 @@ p { margin: 0; }
 .meta span { padding: 7px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
 .levels { width: 100%; max-width: 980px; display: grid; gap: 14px; }
 .levels-label { font: 700 12.5px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--teal-dark); }
-.stairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.stairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: end; }
 .stairs li {
   background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
   padding: 18px 12px 20px; display: grid; gap: 4px; align-content: start; justify-items: center;
   box-shadow: 0 18px 40px -26px rgba(21,48,43,.35);
 }
+.stairs li { min-height: 166px; }
 .stairs li:nth-child(1) { margin-bottom: 0px; }
 .stairs li:nth-child(2) { margin-bottom: 18px; }
 .stairs li:nth-child(3) { margin-bottom: 36px; }
 .stairs li:nth-child(4) { margin-bottom: 54px; }
-.stairs li:nth-child(5) { margin-bottom: 72px; background: var(--teal-pale); border-color: var(--teal-pale); }
+.stairs li:nth-child(5) { margin-bottom: 72px; }
+.stairs li:nth-child(6) { margin-bottom: 90px; background: var(--teal-pale); border-color: var(--teal-pale); }
 .face-wrap { display: inline-flex; vertical-align: middle; }
 .lvl .face-wrap { margin-left: 2px; vertical-align: -0.15em; }
 .lvl .face-wrap svg { width: 1.15em; height: 1.15em; }
 .stairs .em { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); margin-bottom: 6px; }
-.stairs li:nth-child(5) .em { background: var(--surface); }
+.stairs li:nth-child(6) .em { background: var(--surface); }
 .stairs .lv { font: 700 11.5px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--teal-dark); }
 .stairs b { font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; }
 .stairs p { font-size: 13.5px; line-height: 1.4; color: var(--ink-soft); text-wrap: balance; }
@@ -312,13 +314,14 @@ strong.course { font-weight: 800; color: var(--ink); }
     </div>
 
     <div class="levels">
-      <p class="levels-label">Los 5 niveles de Clarity</p>
+      <p class="levels-label">Los 6 niveles de Clarity</p>
       <ol class="stairs">
-        <li><span class="em" aria-hidden="true">👀</span><span class="lv">Nivel 1</span><b>Observer</b></li>
-        <li><span class="em" aria-hidden="true">🌱</span><span class="lv">Nivel 2</span><b>Shy Speaker</b></li>
-        <li><span class="em" aria-hidden="true">🔥</span><span class="lv">Nivel 3</span><b>Brave Speaker</b></li>
-        <li><span class="em" aria-hidden="true">🌊</span><span class="lv">Nivel 4</span><b>Fluent Speaker</b></li>
-        <li><span class="em" aria-hidden="true">⭐</span><span class="lv">Nivel 5</span><b>Leader</b></li>
+        <li><span class="em" aria-hidden="true" data-face="1">👀</span><span class="lv">Nivel 1</span><b>Observer</b></li>
+        <li><span class="em" aria-hidden="true" data-face="1">👀</span><span class="lv">Nivel 2</span><b>Observer Alpha</b></li>
+        <li><span class="em" aria-hidden="true" data-face="2">🌱</span><span class="lv">Nivel 3</span><b>Shy Speaker</b></li>
+        <li><span class="em" aria-hidden="true" data-face="3">🔥</span><span class="lv">Nivel 4</span><b>Brave Speaker</b></li>
+        <li><span class="em" aria-hidden="true" data-face="4">🌊</span><span class="lv">Nivel 5</span><b>Fluent Speaker</b></li>
+        <li><span class="em" aria-hidden="true" data-face="5">⭐</span><span class="lv">Nivel 6</span><b>Leader</b></li>
       </ol>
     </div>
 
@@ -1127,7 +1130,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     });
     ctx.restore();
   }
-  document.querySelectorAll(".stairs .em").forEach((e, i) => { e.innerHTML = faceSVG(i + 1, 44); });
+  document.querySelectorAll(".stairs .em").forEach((e) => { e.innerHTML = faceSVG(Number(e.dataset.face), 44); });
   // The goal is where the next level starts (21, 41, 61, 81); a Leader is measured out of 100.
   function progressPct(r) { return r.next ? Math.max(0, Math.min(99, Math.round(r.progress * 100))) : 100; }
   function ptsTxt(n) { return n + (n === 1 ? " punto" : " puntos"); }
@@ -1143,6 +1146,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     });
   }
   // Observer who already understands when reading is called "Observer Alpha"; the one who still needs vocabulary is plain "Observer". Bars keep "Observer".
+  function shownLevel(n) { return n === 1 ? 1 : n + 1; }
   function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 1; }
   function pageName(r) { return r.level.n === 1 && !isVocabObs(r) ? "Observer Alpha" : r.level.name; }
   // Keep "Hoy eres un …" on one line: shrink the title until it fits its column.
@@ -1195,7 +1199,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       4: "hablar inglés con la confianza y la naturalidad de un nativo",
       5: "seguir creciendo y ayudar a otros a encontrar su voz"
     };
-    setRich($("r-roadmap"), (L.n === 1 && !vocabObs) ? "Este es tu roadmap. Quiero que tengas claro el camino: qué vas a trabajar, en qué orden y qué va a requerir de ti para que tu oído empiece a reconocer el inglés real y llegues al nivel 2." : "Este es tu roadmap. Quiero darte claridad: que entiendas exactamente qué tiene que pasar y qué va a requerir de ti para que puedas " + (vocabObs ? OBS_VOCAB.dream : DREAM[L.n]) + (vocabObs ? " y llegar a ser Observer Alpha" : r.next ? " y llegar al nivel " + r.next.n : "") + ", y que eso deje de ser solo un sueño y se convierta en tu realidad.");
+    setRich($("r-roadmap"), (L.n === 1 && !vocabObs) ? "Este es tu roadmap. Quiero que tengas claro el camino: qué vas a trabajar, en qué orden y qué va a requerir de ti para que tu oído empiece a reconocer el inglés real y llegues al nivel 3." : "Este es tu roadmap. Quiero darte claridad: que entiendas exactamente qué tiene que pasar y qué va a requerir de ti para que puedas " + (vocabObs ? OBS_VOCAB.dream : DREAM[L.n]) + (vocabObs ? " y llegar a ser Observer Alpha" : r.next ? " y llegar al nivel " + shownLevel(r.next.n) : "") + ", y que eso deje de ser solo un sueño y se convierta en tu realidad.");
     const startBy = r.bases <= 5
       ? (L.n === 1 ? "Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo empezar por el curso Pronunciation Foundation, en orden: la iniciación, en la que aprendes la diferencia entre pronunciación y acento; por qué tu cerebro bloquea el inglés; las vocales; las consonantes; las reducciones y los linking sounds. Ahí aprendes todo desde la base. Si un sonido es muy nuevo para ti, repite los entrenamientos para que tu cerebro tenga suficiente contacto con ese sonido. Cada semana, aprende y practica un sonido de ese curso. Dale tiempo a tu cerebro para asimilar lo que vas aprendiendo. Usa los entrenamientos auditivos y de práctica durante la semana y, al final, completa el reto y súbelo al feed para recibir retroalimentación.\n\nCada día, lee 1 capítulo conmigo en Read Along With Me. Solo escúchame y sigue el texto con la vista. Intenta escuchar los nuevos sonidos que vas aprendiendo en Pronunciation Foundation. Si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo.\n\nDespués de haber trabajado en estos programas durante 30 días, reemplaza Read Along With Me por el curso Shadow the Scene. Sus lecciones duran entre 30 y 40 minutos, así que alterna: lunes, miércoles y viernes haz Shadow the Scene; martes y jueves, Pronunciation Foundation. En este punto es importante que combines los programas, porque debes poner en práctica lo que vas aprendiendo en el curso Pronunciation Foundation. Dentro de Shadow the Scene, el ejercicio más importante es el Listening Lab, donde vas a hacer ejercicios de listening: eso es lo que realmente va a entrenar tu oído.\n\nNo olvides hacer tu inmersión diaria. Es importante que escuches inglés todos los días: sin esa inmersión, tu cerebro nunca va a tener suficiente contacto con el inglés para lograr entenderlo." : "Te recomiendo empezar por el curso Pronunciation Foundation, sobre todo los módulos de vocales, reducciones y linking. Te van a ayudar a entender por qué el inglés suena como suena.")
       : (L.n >= 4 ? "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene, con las escenas rápidas y los podcasts. Si algún sonido te genera dudas, repásalo en el curso Pronunciation Foundation." : "Como ya tienes buenas bases, puedes irte directo a Shadow the Scene. Si algún sonido te genera dudas, repásalo en el curso Pronunciation Foundation.");
@@ -1243,7 +1247,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function buildMessage() {
     const r = result, L = r.level;
     const goal = isVocabObs(r) ? "Mi objetivo es llegar a ser Observer Alpha en los próximos 90 días."
-      : r.next ? "Mi objetivo es llegar al nivel " + r.next.n + " en los próximos " + (L.n === 1 ? 90 : 60) + " días."
+      : r.next ? "Mi objetivo es llegar al nivel " + shownLevel(r.next.n) + " en los próximos " + (L.n === 1 ? 90 : 60) + " días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
     return "I'm " + L.art + " " + pageName(r) + "! " + goal + " ¡Vamos con toda! 💪";
   }
@@ -1305,8 +1309,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     const pY = y + 44, pH = 1262 - pY;
     rr(ctx, X, pY, IW, pH, 28); ctx.fillStyle = C.white; ctx.fill();
     // Six columns: the two kinds of Observer, then levels 2-5.
-    const COLS = [{ n: 1, num: "1", name: "Observer" }, { n: 1, num: "1+", name: "Observer Alpha" }]
-      .concat(LEVELS.slice(1).map((lv) => ({ n: lv.n, num: String(lv.n), name: lv.name })));
+    const COLS = [{ n: 1, num: "1", name: "Observer" }, { n: 1, num: "2", name: "Observer Alpha" }]
+      .concat(LEVELS.slice(1).map((lv) => ({ n: lv.n, num: String(shownLevel(lv.n)), name: lv.name })));
     const curIdx = L.n === 1 ? (isVocabObs(r) ? 0 : 1) : L.n;
     const NC = COLS.length, pad = 30, gap = 14, colW = (IW - pad * 2 - gap * (NC - 1)) / NC, base = pY + pH - 268;
     const maxH = base - (pY + 112), minH = Math.min(70, maxH * 0.3);
@@ -1349,14 +1353,14 @@ strong.course { font-weight: 800; color: var(--ink); }
     ctx.fillStyle = C.tealDark; ctx.font = "600 30px " + D; ctx.textAlign = "right"; ctx.textBaseline = "middle";
     ctx.fillText(ptsTxt(r.score), px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
     ctx.fillStyle = C.white; ctx.font = "700 26px " + B;
-    ctx.fillText(isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + r.next.n + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
+    ctx.fillText(isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + shownLevel(r.next.n) + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
     ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, 1310);
 
     $("card").src = cv.toDataURL("image/png");
-    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + L.n + " de 5. " + (r.next ? "Tiene " + ptsTxt(r.score) + "; le faltan " + ptsTxt(r.toNext) + " para ser " + r.next.name + "." : "Nivel máximo.");
+    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + (L.n === 1 && !isVocabObs(r) ? 2 : shownLevel(L.n)) + " de 6. " + (r.next ? "Tiene " + ptsTxt(r.score) + "; le faltan " + ptsTxt(r.toNext) + " para ser " + r.next.name + "." : "Nivel máximo.");
     cardBlob = await new Promise((res) => cv.toBlob(res, "image/png"));
   }
 
