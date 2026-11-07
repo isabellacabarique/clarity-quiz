@@ -1452,6 +1452,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         { d: "Jueves", pf: ["", "Revisa la lección del día."] },
         { d: "Viernes", pf: ["", "Revisa la lección del día."] }
       ],
+      daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
       note: "Sábado y domingo: descansa, ponte al día o lee un capítulo más si te provoca.",
       hint: "Este calendario está pensado para que alcances tu meta de llegar a ser Observer Alpha en 90 días. Para conseguirlo, debes invertir un mínimo de 30 minutos al día a tu práctica de vocabulario y 30 minutos a tu inmersión, 5 días a la semana.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección «Qué es la inmersión y cómo hacerla». Y tu tiempo de práctica de vocabulario no tiene que ser sentarte a traducir palabras 30 minutos: puedes distribuir ese tiempo durante el día mientras conectas con el inglés. Revisa la video lección BONUS «Cómo aprender vocabulario correctamente» para que sepas cómo hacer este proceso.\n\nSigue este plan hasta que puedas seguir la idea sin perderte cuando consumas contenido en inglés; ahí vuelve a hacer el quiz. Si puedes invertir más tiempo, aumenta los tiempos."
     }
@@ -1499,7 +1500,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       const lo = pr ? (pr.range ? pr.range[0] : (pr.min || 15)) : 0, hi = pr ? (pr.range ? pr.range[1] : lo) : 0;
       const prTxt = pr ? (pr.range ? lo + "–" + hi + " min" : lo + " min") : "";
       const tot = lo === hi ? (pfMin + lo) + " min" : (pfMin + lo) + "–" + (pfMin + hi) + " min";
-      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = tot + (day.live ? " + clase 1 h" : "") + (plan.daily ? " + inmersión" : ""); h.appendChild(sm);
+      const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = (plan.daily ? "30 min" : tot) + (day.live ? " + clase 1 h" : "") + (plan.daily ? " + inmersión" : ""); h.appendChild(sm);
       const bl = document.createElement("div"); bl.className = "cal-blocks";
       if (day.pf) bl.appendChild(block(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]));
       if (pr) bl.appendChild(block(pr.cls, prTxt, pr.tag, pr.txt));
