@@ -1185,9 +1185,9 @@ strong.course { font-weight: 800; color: var(--ink); }
 
     let ch = vocabObs ? OBS_VOCAB.challenge : L.challenge;
     if (L.n >= 2 && L.n <= 3 && r.reading !== null && r.reading >= 2 && r.earAvg < 2) {
-      ch += " Además, me contaste que entiendes bien cuando lees. Eso me confirma algo importante: no te falta vocabulario. " + (L.n === 1
-        ? "Quiero que empieces a entrenar tu oído y te acerques a los sonidos reales del inglés. Es importante que te familiarices con la forma en que el inglés se reduce, contrae y conecta porque debes soltar la necesidad de escuchar exactamente lo que lees. Llevas mucho tiempo conociendo el inglés a través de tus ojos. Es hora de que lo conozcas a través de tus oídos."
-        : "Lo que vamos a trabajar es tu pronunciación y tu oído, para que reconozcas al escucharlas las palabras que ya conoces.");
+      ch += L.n === 2
+        ? " Ya estás en el punto en el que entiendes bien cuando lees. Eso quiere decir que ya no te falta vocabulario. Te falta pronunciación, entrenamiento vocal, activación de las palabras y repetición. Vamos a lograr que tu cerebro use lo que ya sabe y puedas empezar a usar el inglés."
+        : " Además, me contaste que entiendes bien cuando lees. Eso me confirma algo importante: no te falta vocabulario. Lo que vamos a trabajar es tu pronunciación y tu oído, para que reconozcas al escucharlas las palabras que ya conoces.";
     }
     setRich($("r-challenge"), ch);
 
