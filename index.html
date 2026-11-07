@@ -266,7 +266,7 @@ p { margin: 0; }
 
 .roadmap { font-size: 17px; color: var(--ink); background: var(--bg-soft, #EAF6F3); border-left: 4px solid var(--teal); border-radius: 0 14px 14px 0; padding: 14px 18px; }
 
-#r-challenge { white-space: pre-line; }
+#r-challenge, #cal-hint { white-space: pre-line; }
 
 strong.course { font-weight: 800; color: var(--ink); }
 
@@ -1214,7 +1214,8 @@ strong.course { font-weight: 800; color: var(--ink); }
 
   function buildMessage() {
     const r = result, L = r.level;
-    const goal = r.next ? "Mi objetivo es llegar al nivel " + r.next.n + " en los próximos 60 días."
+    const days = (L.n === 1 && r.reading !== null && r.reading <= 1) ? 90 : 60;
+    const goal = r.next ? "Mi objetivo es llegar al nivel " + r.next.n + " en los próximos " + days + " días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
     return "I'm " + L.art + " " + L.name + "! " + goal + " ¡Vamos con toda! 💪";
   }
@@ -1384,7 +1385,11 @@ strong.course { font-weight: 800; color: var(--ink); }
         { d: "Viernes", pf: ["Reto", "Completa el reto del sonido y súbelo al feed para recibir retroalimentación."] }
       ],
       note: "Sábado y domingo: descansa, ponte al día o lee un capítulo más si te provoca.",
-      hint: "Este calendario está pensado para 30 minutos al día. Síguelo hasta que puedas seguir la idea de los capítulos sin perderte; ahí vuelve a hacer el quiz. Si puedes invertir más tiempo, aumenta los tiempos."
+      hint: "Este calendario está pensado para que alcances tu meta de subir al nivel 2 en 90 días. Para conseguirlo, debes invertir un mínimo de 30 minutos al día a tu práctica de vocabulario y 30 minutos a tu inmersión, 5 días a la semana.
+
+No quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección «Qué es la inmersión y cómo hacerla».
+
+Sigue este plan hasta que puedas seguir la idea sin perderte cuando consumas contenido en inglés; ahí vuelve a hacer el quiz. Si puedes invertir más tiempo, aumenta los tiempos."
     }
   };
   let calKey = 1;
