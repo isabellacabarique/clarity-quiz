@@ -1456,7 +1456,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("print-sheet").innerHTML = '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(L.name) + " · " + esc(st.label) + " · 30 minutos al día</p>" +
       '<div class="fields"><span>Semana del:</span></div><table>' + rows +
       "<tr><th>Fin de semana</th><td>" + ck("Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
-      '<div class="notes">Lo que más me costó esta semana:<div></div><div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
+      '<div class="notes">Lo que más me costó esta semana:<div></div><div></div><div></div></div><div class="notes">Cómo puedo hacer que la siguiente semana sea mejor:<div></div><div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
   }
   $("print-cl").addEventListener("click", () => {
     buildPrintSheet(result.level);
