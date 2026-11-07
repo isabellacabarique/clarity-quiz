@@ -1379,13 +1379,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo." } },
         { key: "m2", label: "Mes 2 · días 31 a 60", practice: { cls: "ss", tag: "Shadow the Scene", txt: "Haz 1 ejercicio del Listening Lab o practica 1 escena." } }
       ],
-      days: [
-        { d: "Lunes", pf: ["Aprende", "Mira la lección del sonido de la semana."] },
-        { d: "Martes", pf: ["Entrena el oído", "Haz el entrenamiento auditivo del sonido."], live: true },
-        { d: "Miércoles", pf: ["Practica", "Haz el entrenamiento de práctica en voz alta."] },
-        { d: "Jueves", pf: ["Repasa", "Repite los entrenamientos auditivos y de práctica."] },
-        { d: "Viernes", pf: ["Reto", "Completa el reto del sonido y súbelo al feed para recibir retroalimentación."] }
-      ],
+      days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Completa la lección del día."], live: d === "Martes" })),
       note: "Sábado y domingo: descansa o ponte al día con lo que te faltó en la semana.",
       hint: "Este nivel está pensado para 2 meses, con 30 minutos al día. Si puedes invertir más tiempo, aumenta los tiempos."
     },
