@@ -278,7 +278,9 @@ p { margin: 0; }
 
 strong.course { font-weight: 800; color: var(--ink); }
 
-.opts2 { display: grid; gap: 10px; margin-top: 4px; }
+.opts2 { display: grid; gap: 12px; margin-top: 6px; }
+.opts2 .toggle { display: grid; grid-template-columns: 1fr 1fr; width: 100%; border-radius: 18px; }
+.opts2 .toggle button { border-radius: 14px; line-height: 1.3; }
 .opt2 { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--bg-soft, #F4FAF8); }
 .opt2 > strong { display: block; font: 600 16px/1.3 var(--font-display); color: var(--teal-dark); margin-bottom: 6px; }
 .opt2 p { margin: 0; color: var(--ink-soft); white-space: pre-line; }
@@ -1212,8 +1214,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     }
     const weekVal = week;
     const startVal = (L.n === 1 && !vocabObs) ? { options: [
-      ["Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés", startBy.replace(/^Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo/, "Te recomiendo")],
-      ["Si ya has tenido acercamiento a la pronunciación y los sonidos en inglés", ""]
+      ["Es mi primera vez con la pronunciación", startBy.replace(/^Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo/, "Te recomiendo")],
+      ["Ya tengo bases o vengo de Observer", ""]
     ] } : startBy;
     const items = [["Por dónde empezar", startVal], ...(L.n === 1 ? [OBS_VOCAB.items[1]] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el quiz" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
     if (vocabObs) items.splice(0, items.length, ...OBS_VOCAB.items);
@@ -1228,9 +1230,17 @@ strong.course { font-weight: 800; color: var(--ink); }
       const s = document.createElement("span"); if (!(v && v.options)) setRich(s, v && v.text ? v.text : v);
       li.append(b, s);
       if (v && v.options) {
+        // Two paths as tabs: the student opens the one that fits.
         const og = document.createElement("div"); og.className = "opts2";
-        v.options.forEach(([t, txt]) => { const o = document.createElement("div"); o.className = "opt2"; const ot = document.createElement("strong"); ot.textContent = t; const ox = document.createElement("p"); setRich(ox, txt); o.append(ot, ox); og.appendChild(o); });
-        li.appendChild(og);
+        const tg = document.createElement("div"); tg.className = "toggle"; tg.setAttribute("role", "group");
+        const box = document.createElement("div"); box.className = "opt2";
+        const ox = document.createElement("p"); box.appendChild(ox);
+        const pick = (i) => {
+          [...tg.children].forEach((b, j) => b.setAttribute("aria-pressed", String(i === j)));
+          setRich(ox, v.options[i][1] || ""); box.hidden = !v.options[i][1];
+        };
+        v.options.forEach(([t], i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.addEventListener("click", () => pick(i)); tg.appendChild(b); });
+        og.append(tg, box); li.appendChild(og); pick(0);
       }
       if (v && v.list) {
         const cl = document.createElement("ul"); cl.className = "chips";
