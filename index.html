@@ -51,7 +51,7 @@ body {
   color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
 }
 .wrap {
-  max-width: 1060px; margin: 0 auto;
+  max-width: 1120px; margin: 0 auto;
   padding-block: 28px 64px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
@@ -186,7 +186,7 @@ p { margin: 0; }
 .notes ul { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 
 /* Result */
-.result { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 44px; align-items: start; }
+.result { display: grid; grid-template-columns: minmax(0, 500px) minmax(0, 1fr); gap: 40px; align-items: start; }
 @media (max-width: 860px) { .result { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
 .card-col { display: grid; gap: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
 @media (max-width: 860px) { .card-col { position: static; } }
@@ -1277,7 +1277,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       ]);
     } catch (e) {}
     const r = result, L = r.level;
-    const W = 1080, H = 1350, X = 80, IW = 920;
+    const W = 1080, H = 1350, X = 56, IW = 968;
     const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
     const ctx = cv.getContext("2d");
     const D = '"Fredoka", system-ui, sans-serif', B = '"Manrope", system-ui, sans-serif';
@@ -1312,7 +1312,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const COLS = [{ n: 1, num: "1", name: "Observer" }, { n: 1, num: "2", name: "Observer Alpha" }]
       .concat(LEVELS.slice(1).map((lv) => ({ n: lv.n, num: String(shownLevel(lv.n)), name: lv.name })));
     const curIdx = L.n === 1 ? (isVocabObs(r) ? 0 : 1) : L.n;
-    const NC = COLS.length, pad = 30, gap = 14, colW = (IW - pad * 2 - gap * (NC - 1)) / NC, base = pY + pH - 268;
+    const NC = COLS.length, pad = 20, gap = 12, colW = (IW - pad * 2 - gap * (NC - 1)) / NC, base = pY + pH - 268;
     const maxH = base - (pY + 112), minH = Math.min(70, maxH * 0.3);
     COLS.forEach((col, i) => {
       const x = X + pad + i * (colW + gap), h = minH + (maxH - minH) * i / (NC - 1), top = base - h;
@@ -1324,10 +1324,10 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (isCur) {
         const fs = 44; drawFace(ctx, col.n, x + colW / 2 - fs / 2, top + Math.min(h / 2, 40) - fs / 2, fs, C.white);
       } else {
-        ctx.fillStyle = C.tealDark; ctx.font = "600 34px " + D; ctx.fillText(col.num, x + colW / 2, top + 44);
+        ctx.fillStyle = C.tealDark; ctx.font = "600 38px " + D; ctx.fillText(col.num, x + colW / 2, top + 44);
       }
-      ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "24px " + B;
-      col.name.split(" ").forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 38 + j * 29));
+      ctx.fillStyle = isCur ? C.ink : C.soft; ctx.font = (isCur ? "800 " : "600 ") + "28px " + B;
+      col.name.split(" ").forEach((p, j) => ctx.fillText(p, x + colW / 2, base + 40 + j * 33));
       if (isCur) {
         const tagH = 50, ty = top - tagH - 14, cx = x + colW / 2;
         rr(ctx, x - 6, ty, colW + 12, tagH, 14); ctx.fillStyle = C.coral; ctx.fill();
