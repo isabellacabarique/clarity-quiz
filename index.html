@@ -245,6 +245,7 @@ p { margin: 0; }
 .cal-b.pf { background: #DCEFEA; } .cal-b.pf em { color: #2D7A72; }
 .cal-b.ra { background: #FBE8D8; } .cal-b.ra em { color: #B5561E; }
 .cal-b.ss { background: #DDE9F8; } .cal-b.ss em { color: #2F5D9A; }
+.cal-b.sp { background: #FFE9C7; } .cal-b.sp em { color: #A35F00; }
 .cal-b.imm { background: #E6F0DA; } .cal-b.imm em { color: #4E7A2A; }
 .cal-b.bonus { background: #ECE4F7; } .cal-b.bonus em { color: #6A4BA0; }
 .cal-b.clive { background: #FFE1D9; } .cal-b.clive em { color: #C0402B; }
@@ -1265,11 +1266,11 @@ strong.course { font-weight: 800; color: var(--ink); }
       week += " Y un consejo: si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video en Read Along With Me. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo.";
     }
     const weekVal = week;
-    const startVal = (L.n === 1 && !vocabObs) ? { options: [
+    const startVal = L.n === 2 ? "Si vienes de Observer Alpha, ya pasaste por el curso Pronunciation Foundation; si llegaste directo a Shy Speaker, empieza por ahí. En ambos casos, asegúrate de completar todos sus módulos: ahí aprendes la base de los sonidos del inglés (la iniciación, por qué tu cerebro bloquea el inglés, las vocales, las consonantes, las reducciones y los linking sounds). Ese conocimiento te permite escuchar y pronunciar el inglés de una forma diferente: sabrás por qué las palabras no suenan como se escriben, por qué se pegan unas con otras y por qué algunos sonidos casi desaparecen cuando un nativo habla. Sin esa base, tu boca no tiene un modelo claro que imitar.\n\nVas a usar el curso Shadow the Scene para entrenar tu oído y, sobre todo, tu boca. En este punto es muy importante que sigas los tres pasos de cada video: vas a escuchar un clip, analizar conmigo la escena y luego vas a tener tiempo para repetir cada audio. Después de haber practicado con algunos videos, vas a poder completar un reto para demostrar tu avance y recibir feedback. Completa los videos en orden y no te saltes el reto.\n\nDespués de haber practicado un mes con el curso Shadow the Scene (con el enfoque en la práctica y los retos), empieza el Reto de 30 días para mejorar tu speaking, que encuentras en el módulo BONUS del curso Clarity (Primeros pasos), o usa el curso Read Along With Me enfocándote en la lectura en voz alta.\n\nNo olvides hacer tu inmersión diaria. Es importante que escuches inglés todos los días: sin esa inmersión, tu cerebro nunca va a tener suficiente contacto con el inglés para lograr entenderlo. Puedes hacer inmersión con el curso Read Along With Me, en el que leemos libros e historias juntos, o viendo series, películas o escuchando podcasts. Tu inmersión no es tiempo de estudio: es tiempo para conectar con el inglés, y puedes distribuirlo durante el día." : (L.n === 1 && !vocabObs) ? { options: [
       ["Es mi primera vez con la pronunciación", startBy.replace(/^Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo/, "Te recomiendo")],
       ["Ya tengo bases de pronunciación o vengo de Observer", "Si ya has tenido acercamiento a la pronunciación, significa que ya conoces sonidos como el schwa, las vocales y las consonantes del inglés, y que ya estás familiarizado con las reducciones y los linking sounds 😏. Ese conocimiento te permite escuchar el inglés de una forma diferente: ya sabes por qué las palabras no suenan como se escriben, por qué se pegan unas con otras y por qué algunos sonidos casi desaparecen cuando un nativo habla.\n\nAhora tu reto es lograr que ese conocimiento se conecte con tu oído y logres entender el inglés sin sufrir porque «los nativos hablan muy rápido» 😭.\n\nTe recomiendo que revises el curso Pronunciation Foundation para ver si hay algún sonido que aún no reconoces o algo que quieras repasar. Si no es así, salta directo al curso Shadow the Scene, donde, a través del ejercicio de shadowing, vas a imitar a nativos. En este curso vas a encontrar el Listening Lab, que será el ejercicio más importante para ti, porque es lo que realmente va a entrenar tu oído. No te lo saltes.\n\nNo olvides hacer tu inmersión diaria. Es importante que escuches inglés todos los días: sin esa inmersión, tu cerebro nunca va a tener suficiente contacto con el inglés para lograr entenderlo. Puedes hacer inmersión con el curso Read Along With Me, en el que leemos libros e historias juntos. Revisa el PDF de vocabulario y luego lee conmigo: solo escúchame y sigue el texto con la vista. Puedes reducir la velocidad del video si lo necesitas. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo. También puedes hacer inmersión viendo series, películas o escuchando podcasts."]
     ] } : startBy;
-    const items = [["Por dónde empezar", startVal], ...(L.n === 1 ? [OBS_VOCAB.items[1]] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el quiz" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
+    const items = [["Por dónde empezar", startVal], ...(L.n === 1 ? [OBS_VOCAB.items[1]] : L.n === 2 ? [] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el quiz" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
     if (vocabObs) items.splice(0, items.length, ...OBS_VOCAB.items);
     // Reading question: "Muy poco" or "La idea general, pero se me escapan muchas palabras" -> vocabulary still needs work.
     else if (r.reading !== null && r.reading <= 1) {
@@ -1464,6 +1465,26 @@ strong.course { font-weight: 800; color: var(--ink); }
       note: "",
       hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla»."
     },
+    // Shy Speaker: alternate Shadow the Scene parts; after day 30, the speaking challenge or reading aloud.
+    2: {
+      stages: [
+        { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." },
+          days: [
+            { d: "Lunes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
+            { d: "Martes", pf: null, live: true, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
+            { d: "Miércoles", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
+            { d: "Jueves", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
+            { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } }
+          ] },
+        { key: "m2", label: "Desde el día 31", practice: { cls: "sp", tag: "Speaking", when: "Cada día", txt: "Responde la pregunta del día del Reto de 30 días para mejorar tu speaking, o lee en voz alta conmigo en Read Along With Me." },
+          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: null, live: d === "Martes" })) }
+      ],
+      days: [],
+      weekend: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
+      daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
+      note: "Sigue alternando: si el viernes empezaste un video nuevo, el lunes regresa a él y completa las partes 2 y 3.",
+      hint: "Si puedes invertir más tiempo, aumenta los tiempos.\n\nVerás que cada día tienes práctica de speaking y tiempo de inmersión. No quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés, y puedes distribuir ese tiempo durante el día. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla». Tu tiempo de estudio es el que dedicas a tu práctica del día."
+    },
     // Observer Alpha who already knows the pronunciation basics (or comes from Observer): Shadow the Scene first.
     "1b": {
       stages: [
@@ -1548,7 +1569,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       const col = document.createElement("div"); col.className = "cal-day";
       const pfMin = day.pf ? (day.pf[4] || 15) : 0, pr = day.prac === false ? null : (day.prac || st.practice);
       const lo = pr ? (pr.range ? pr.range[0] : (pr.min || 15)) : 0, hi = pr ? (pr.range ? pr.range[1] : lo) : 0;
-      const prTxt = pr ? (pr.range ? lo + "–" + hi + " min" : lo + " min") : "";
+      const prTxt = pr ? (pr.when || (pr.range ? lo + "–" + hi + " min" : lo + " min")) : "";
       const tot = lo === hi ? (pfMin + lo) + " min" : (pfMin + lo) + "–" + (pfMin + hi) + " min";
       const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = (plan.daily ? "30 min" : tot) + (day.live ? " + clase 1 h" : "") + (plan.daily ? " + inmersión" : ""); h.appendChild(sm);
       const bl = document.createElement("div"); bl.className = "cal-blocks";
@@ -1617,7 +1638,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           const head = (plan.daily ? "30 min" : tot) + (day.live ? " + clase 1 h" : "") + (plan.daily ? " + inmersión" : "");
           let bl = "";
           if (day.pf) bl += blk(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]);
-          if (pr) bl += blk(pr.cls, pr.range ? lo + "–" + hi + " min" : lo + " min", pr.tag, pr.txt);
+          if (pr) bl += blk(pr.cls, pr.when || (pr.range ? lo + "–" + hi + " min" : lo + " min"), pr.tag, pr.txt);
           if (plan.daily) bl += blk("imm", plan.daily.min + " min", plan.daily.tag, plan.daily.txt);
           if (day.live) bl += blk("clive", "7:00 p. m. · 1 h", "Clase en vivo", "Practicamos juntos y te doy feedback.");
           const dayHtml = '<div class="cal-day"><h4>' + esc(day.d) + "<small>" + esc(head) + '</small></h4><div class="cal-blocks">' + bl + "</div></div>";
