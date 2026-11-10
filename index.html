@@ -346,6 +346,10 @@ strong.course { font-weight: 800; color: var(--ink); }
 .path li > .after-btn { grid-column: 2; color: var(--ink-soft); white-space: pre-line; margin-top: 16px; }
 .unlock { grid-column: 2; margin-top: 16px; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 14px; padding: 16px 18px; border-radius: 18px; background: linear-gradient(135deg, #FFF6D8, #FFE9B8); border: 1px solid #F3D27A; box-shadow: 0 18px 30px -22px rgba(163,95,0,.6); }
 .unlock-ic { font-size: 30px; grid-row: span 2; }
+.unlock.soon { background: var(--bg); border: 1px dashed var(--line); box-shadow: none; }
+.unlock.soon .unlock-ic { filter: grayscale(1); opacity: .5; }
+.unlock.soon b { color: var(--ink-soft); }
+.unlock.soon small { color: var(--ink); font-weight: 700; }
 .unlock b { display: block; font: 600 18px/1.2 var(--font-display); color: #5A3A00; }
 .unlock small { display: block; font-size: 13.5px; color: #7A5A1A; font-weight: 600; }
 .unlock .wa-btn { grid-column: 1 / -1; margin-top: 10px; }
@@ -1296,7 +1300,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       ["Es mi primera vez con la pronunciación", startBy.replace(/^Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo/, "Te recomiendo")],
       ["Ya tengo bases de pronunciación o vengo de Observer", "Si ya has tenido acercamiento a la pronunciación, significa que ya conoces sonidos como el schwa, las vocales y las consonantes del inglés, y que ya estás familiarizado con las reducciones y los linking sounds 😏. Ese conocimiento te permite escuchar el inglés de una forma diferente: ya sabes por qué las palabras no suenan como se escriben, por qué se pegan unas con otras y por qué algunos sonidos casi desaparecen cuando un nativo habla.\n\nAhora tu reto es lograr que ese conocimiento se conecte con tu oído y logres entender el inglés sin sufrir porque «los nativos hablan muy rápido» 😭.\n\nTe recomiendo que revises el curso Pronunciation Foundation para ver si hay algún sonido que aún no reconoces o algo que quieras repasar. Si no es así, salta directo al curso Shadow the Scene, donde, a través del ejercicio de shadowing, vas a imitar a nativos. En este curso vas a encontrar el Listening Lab, que será el ejercicio más importante para ti, porque es lo que realmente va a entrenar tu oído. No te lo saltes.\n\nNo olvides hacer tu inmersión diaria. Es importante que escuches inglés todos los días: sin esa inmersión, tu cerebro nunca va a tener suficiente contacto con el inglés para lograr entenderlo. Puedes hacer inmersión con el curso Read Along With Me, en el que leemos libros e historias juntos. Revisa el PDF de vocabulario y luego lee conmigo: solo escúchame y sigue el texto con la vista. Puedes reducir la velocidad del video si lo necesitas. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo. También puedes hacer inmersión viendo series, películas o escuchando podcasts."]
     ] } : startBy;
-    const items = [["Por dónde empezar", startVal], ...(L.n === 1 ? [OBS_VOCAB.items[1]] : L.n === 2 ? [] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el quiz" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
+    const items = [["Por dónde empezar", startVal], ...(L.n === 1 && !vocabObs ? [OBS_VOCAB.items[1], ["Tu premio de este nivel", { text: "Al llegar a Observer Alpha, vas a desbloquear un reto exclusivo para entrenar tu oído con series reales. Muy pronto lo vas a encontrar aquí.", locked: "Reto 15 días: entiende series sin subtítulos" }]] : L.n === 1 ? [OBS_VOCAB.items[1]] : L.n === 2 ? [] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el quiz" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
     if (vocabObs) items.splice(0, items.length, ...OBS_VOCAB.items);
     // Reading question: "Muy poco" or "La idea general, pero se me escapan muchas palabras" -> vocabulary still needs work.
     else if (r.reading !== null && r.reading <= 1) {
@@ -1324,6 +1328,11 @@ strong.course { font-weight: 800; color: var(--ink); }
         const a = document.createElement("a"); a.className = "btn wa-btn"; a.href = v.button.href; a.target = "_blank"; a.rel = "noopener";
         a.textContent = v.button.label; badge.appendChild(a); li.appendChild(badge);
         if (v.after) { const s2 = document.createElement("span"); s2.className = "after-btn"; setRich(s2, v.after); li.appendChild(s2); }
+      }
+      if (v && v.locked) {
+        const badge = document.createElement("div"); badge.className = "unlock soon";
+        badge.innerHTML = '<span class="unlock-ic" aria-hidden="true">🏆</span><span><b>Próximamente</b><small></small></span>';
+        badge.querySelector("small").textContent = v.locked; li.appendChild(badge);
       }
       if (v && v.list) {
         const cl = document.createElement("ul"); cl.className = "chips";
@@ -1654,6 +1663,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         body = (on ? "<strong>Tu camino: " + esc(on.textContent) + "</strong><br>" : "") + txt(li.querySelector("[data-path-box] p"));
       }
       const wa = li.querySelector(".wa-btn");
+      if (li.querySelector(".unlock.soon")) body += "<br><strong>Próximamente: " + txt(li.querySelector(".unlock.soon small")) + "</strong>";
       if (wa) body += "<br><strong>WhatsApp de mi equipo: +57 302 362 9834</strong>" + (li.querySelector(".after-btn") ? "<br><br>" + txt(li.querySelector(".after-btn")) : "");
       const chips = [...li.querySelectorAll(".chips li")].map((c) => "<li>" + esc(c.textContent) + "</li>").join("");
       h += "<li><b>" + txt(title) + "</b><p>" + body + "</p>" + (chips ? "<ul>" + chips + "</ul>" : "") + "</li>";
