@@ -245,6 +245,7 @@ p { margin: 0; }
 .cal-b.pf { background: #DCEFEA; } .cal-b.pf em { color: #2D7A72; }
 .cal-b.ra { background: #FBE8D8; } .cal-b.ra em { color: #B5561E; }
 .cal-b.ss { background: #DDE9F8; } .cal-b.ss em { color: #2F5D9A; }
+.cal-b.rest { background: #EEF1F0; } .cal-b.rest em { color: #5B6B68; }
 .cal-b.sp { background: #FFE9C7; } .cal-b.sp em { color: #A35F00; }
 .cal-b.imm { background: #E6F0DA; } .cal-b.imm em { color: #4E7A2A; }
 .cal-b.bonus { background: #ECE4F7; } .cal-b.bonus em { color: #6A4BA0; }
@@ -1460,7 +1461,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           ] }
       ],
       days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Revisa la lección del día."], live: d === "Martes" })),
-      weekend: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
+      weekend: { d: "Domingo", when: "Día libre", tag: "Descanso", txt: "Descansa.", cls: "rest" },
       daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
       note: "",
       hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla»."
@@ -1474,15 +1475,16 @@ strong.course { font-weight: 800; color: var(--ink); }
             { d: "Martes", pf: null, live: true, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
             { d: "Miércoles", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
             { d: "Jueves", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
-            { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } }
+            { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
+            { d: "Sábado", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } }
           ] },
         { key: "m2", label: "Desde el día 31", practice: { cls: "sp", tag: "Speaking", when: "Cada día", txt: "Responde la pregunta del día del Reto de 30 días para mejorar tu speaking, o lee en voz alta conmigo en Read Along With Me." },
-          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: null, live: d === "Martes" })) }
+          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"].map((d) => ({ d, pf: null, live: d === "Martes" })) }
       ],
       days: [],
-      weekend: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
+      weekend: { d: "Domingo", when: "Día libre", tag: "Descanso", txt: "Descansa.", cls: "rest" },
       daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
-      note: "Sigue alternando: si el viernes empezaste un video nuevo, el lunes regresa a él y completa las partes 2 y 3.",
+      note: "",
       hint: "Si puedes invertir más tiempo, aumenta los tiempos.\n\nVerás que cada día tienes práctica de speaking y tiempo de inmersión. No quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés, y puedes distribuir ese tiempo durante el día. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla». Tu tiempo de estudio es el que dedicas a tu práctica del día."
     },
     // Observer Alpha who already knows the pronunciation basics (or comes from Observer): Shadow the Scene first.
@@ -1582,9 +1584,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     });
     if (plan.weekend) {
       const col = document.createElement("div"); col.className = "cal-day";
-      const h = document.createElement("h4"); h.textContent = "Sábado y domingo";
+      const h = document.createElement("h4"); h.textContent = plan.weekend.d || "Sábado y domingo";
       const bl = document.createElement("div"); bl.className = "cal-blocks";
-      bl.appendChild(block("imm", "Fin de semana", plan.weekend.tag, plan.weekend.txt));
+      bl.appendChild(block(plan.weekend.cls || "imm", plan.weekend.when || "Fin de semana", plan.weekend.tag, plan.weekend.txt));
       col.append(h, bl); cal.appendChild(col);
     }
     $("cal-note").textContent = plan.note || "";
@@ -1597,7 +1599,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt)) + (plan.daily ? ck(plan.daily.tag + ": " + plan.daily.txt) : "") + (day.live ? ck("Clase en vivo, 7:00 p. m. (hora Colombia)") : "") + "</td></tr>").join("");
     return '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(st.label) + "</p>" +
       '<div class="fields"><span>Semana del:</span></div><table>' + rows +
-      "<tr><th>Fin de semana</th><td>" + ck(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : "Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
+      "<tr><th>" + (plan.weekend && plan.weekend.d ? plan.weekend.d : "Fin de semana") + "</th><td>" + ck(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : "Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
       '<div class="notes">Lo que más me costó esta semana:<div></div><div></div><div></div></div><div class="notes">Cómo puedo hacer que la siguiente semana sea mejor:<div></div><div></div><div></div></div><p class="foot">Si puedes invertir más tiempo, aumenta los tiempos.</p></div>';
   }
   // Full plan as a printable document (the student saves it as PDF): result texts, roadmap, calendar and checklists.
@@ -1646,7 +1648,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           h += (firstDay ? stageTitle : "") + dayHtml;
           firstDay = false;
         });
-        if (plan.weekend) h += '<div class="cal-day"><h4>Sábado y domingo</h4><div class="cal-blocks">' + blk("imm", "Fin de semana", plan.weekend.tag, plan.weekend.txt) + "</div></div>";
+        if (plan.weekend) h += '<div class="cal-day"><h4>' + esc(plan.weekend.d || "Sábado y domingo") + '</h4><div class="cal-blocks">' + blk(plan.weekend.cls || "imm", plan.weekend.when || "Fin de semana", plan.weekend.tag, plan.weekend.txt) + "</div></div>";
         h += "</div></div>";
         if (plan.note) h += "<p>" + esc(plan.note) + "</p>";
       });
