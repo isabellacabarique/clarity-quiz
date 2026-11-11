@@ -294,6 +294,25 @@ p { margin: 0; }
 .pp-steps li { margin-bottom: 10px; }
 .pp-steps b { page-break-after: avoid; break-after: avoid; }
 .pp-steps b { display: block; font-size: 13.5px; }
+.pp-roadmap { font-family: var(--font-body); font-size: 13px; }
+.pp-roadmap .roadmap { margin: 6px 0 14px; font-size: 13.5px; }
+.pp-roadmap .path { margin-top: 6px; }
+.pp-roadmap .path li { padding-bottom: 18px; }
+.pp-roadmap .path b { font-size: 16px; }
+.pp-roadmap .path li > span, .pp-roadmap .after-btn, .pp-roadmap .opt2 p { font-size: 12.5px; line-height: 1.5; }
+.pp-roadmap .unlock, .pp-roadmap .chips, .pp-roadmap .opt2 { break-inside: avoid; page-break-inside: avoid; }
+.pp-roadmap .unlock-img { max-width: 80mm; }
+.pp-roadmap .wa-btn { padding: 9px 16px 9px 12px; font-size: 12.5px; box-shadow: none; }
+.pp-pathlabel { margin: 4px 0 6px; font-weight: 800; color: #2D7A72; font-size: 13px; }
+.pp-prize { margin: 8px 0 10px; padding: 10px 12px; border-radius: 10px; background: linear-gradient(135deg, #FFF6D8, #FFE9B8); border: 1px solid #F3D27A; break-inside: avoid; page-break-inside: avoid; }
+.pp-prize.soon { background: #F4FAF8; border: 1px dashed #B9E0DA; }
+.pp-prize-h { display: flex; gap: 10px; align-items: center; }
+.pp-prize-h span { font-size: 22px; }
+.pp-prize-h b { display: block; font-size: 13.5px; }
+.pp-prize-h small { display: block; font-size: 12px; font-weight: 600; }
+.pp-prize img { display: block; width: 70mm; border-radius: 8px; margin: 8px 0 2px; }
+.pp-wa { display: inline-block; margin-top: 8px; padding: 6px 12px; border-radius: 999px; background: #15302B; color: #FFFFFF !important; font-weight: 800; font-size: 12px; text-decoration: none; }
+.pp-link { color: #2D7A72; font-weight: 800; }
 .pp-steps ul { margin: 4px 0 0; padding-left: 18px; }
 .pp-cal { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 6px; page-break-inside: avoid; }
 .pp-cal th, .pp-cal td { border: 1px solid #B9E0DA; padding: 5px 8px; text-align: left; vertical-align: top; }
@@ -1513,7 +1532,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           ] }
       ],
       days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Revisa la lección del día."], live: d === "Martes" })),
-      weekend: { d: "Domingo", when: "Día libre", tag: "Descanso", txt: "Descansa.", cls: "rest" },
+      weekend: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
       daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
       note: "",
       hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla»."
@@ -1664,22 +1683,16 @@ strong.course { font-weight: 800; color: var(--ink); }
       '<img class="pp-card" src="' + $("card").src + '" alt="">' +
       "<h2>" + txt($("r-mean-title")) + "</h2><p>" + txt($("r-desc")) + "</p>" +
       "<h2>Tu reto más grande en este momento</h2><p>" + txt($("r-challenge")) + "</p>" +
-      "<h2>Tu roadmap</h2><p>" + txt($("r-roadmap")) + "</p><ol class=\"pp-steps\">";
-    [...$("r-path").children].forEach((li) => {
-      const title = li.querySelector(":scope > b"), span = li.querySelector(":scope > span");
-      let body = txt(span);
-      const tabs = li.querySelector("[data-path-tabs]");
-      if (tabs) {
-        const on = tabs.querySelector('[aria-pressed="true"]');
-        body = (on ? "<strong>Tu camino: " + esc(on.textContent) + "</strong><br>" : "") + txt(li.querySelector("[data-path-box] p"));
-      }
-      const wa = li.querySelector(".wa-btn");
-      if (li.querySelector(".unlock.soon")) body += "<br><strong>Próximamente: " + txt(li.querySelector(".unlock.soon small")) + "</strong>";
-      if (wa) body += "<br><strong>WhatsApp de mi equipo: +57 302 362 9834</strong>" + [...li.querySelectorAll(".after-btn")].map((e) => "<br><br>" + txt(e)).join("");
-      const chips = [...li.querySelectorAll(".chips li")].map((c) => "<li>" + esc(c.textContent) + "</li>").join("");
-      h += "<li><b>" + txt(title) + "</b><p>" + body + "</p>" + (chips ? "<ul>" + chips + "</ul>" : "") + "</li>";
+      "<h2>Tu roadmap</h2>";
+    // Same design as the page: clone the roadmap itself (timeline, prize boxes, image, WhatsApp buttons stay clickable).
+    const rm = $("r-roadmap").cloneNode(true); rm.removeAttribute("id");
+    const path = $("r-path").cloneNode(true); path.removeAttribute("id"); path.classList.add("pp-path");
+    path.querySelectorAll("[data-path-tabs]").forEach((tg) => {
+      const on = tg.querySelector('[aria-pressed="true"]'), lab = document.createElement("p");
+      lab.className = "pp-pathlabel"; lab.textContent = "Tu camino: " + (on ? on.textContent : ""); tg.replaceWith(lab);
     });
-    h += "</ol>";
+    path.querySelectorAll("[hidden]").forEach((e) => e.remove());
+    h += '<div class="pp-roadmap">' + rm.outerHTML + path.outerHTML + "</div>";
     const plan = CAL[calKey];
     if (plan) {
       h += "<h2>Tu semana en Clarity</h2><p>" + txt($("cal-hint")) + "</p>";
