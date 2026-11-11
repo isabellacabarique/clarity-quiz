@@ -1544,7 +1544,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: ["", "Revisa la lección del día."], live: d === "Martes" })),
       weekend: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
       daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
-      note: "",
+      note: "Sigue alternando: si el viernes empezaste un video nuevo, el lunes regresa a él y completa las partes 2 y 3.",
       hint: "Este plan está pensado para 3 meses. Si puedes invertir más tiempo, aumenta los tiempos.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla»."
     },
     // Shy Speaker: alternate Shadow the Scene parts; after day 30, the speaking challenge or reading aloud.
@@ -1556,14 +1556,13 @@ strong.course { font-weight: 800; color: var(--ink); }
             { d: "Martes", pf: null, live: true, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
             { d: "Miércoles", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
             { d: "Jueves", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
-            { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
-            { d: "Sábado", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } }
+            { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } }
           ] },
         { key: "m2", label: "Mes 2 · días 31 a 60", practice: { cls: "sp", tag: "Speaking", when: "Cada día", txt: "Responde la pregunta del día del Reto de 30 días para mejorar tu speaking, o lee en voz alta conmigo en Read Along With Me." },
-          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"].map((d) => ({ d, pf: null, live: d === "Martes" })) }
+          days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: null, live: d === "Martes" })) }
       ],
       days: [],
-      weekend: { d: "Domingo", when: "Domingo", tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
+      weekend: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
       daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
       note: "",
       hint: "Este plan está pensado para 60 días: tu fase para calentar motores antes de lanzarte al agua y hablar con otras personas. Si puedes invertir más tiempo, aumenta los tiempos.\n\nCada día tiene dos partes: tu práctica de speaking y tu inmersión. Si al ver el calendario piensas «¡no tengo tiempo para todo esto!», no te preocupes: no se trata de sentarte a estudiar más horas. Tu práctica del día es tu momento de entrenar la boca; tu inmersión, en cambio, puede ir contigo a todas partes: un podcast mientras cocinas, una serie en la noche o un capítulo del curso Read Along With Me antes de dormir. Lo que hace la diferencia no es cuánto tiempo estudias, sino que el inglés se vuelva parte de tu día. Si quieres repasar cómo hacer tu inmersión, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla»."
