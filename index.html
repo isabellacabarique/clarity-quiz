@@ -370,7 +370,8 @@ strong.course { font-weight: 800; color: var(--ink); }
 .unlock.soon { background: var(--bg); border: 1px dashed var(--line); box-shadow: none; }
 .unlock.soon .unlock-ic { filter: grayscale(1); opacity: .5; }
 .unlock.next .unlock-ic { filter: none; opacity: 1; font-size: 26px; }
-.unlock.next small { color: #A35F00; font-weight: 700; }
+.unlock.next .unlock-ic { grid-row: auto; }
+.lock-note { grid-column: 1 / -1; margin: 6px 0 0 4px; font-size: 12.5px; color: var(--ink-faint); font-weight: 600; }
 .unlock.soon b { color: var(--ink-soft); }
 .unlock.soon small { color: var(--ink); font-weight: 700; }
 .unlock b { display: block; font: 600 18px/1.2 var(--font-display); color: #5A3A00; }
@@ -1357,10 +1358,11 @@ strong.course { font-weight: 800; color: var(--ink); }
         if (v.afterLink && v.afterLink.href) { const l = document.createElement("a"); l.className = "after-link"; l.href = v.afterLink.href; l.target = "_blank"; l.rel = "noopener"; l.textContent = v.afterLink.label + " ▶"; li.appendChild(l); }
         if (v.afterButton) {
           const ab = v.afterButton, box = document.createElement("div"); box.className = "unlock soon next";
-          box.innerHTML = '<span class="unlock-ic" aria-hidden="true">🔒</span><span><b></b><small></small></span>';
-          box.querySelector("b").textContent = ab.lockTitle || ""; box.querySelector("small").textContent = ab.lockNote || "";
+          box.innerHTML = '<span class="unlock-ic" aria-hidden="true">🔒</span><span><b></b></span>';
+          box.querySelector("b").textContent = ab.lockTitle || "";
           const b2 = document.createElement("a"); b2.className = "btn wa-btn"; b2.href = ab.href; b2.target = "_blank"; b2.rel = "noopener"; b2.textContent = ab.label;
-          box.appendChild(b2); li.appendChild(box);
+          const nt = document.createElement("p"); nt.className = "lock-note"; nt.textContent = ab.lockNote || "";
+          box.append(b2, nt); li.appendChild(box);
         }
         if (v.after2) { const s3 = document.createElement("span"); s3.className = "after-btn"; setRich(s3, v.after2); li.appendChild(s3); }
       }
