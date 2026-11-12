@@ -4,7 +4,7 @@
 // Configura en Cloudflare (Settings → Variables and Secrets):
 //   AZURE_KEY        (Secret)  la "Key 1" de tu recurso de Speech en Azure
 //   AZURE_REGION     (Text)    la región del recurso, por ejemplo: eastus
-//   ALLOWED_ORIGINS  (Text)    https://isabellacabarique.github.io,https://quiz.immersa.com.co
+//   ALLOWED_ORIGINS  (Text)    https://isabellacabarique.github.io,https://quiz.immersa.com.co,https://quizclarity.immersa.com.co
 
 export default {
   async fetch(request, env) {
