@@ -89,7 +89,7 @@ p { margin: 0; }
 .meta span { padding: 7px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
 .levels { width: 100%; max-width: 980px; display: grid; gap: 14px; }
 .levels-label { font: 700 12.5px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--teal-dark); }
-.stairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.stairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: end; }
 .stairs li { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
 .lvcard {
   background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
@@ -101,13 +101,12 @@ p { margin: 0; }
 .stairs li:nth-child(3) { margin-bottom: 36px; }
 .stairs li:nth-child(4) { margin-bottom: 54px; }
 .stairs li:nth-child(5) { margin-bottom: 72px; }
-.stairs li:nth-child(6) { margin-bottom: 90px; }
-.stairs li:nth-child(6) .lvcard { background: var(--teal-pale); border-color: var(--teal-pale); }
+.stairs li:nth-child(5) .lvcard { background: var(--teal-pale); border-color: var(--teal-pale); }
 .face-wrap { display: inline-flex; vertical-align: middle; }
 .lvl .face-wrap { margin-left: 2px; vertical-align: -0.15em; }
 .lvl .face-wrap svg { width: 1.15em; height: 1.15em; }
 .stairs .em { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); margin-bottom: 6px; }
-.stairs li:nth-child(6) .em { background: var(--surface); }
+.stairs li:nth-child(5) .em { background: var(--surface); }
 .stairs .lv { font: 700 11.5px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--teal-dark); }
 .stairs b { font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; }
 .levels-sub { margin: -4px 0 4px; color: var(--ink-soft); font-size: 15px; }
@@ -414,15 +413,14 @@ strong.course { font-weight: 800; color: var(--ink); }
     </div>
 
     <div class="levels">
-      <p class="levels-label">Los 6 niveles de Clarity</p>
+      <p class="levels-label">Los 5 niveles de Clarity</p>
       <p class="levels-sub">Cada vez que llegas a un nivel, desbloqueas un reto exclusivo 🏆</p>
       <ol class="stairs">
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="1">👀</span><span class="lv">Nivel 1</span><b>Observer</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><span class="pz">Reto Despierta tu oído</span></span></li>
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="1">👀</span><span class="lv">Nivel 2</span><b>Observer Alpha</b></div><span class="prize locked"><i class="trophy" aria-hidden="true">🏆</i><small>Próximamente</small><span class="pz">Reto 15 días: entiende series sin subtítulos (edición Friends)</span></span></li>
-        <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="2">🌱</span><span class="lv">Nivel 3</span><b>Shy Speaker</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><span class="pz">Reto Linking sounds</span><span class="pz2">+ Reto 30 días de speaking</span></span></li>
+        <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="2">🌱</span><span class="lv">Nivel 3</span><b>Shy Speaker</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><span class="pz">Reto Linking sounds</span><span class="pz">Reto Reductions</span><span class="pz">Reto Grammar (past tense)</span><span class="pz2">+ Reto 30 días de speaking</span></span></li>
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="3">🔥</span><span class="lv">Nivel 4</span><b>Brave Speaker</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><span class="pz">Club de conversación</span></span></li>
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="4">🌊</span><span class="lv">Nivel 5</span><b>Fluent Speaker</b></div><span class="prize locked"><i class="trophy" aria-hidden="true">🏆</i><small>Próximamente</small><span class="pz">Reto sorpresa</span></span></li>
-        <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="5">⭐</span><span class="lv">Nivel 6</span><b>Leader</b></div><span class="prize locked"><i class="trophy" aria-hidden="true">🏆</i><small>Próximamente</small><span class="pz">Reto sorpresa</span></span></li>
       </ol>
     </div>
 
@@ -661,13 +659,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
       challenge: "Tu reto más grande ahora es pulir los detalles: la entonación, el énfasis y esos sonidos que todavía delatan al español. También es momento de entender el inglés más rápido, el de las conversaciones reales entre nativos, sin ningún filtro.",
       week: "Cada semana, haz 2 escenas o podcasts de Shadow the Scene y los ejercicios más retadores de Listening Lab. En la clase en vivo trabajemos juntos la entonación, el énfasis y esos sonidos que todavía quieras afinar.",
-      up: "Sigue escuchando inglés real sin subtítulos y habla en inglés siempre que puedas. Y empieza a compartir lo que ya sabes en la comunidad: responder los audios de otros también te hace crecer." },
-    { n: 5, name: "Leader", icon: "⭐", art: "a", min: 81,
-      phrase: "I speak with confidence and help others find their voice.",
-      desc: "Ser Leader significa que hablas con total confianza y entiendes el inglés real sin esfuerzo. Llegaste al nivel más alto del camino Clarity, y ahora puedes ayudar a otros a encontrar su voz. ¡No sabes lo feliz que me hace ver esto!",
-      challenge: "Tu reto ahora es mantener tu nivel y compartirlo. Seguir entrenando tu oído con contenido real para no perder lo que lograste, y acompañar a quienes van empezando: cada estudiante que llega quiere estar donde tú estás.",
-      week: "Sigue entrenando el oído con Shadow the Scene y, si te animas, ayúdame a liderar la comunidad: organiza o anima espacios de práctica y dale la bienvenida a quienes van llegando.",
-      up: "Sigue guiando a otros. Verte les demuestra que sí se puede." }
+      up: "Sigue escuchando inglés real sin subtítulos y habla en inglés siempre que puedas. Y empieza a compartir lo que ya sabes en la comunidad: responder los audios de otros también te hace crecer." }
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -1171,8 +1163,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     let max = SCORED_MAX;
     if (!speakOff && spkDone) { raw += spkSum / spkDone * SPEAK_WEIGHT; max += SPEAK_WEIGHT; }
     const score = Math.round(raw / max * 100);
-    const idx = score <= 20 ? 0 : score <= 40 ? 1 : score <= 60 ? 2 : score <= 80 ? 3 : 4;
-    const level = LEVELS[idx], next = idx < 4 ? LEVELS[idx + 1] : null;
+    const idx = score <= 20 ? 0 : score <= 40 ? 1 : score <= 60 ? 2 : 3;
+    const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const toNext = next ? next.min - score : 0;
     const progress = next ? Math.max(0, Math.min(1, (score - level.min) / (next.min - level.min))) : 1;
     return { score, bases, earAvg: ear / earN, reading, level, next, toNext, progress };
@@ -1244,7 +1236,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     ctx.restore();
   }
   document.querySelectorAll(".stairs .em").forEach((e) => { e.innerHTML = faceSVG(Number(e.dataset.face), 44); });
-  // The goal is where the next level starts (21, 41, 61, 81); a Leader is measured out of 100.
+  // The goal is where the next level starts (21, 41, 61); a Fluent Speaker is measured out of 100.
   function progressPct(r) { return r.next ? Math.max(0, Math.min(99, Math.round(r.progress * 100))) : 100; }
   function ptsTxt(n) { return n + (n === 1 ? " punto" : " puntos"); }
   function scoreLabel(r) { return r.next ? progressPct(r) + "%" : "¡Nivel máximo!"; }
@@ -1509,7 +1501,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, 1310);
 
     $("card").src = cv.toDataURL("image/png");
-    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + (L.n === 1 && !isVocabObs(r) ? 2 : shownLevel(L.n)) + " de 6. " + (r.next ? "Tiene " + ptsTxt(r.score) + "; le faltan " + ptsTxt(r.toNext) + " para ser " + r.next.name + "." : "Nivel máximo.");
+    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + (L.n === 1 && !isVocabObs(r) ? 2 : shownLevel(L.n)) + " de 5. " + (r.next ? "Tiene " + ptsTxt(r.score) + "; le faltan " + ptsTxt(r.toNext) + " para ser " + r.next.name + "." : "Nivel máximo.");
     cardBlob = await new Promise((res) => cv.toBlob(res, "image/png"));
   }
 
@@ -1784,12 +1776,12 @@ strong.course { font-weight: 800; color: var(--ink); }
     else if (e.key === "Enter" && e.target.tagName !== "BUTTON") goNext();
   });
 
-  // Review shortcut for Isa: #resultado-1 … #resultado-5 opens a sample result for that level
+  // Review shortcut for Isa: #resultado-1 … #resultado-4 opens a sample result for that level
   // (score in the middle of the level). Students never see it unless they type it.
   function previewFromHash() {
-    const m = /^#resultado-([1-5])(b?)$/.exec(location.hash);
+    const m = /^#resultado-([1-4])(b?)$/.exec(location.hash);
     if (!m) return;
-    const idx = Number(m[1]) - 1, level = LEVELS[idx], next = idx < 4 ? LEVELS[idx + 1] : null;
+    const idx = Number(m[1]) - 1, level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const score = next ? Math.round((level.min + next.min - 1) / 2) : 90;
     result = { score, bases: idx >= 3 ? 7 : 3, earAvg: 1 + idx * 0.4, reading: m[2] ? 0 : 2, level, next, toNext: next ? next.min - score : 0,
       progress: next ? (score - level.min) / (next.min - level.min) : 1 };
