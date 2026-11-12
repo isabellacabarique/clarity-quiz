@@ -8,7 +8,7 @@
 <meta name="description" content="Quiz de Clarity by teacher Isa: descubre qué tipo de speaker eres hoy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap">
 <style>
 /* Layout: one focused column for the quiz; the result opens into two columns (shareable card left, explanation right). Palette and type follow clarity.immersa.com.co. */
 :root {
@@ -116,6 +116,7 @@ p { margin: 0; }
 .prize.locked .trophy { filter: grayscale(1); opacity: .45; }
 .prize small { font: 700 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: #B08A2E; }
 .prize .pz { font: 600 14px/1.25 var(--font-display); color: var(--ink); text-wrap: balance; }
+.prize:not(.locked) .pz { font-weight: 400; }
 .prize .pz2 { font-size: 11.5px; line-height: 1.3; color: var(--ink-soft); }
 .prize.locked { border-top-color: var(--line); }
 .prize.locked small { color: var(--ink-faint); }
