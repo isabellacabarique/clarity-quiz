@@ -1577,13 +1577,13 @@ strong.course { font-weight: 800; color: var(--ink); }
     // Shy Speaker: alternate Shadow the Scene parts; after day 30, the speaking challenge or reading aloud.
     2: {
       stages: [
-        { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." },
+        { key: "m1", label: "Mes 1 · días 1 a 30", practice: { cls: "ss", tag: "Shadow the Scene", noTime: true, txt: "Completa la lección del día." },
           days: [
-            { d: "Lunes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
-            { d: "Martes", pf: null, live: true, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
-            { d: "Miércoles", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } },
-            { d: "Jueves", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Partes 2 y 3", txt: "Regresa al mismo video y completa las partes 2 y 3 + Listening Lab (opcional, pero recomendado)." } },
-            { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", when: "Parte 1", txt: "Completa la parte 1 de un video nuevo." } }
+            { d: "Lunes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", noTime: true, txt: "Completa la lección del día." } },
+            { d: "Martes", pf: null, live: true, prac: { cls: "ss", tag: "Shadow the Scene", noTime: true, txt: "Completa la lección del día." } },
+            { d: "Miércoles", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", noTime: true, txt: "Completa la lección del día." } },
+            { d: "Jueves", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", noTime: true, txt: "Completa la lección del día." } },
+            { d: "Viernes", pf: null, prac: { cls: "ss", tag: "Shadow the Scene", noTime: true, txt: "Completa la lección del día." } }
           ] },
         { key: "m2", label: "Mes 2 · días 31 a 60", practice: { cls: "sp", tag: "Speaking", when: "Cada día", txt: "Responde la pregunta del día del Reto de 30 días para mejorar tu speaking, o lee en voz alta conmigo en Read Along With Me." },
           days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map((d) => ({ d, pf: null, live: d === "Martes" })) }
@@ -1591,7 +1591,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       days: [],
       weekend: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés." },
       daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
-      note: "Sigue alternando: si el viernes empezaste un video nuevo, el lunes regresa a él y completa las partes 2 y 3.",
+      note: "",
       hint: "Este plan está pensado para 60 días: tu fase para calentar motores antes de lanzarte al agua y hablar con otras personas. Si puedes invertir más tiempo, aumenta los tiempos.\n\nCada día tiene dos partes: tu práctica de speaking y tu inmersión. Vamos a darla toda cada día. Si no sabes cómo hacer tu inmersión, repasa cómo hacerlo en la video lección BONUS «Qué es la inmersión y cómo hacerla»."
     },
     // Observer Alpha who already knows the pronunciation basics (or comes from Observer): Shadow the Scene first.
@@ -1673,12 +1673,12 @@ strong.course { font-weight: 800; color: var(--ink); }
       tabs.appendChild(b);
     });
     const st = plan.stages[calStage], cal = $("cal"); cal.textContent = "";
-    const block = (cls, time, tag, txt, step) => { const d = document.createElement("div"); d.className = "cal-b " + cls; const e = document.createElement("em"); e.textContent = time + " · " + tag; d.appendChild(e); if (step) { const b = document.createElement("strong"); b.textContent = step + ": "; d.appendChild(b); } if (txt) d.append(txt); else d.classList.add("bare"); return d; };
+    const block = (cls, time, tag, txt, step) => { const d = document.createElement("div"); d.className = "cal-b " + cls; const e = document.createElement("em"); e.textContent = (time ? time + " · " : "") + tag; d.appendChild(e); if (step) { const b = document.createElement("strong"); b.textContent = step + ": "; d.appendChild(b); } if (txt) d.append(txt); else d.classList.add("bare"); return d; };
     (st.days || plan.days).forEach((day) => {
       const col = document.createElement("div"); col.className = "cal-day";
       const pfMin = day.pf ? (day.pf[4] || 15) : 0, pr = day.prac === false ? null : (day.prac || st.practice);
       const lo = pr ? (pr.range ? pr.range[0] : (pr.min || 15)) : 0, hi = pr ? (pr.range ? pr.range[1] : lo) : 0;
-      const prTxt = pr ? (pr.when || (pr.range ? lo + "–" + hi + " min" : lo + " min")) : "";
+      const prTxt = pr ? (pr.noTime ? "" : pr.when || (pr.range ? lo + "–" + hi + " min" : lo + " min")) : "";
       const tot = lo === hi ? (pfMin + lo) + " min" : (pfMin + lo) + "–" + (pfMin + hi) + " min";
       const h = document.createElement("h4"); h.textContent = day.d; const sm = document.createElement("small"); sm.textContent = (plan.daily ? "30 min" : tot) + (day.live ? " + clase 1 h" : "") + (plan.daily ? " + inmersión" : ""); h.appendChild(sm);
       const bl = document.createElement("div"); bl.className = "cal-blocks";
@@ -1735,7 +1735,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       plan.stages.forEach((st) => {
         const stageTitle = plan.stages.length > 1 ? "<h3>" + esc(st.label) + "</h3>" : "";
         let firstDay = true;
-        const blk = (cls, time, tag, text, step) => '<div class="cal-b ' + cls + '"><em>' + esc(time + " · " + tag) + "</em>" + (step ? "<strong>" + esc(step) + ": </strong>" : "") + esc(text || "") + "</div>";
+        const blk = (cls, time, tag, text, step) => '<div class="cal-b ' + cls + '"><em>' + esc((time ? time + " · " : "") + tag) + "</em>" + (step ? "<strong>" + esc(step) + ": </strong>" : "") + esc(text || "") + "</div>";
         h += '<div class="pp-stage"><div class="cal pp-week">';
         (st.days || plan.days).forEach((day) => {
           const pfMin = day.pf ? (day.pf[4] || 15) : 0, pr = day.prac === false ? null : (day.prac || st.practice);
@@ -1744,7 +1744,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           const head = (plan.daily ? "30 min" : tot) + (day.live ? " + clase 1 h" : "") + (plan.daily ? " + inmersión" : "");
           let bl = "";
           if (day.pf) bl += blk(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]);
-          if (pr) bl += blk(pr.cls, pr.when || (pr.range ? lo + "–" + hi + " min" : lo + " min"), pr.tag, pr.txt);
+          if (pr) bl += blk(pr.cls, pr.noTime ? "" : pr.when || (pr.range ? lo + "–" + hi + " min" : lo + " min"), pr.tag, pr.txt);
           if (plan.daily) bl += blk("imm", plan.daily.min + " min", plan.daily.tag, plan.daily.txt);
           if (day.live) bl += blk("clive", "7:00 p. m. · 1 h", "Clase en vivo", "Practicamos juntos y te doy feedback.");
           const dayHtml = '<div class="cal-day"><h4>' + esc(day.d) + "<small>" + esc(head) + '</small></h4><div class="cal-blocks">' + bl + "</div></div>";
