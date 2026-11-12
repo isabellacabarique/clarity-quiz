@@ -399,6 +399,22 @@ strong.course { font-weight: 800; color: var(--ink); }
   .toggle button { flex: 1 1 auto; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* password gate for result links opened directly (not after taking the test) */
+.rgate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px))}
+.rgate[hidden]{display:none}
+.rgate .card{width:min(420px,100%);background:var(--surface);border:1.5px solid var(--line);border-radius:22px;padding:30px 26px 24px;text-align:center;box-shadow:0 18px 50px rgba(21,48,43,.12)}
+.rgate .lock{width:58px;height:58px;margin:0 auto 12px;border-radius:50%;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;font-size:26px}
+.rgate .eyebrow{font:700 12px/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase;color:var(--teal-dark)}
+.rgate h2{font-family:var(--font-display);font-size:26px;margin:8px 0 8px;color:var(--ink);text-wrap:balance}
+.rgate p{margin:0 0 16px;color:var(--ink-soft);font-size:15px;line-height:1.5}
+.rgate input{width:100%;box-sizing:border-box;font:16px var(--font-body);padding:13px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);text-align:center}
+.rgate input:focus{outline:2px solid var(--focus);outline-offset:2px}
+.rgate .btn{width:100%;margin-top:10px}
+.rgate .err{min-height:18px;margin-top:8px;color:var(--coral-dark);font-size:13.5px}
+.rgate .help{margin-top:12px;font-size:13px;color:var(--ink-soft)}
+.rgate .help a{color:var(--teal-dark);font-weight:600}
+.rgate .help2{margin-top:6px;font-size:12px}
 </style>
 </head>
 <body>
@@ -535,6 +551,17 @@ strong.course { font-weight: 800; color: var(--ink); }
       <button class="btn" type="button" id="pop-close">Entendido</button>
     </div>
     <p class="pop-quote">«Quien tiene un plan, toma acción masiva y ve resultados.»</p>
+  </div>
+</div>
+<div class="rgate" id="rgate" hidden role="dialog" aria-modal="true" aria-labelledby="rg-title">
+  <div class="card">
+    <div class="lock" aria-hidden="true">🔒</div>
+    <div class="eyebrow">Tu plan de Clarity</div>
+    <h2 id="rg-title">Plan de <span id="rg-name"></span></h2>
+    <p>Escribe la contraseña de tu nivel para ver tu resultado y tu plan.</p>
+    <form id="rg-form" autocomplete="off"><input id="rg-pass" type="password" placeholder="Contraseña" aria-label="Contraseña" autocomplete="current-password"><button class="btn" type="submit">Ver mi plan</button><div class="err" id="rg-err" aria-live="polite"></div></form>
+    <div class="help">¿Ya eres <span id="rg-name2"></span> y no recuerdas la contraseña? <a id="rg-wa" href="#" target="_blank" rel="noopener">Escríbele a Santi</a></div>
+    <div class="help help2">¿No sabes en qué nivel estás? Haz el <a href="./">test</a>.</div>
   </div>
 </div>
 <script>
@@ -1176,6 +1203,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     result = compute();
     renderResult();
     show("result");
+    const k = Object.keys(RLINKS).find((x) => RLINKS[x].n === String(result.level.n) && RLINKS[x].b === (isVocabObs(result) ? "b" : ""));
+    if (k) rgRemember(k);
   }
 
   // ---------- result ----------
@@ -1779,9 +1808,50 @@ strong.course { font-weight: 800; color: var(--ink); }
 
   // Review shortcut for Isa: #resultado-1 … #resultado-4 opens a sample result for that level
   // (score in the middle of the level). Students never see it unless they type it.
+  // Result links for the platform: #observer, #observer-alpha, #shy-speaker, #brave-speaker, #fluent-speaker
+  // (#resultado-1 … #resultado-4, #resultado-1b still work). Opened directly they ask for that level's password;
+  // after taking the test the result shows without one, and that device remembers the level.
+  const RLINKS = {"observer": {"n": "1", "b": "b", "name": "Observer", "h": ["573bf11496a00cf4b7ea2690ca4a40ae7a85962aa58a7b272fca435f4f7df863"]}, "observer-alpha": {"n": "1", "b": "", "name": "Observer Alpha", "h": ["2d4579245afed2da70a5d698f719984a353f71067c6ba97daf98f22f3044c9b0"]}, "shy-speaker": {"n": "2", "b": "", "name": "Shy Speaker", "h": ["c231de566e9da2ab7f955fae6e7e98b708db993fead8cb8d6cb14cc678901b42"]}, "brave-speaker": {"n": "3", "b": "", "name": "Brave Speaker", "h": ["872ba0d479445360601287951e30762ac7a75f771fa04f09c670d9b90535cd18"]}, "fluent-speaker": {"n": "4", "b": "", "name": "Fluent Speaker", "h": ["dca478e3c28a358aeac02960abdd204b9c93098c4ff0875ca0abc83c966aeec8", "4d3a1ac738b6203aa034a98fd74804f85f58d9a423dfdc49a1d9616a2eb30314"]}};
+  function parseResultHash() {
+    const h = location.hash.replace(/^#/, "").toLowerCase();
+    if (RLINKS[h]) return Object.assign({ key: h }, RLINKS[h]);
+    const m = /^resultado-([1-4])(b?)$/.exec(h);
+    if (!m) return null;
+    const key = Object.keys(RLINKS).find((k) => RLINKS[k].n === m[1] && RLINKS[k].b === m[2]);
+    return key ? Object.assign({ key }, RLINKS[key]) : null;
+  }
+  function rgUnlocked(key) { try { return localStorage.getItem("cq-ok-" + key) === "1"; } catch (e) { return false; } }
+  function rgRemember(key) { try { localStorage.setItem("cq-ok-" + key, "1"); } catch (e) {} }
+  async function sha256(t) {
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+    return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+  }
+  let rgPending = null;
+  $("rg-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!rgPending) return;
+    const v = $("rg-pass").value.trim().toLowerCase();
+    let ok = false;
+    try { ok = rgPending.h.includes(await sha256(v)); } catch (err) { ok = false; }
+    if (!ok) { $("rg-err").textContent = "Esa contraseña no es la de este nivel. Revísala e intenta de nuevo."; $("rg-pass").select(); return; }
+    rgRemember(rgPending.key);
+    const r = rgPending; rgPending = null;
+    $("rgate").hidden = true; $("rg-pass").value = ""; $("rg-err").textContent = "";
+    openSample(r.n, r.b);
+  });
   function previewFromHash() {
-    const m = /^#resultado-([1-4])(b?)$/.exec(location.hash);
-    if (!m) return;
+    const r = parseResultHash();
+    if (!r) return;
+    if (rgUnlocked(r.key)) { $("rgate").hidden = true; openSample(r.n, r.b); return; }
+    rgPending = r;
+    $("rg-name").textContent = r.name; $("rg-name2").textContent = r.name;
+    $("rg-wa").href = "https://wa.me/573023629834?text=" + encodeURIComponent("Hola Santi, soy " + r.name + " y necesito la contraseña de mi plan del test de Clarity");
+    $("rg-err").textContent = "";
+    $("rgate").hidden = false;
+    setTimeout(() => $("rg-pass").focus(), 50);
+  }
+  function openSample(n, b) {
+    const m = [null, n, b];
     const idx = Number(m[1]) - 1, level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const score = next ? Math.round((level.min + next.min - 1) / 2) : 90;
     result = { score, bases: idx >= 3 ? 7 : 3, earAvg: 1 + idx * 0.4, reading: m[2] ? 0 : 2, level, next, toNext: next ? next.min - score : 0,
