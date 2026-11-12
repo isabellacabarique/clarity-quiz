@@ -685,8 +685,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       phrase: "I speak, even if I make mistakes.",
       desc: "Ser Brave Speaker significa que ya te atreves a hablar, y eso es lo más difícil. A veces todavía traduces del español, te trabas o cometes errores, pero no dejas que el miedo decida por ti. ¡Me encanta verte aquí!",
       challenge: "Tu reto más grande ahora es dejar de traducir. Ya hablas, pero muchas veces armas la frase en español primero y luego la pasas al inglés, y eso te hace ir lento y trabarte. Necesitas que las frases te salgan directo en inglés, como te salen en español.",
-      week: "Cada semana, haz 2 escenas de Shadow the Scene repitiendo cada oración, 1 ejercicio de Listening Lab y 2 sesiones de Read Along With Me fijándote en el ritmo y la entonación. Y en la clase en vivo, pídeme feedback sobre algo concreto: para eso estoy.",
-      up: "Empieza a decir frases cortas sin traducirlas primero del español, y pasa a ver series con subtítulos en inglés, o sin ellos. Vas mejor de lo que crees." },
+      week: "Tu semana debe estar llena de práctica de speaking. Quiero animarte a que te unas a sesiones en la plataforma Episoden, donde hablas con personas de todo el mundo. Son gratuitas y puedes unirte cuando quieras.",
+      up: "Vas a ser Fluent Speaker cuando puedas mantener una conversación de 20 o 30 minutos en inglés sobre tu vida, tu trabajo o tus planes, sin armar las frases en español primero. Todavía vas a cometer errores y a veces te va a faltar una palabra, pero ya no te vas a quedar en blanco: la vas a explicar con otras palabras y vas a seguir. Vas a entender series y podcasts sin subtítulos, aunque se te escape algún detalle, y vas a poder conversar con una persona que no conoces sin que el miedo decida por ti." },
     { n: 4, name: "Fluent Speaker", icon: "🌊", art: "a", min: 61,
       phrase: "I understand real English and speak without translating.",
       desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
@@ -1357,11 +1357,15 @@ strong.course { font-weight: 800; color: var(--ink); }
       items.splice(2, 0, ["Tu vocabulario", "Me contaste que, cuando lees, todavía se te escapan muchas palabras. Para entender el inglés hay que conocer su vocabulario, así que es muy importante que uses los PDFs de vocabulario de cada lección y te asegures de conocer las palabras que aparecen. Puedes hacer este trabajo al mismo tiempo que te familiarizas con los sonidos, pero no dejes de construir tu vocabulario: cuando conozcas al menos el 60% de las palabras de lo que escuchas, vas a sentir cómo se empieza a desbloquear tu speaking."]);
     }
     const ul = $("r-path"); ul.textContent = "";
+    if (L.n === 3) {
+      items[0] = ["", "Ya debiste haber terminado los módulos y retos de Pronunciation Foundation. Ese entrenamiento auditivo y vocal es muy importante para que puedas ganar claridad al hablar y al escuchar.\n\nTambién ya debes haber terminado los módulos y retos de Shadow the Scene, y ya debes estar más que familiarizado con el Listening Lab. Si todavía no se ha convertido en tu mejor amigo, estás desperdiciando una gran herramienta.\n\nPara superar todos los retos que vas a enfrentar en este nivel, lo que más nos interesa es que practiques. Por eso vas a desbloquear el acceso al Speaking Club, un espacio donde vas a practicar en sesiones en vivo, hablando con personas reales. Esto te va a ayudar a pensar directo en inglés, porque en una conversación real no hay tiempo para traducir; a acostumbrarte a distintos acentos y ritmos, y a perderle el miedo a equivocarte frente a otros. Cada sesión hace que las palabras que ya conoces te salgan solas cuando las necesitas."];
+      items[items.length - 1] = ["Nos vemos los martes y los jueves", "Te espero en la clase en vivo de los martes, de 7:00 a 8:00 p. m. (hora Colombia), donde practicamos juntos y te doy feedback, y en la sesión de speaking de los jueves."];
+    }
     items.forEach(([k, v]) => {
       const li = document.createElement("li");
       const b = document.createElement("b"); b.textContent = k;
       const s = document.createElement("span"); if (!(v && v.options)) setRich(s, v && v.text ? v.text : v);
-      li.append(b, s);
+      if (k) li.append(b, s); else { li.classList.add("notitle"); li.append(s); }
       if (v && v.options) {
         // Two paths as tabs: the student opens the one that fits.
         const og = document.createElement("div"); og.className = "opts2";
