@@ -584,21 +584,21 @@ strong.course { font-weight: 800; color: var(--ink); }
 
   // max: how many options can be chosen (1 = single choice). score:false = not counted in the level.
   const QUESTIONS = [
-    { dim: "Bases", max: 2, text: "¿Has estudiado pronunciación en inglés, es decir, cómo suenan los sonidos?",
+    { dim: "Bases", max: 2, key: "studied", text: "¿Has estudiado pronunciación en inglés, es decir, cómo suenan los sonidos?",
       opts: [["Nunca", 0], ["He visto videos sueltos en redes como Instagram o YouTube", 1], ["He estudiado algunos temas y tengo conocimiento básico", 2], ["Conozco bien los sonidos del inglés y sus reglas", 3]] },
     { dim: "Oído", max: 1, text: "Cuando ves una serie, video o película en inglés, ¿qué subtítulos usas?",
-      opts: [["En español, siempre", 0], ["En español casi siempre, a veces en inglés", 1], ["En inglés", 2], ["Puedo verla sin subtítulos", 3], ["No suelo ver contenido en inglés", 0]] },
+      opts: [["En español, siempre", 0], ["En español casi siempre, a veces en inglés", 1], ["En inglés", 2], ["La entiendo sin subtítulos", 3], ["No suelo ver contenido en inglés", 0]] },
     { dim: "Lectura", max: 1, score: false, key: "reading", text: "Cuando lees un texto en inglés, como un artículo, un post o los subtítulos de una serie, ¿cuánto entiendes?",
-      opts: [["Muy poco, necesito traductor", 0], ["La idea general, pero se me escapan muchas palabras", 1], ["Casi todo, aunque a veces busco alguna palabra", 2], ["Todo o casi todo, sin esfuerzo", 3]] },
-    { dim: "Oído", text: "Sin subtítulos, ¿cuánto entiendes de una conversación entre nativos?",
+      opts: [["0 % · Nada", 0], ["25 % · Muy poco, solo palabras sueltas", 1], ["50 % · Entiendo la idea general, pero se me escapan muchos detalles", 2], ["75 % · Entiendo bastante, aunque todavía necesito los subtítulos", 3], ["90 % · Entiendo casi todo, sin esfuerzo", 3]] },
+    { dim: "Oído", key: "conv", text: "Sin subtítulos, ¿cuánto entiendes de una conversación entre nativos?",
       opts: [["Casi nada", 0], ["Algunas palabras sueltas", 1], ["La idea general", 2], ["Casi todo", 3]] },
-    { dim: "Oído", text: "¿Cuánto entiendes de un podcast o audio en inglés, sin imagen?",
+    { dim: "Oído", key: "pod", text: "¿Cuánto entiendes de un podcast o audio en inglés, sin imagen?",
       opts: [["Casi nada", 0], ["Solo si es lento o hecho para estudiantes", 1], ["Entiendo podcasts normales, con esfuerzo", 2], ["Entiendo sin esfuerzo", 3]] },
     { dim: "Voz", key: "speak", text: "Cuando tienes que hablar en inglés, ¿qué te pasa?",
-      opts: [["Lo evito siempre que puedo", 0], ["Me bloqueo o me quedo en blanco", 1], ["Hablo, pero lento y traduciendo del español", 2], ["Hablo, pero sé que cometo muchos errores gramaticales", 2], ["Hablo con fluidez, sin traducir", 3]] },
+      opts: [["Lo evito siempre que puedo", 0], ["Me bloqueo o me quedo en blanco", 1], ["Hablo, pero lento y traduciendo del español", 2], ["Se me enreda la boca y me cuesta pronunciar", 1], ["Hablo, pero sé que cometo muchos errores gramaticales", 2], ["Hablo con fluidez, sin traducir", 3]] },
     { dim: "Voz", max: 2, key: "freq", text: "¿Con qué frecuencia hablas en inglés? Cuenta todo: conversaciones, clases, grabarte respondiendo preguntas, hacer shadowing o leer en voz alta.",
       opts: [["Nunca", 0], ["Muy poco, solo cuando me toca", 1], ["Algunas veces por semana", 2], ["A diario o casi a diario", 3]] },
-    { dim: "Voz", text: "Cuando hablas en inglés, ¿qué tan seguido tienes que repetir algo porque no te entienden?",
+    { dim: "Voz", key: "repeat", text: "Cuando hablas en inglés, ¿qué tan seguido tienes que repetir algo porque no te entienden?",
       opts: [["Muy seguido", 0], ["Con frecuencia", 1], ["A veces", 2], ["Casi nunca", 3]] },
     { dim: "Voz", text: "¿Cómo te sientes con la forma en que suenas en inglés?",
       opts: [["Me da vergüenza escucharme", 0], ["Siento que sueno como un robot", 1], ["Sueno bien, pero todavía no natural", 2], ["Me siento cómodo y natural", 3]] },
@@ -1211,13 +1211,22 @@ strong.course { font-weight: 800; color: var(--ink); }
     // (Observer vs Observer Alpha is decided by the reading question: see isVocabObs.)
     const dictAvg = DICT_TOTAL ? dictSum / DICT_TOTAL : 0;
     if (dictAvg < 0.6) idx = 0;
-    // Someone who avoids speaking or blocks ("Lo evito" / "Me bloqueo") can't be Brave or Fluent yet.
-    if (idx >= 2 && pointsOf(qIndex("speak")) <= 1) idx = 1;
+    // Teacher Isa's rules (each one is a ceiling; the lowest one wins).
+    const sel = (k) => answers[qIndex(k)] || [];
+    const one = (k) => { const a = sel(k); return a.length ? Math.min(...a) : 0; };   // lowest option marked
+    const studied = one("studied") > 0;                    // has studied pronunciation (anything but "Nunca")
+    const vocab50 = one("reading") >= 2;                   // reads at 50 % or more
+    if (one("conv") <= 2 || one("pod") <= 2) idx = 0;      // conversation / podcast up to C → Observer / Observer Alpha
+    if (one("repeat") <= 1) idx = 0;                       // "Muy seguido" / "Con frecuencia" → Observer Alpha
+    if (one("repeat") === 2) idx = Math.min(idx, studied ? 1 : 0); // "A veces": Shy only if they studied pronunciation
+    const sp = sel("speak");
+    if (sp.some((o) => o <= 3)) idx = Math.min(idx, vocab50 ? 1 : 0); // avoids / blocks / translates / tongue-tied
+    if (sp.includes(3) && !studied) idx = 0;               // tongue-tied and never studied pronunciation
     const shown = Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100);
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const toNext = next ? next.min - shown : 0;
     const progress = next ? Math.max(0, Math.min(1, (shown - level.min) / (next.min - level.min))) : 1;
-    return { score: shown, bases, earAvg: ear / earN, reading, level, next, toNext, progress };
+    return { score: shown, bases, earAvg: ear / earN, reading, level, next, toNext, progress, obsEar: one("conv") <= 1 || one("pod") <= 1 };
   }
 
   function finish() {
@@ -1307,7 +1316,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   // Observer who already understands when reading is called "Observer Alpha"; the one who still needs vocabulary is plain "Observer". Bars keep "Observer".
   function shownLevel(n) { return n === 1 ? 1 : n + 1; }
-  function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 0; } // only "Muy poco, necesito traductor" → Observer
+  function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && (r.obsEar || r.reading <= 1); } // reading 0–25 %, or conversation/podcast A–B → Observer
   function pageName(r) { return r.level.n === 1 && !isVocabObs(r) ? "Observer Alpha" : r.level.name; }
   // Keep "Hoy eres un …" on one line: shrink the title until it fits its column.
   function fitTitle() {
