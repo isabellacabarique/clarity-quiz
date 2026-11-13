@@ -684,19 +684,19 @@ strong.course { font-weight: 800; color: var(--ink); }
       challenge: "Tu reto más grande ahora es que tu oído reconozca las palabras que ya conoces. Cuando un nativo habla, esas palabras suenan distinto a como las aprendiste: se reducen, se pegan entre sí y algunos sonidos desaparecen. Por eso no las reconoces cuando las escuchas, pero sí cuando las lees. Quiero que empieces a entrenar tu oído, te acerques a los sonidos reales del inglés y sueltes la necesidad de escuchar exactamente lo que lees. Llevas mucho tiempo conociendo el inglés a través de tus ojos. Es hora de que lo conozcas a través de tus oídos.",
       week: "Primer mes: cada semana, aprende un sonido del curso Pronunciation Foundation. Usa los entrenamientos auditivos y de práctica durante la semana y, al final, completa el reto y súbelo al feed para recibir retroalimentación. Cada día, lee 1 capítulo conmigo en Read Along With Me. Solo escúchame y sigue el texto con la vista. Intenta escuchar los nuevos sonidos que vas aprendiendo en Pronunciation Foundation. Si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo.\n\nA partir del día 30, reemplaza Read Along With Me por el curso Shadow the Scene. Es importante que combines dos programas, porque debes poner en práctica lo que vas aprendiendo en el curso Pronunciation Foundation.", noTip: true,
       up: "Cuando termines los módulos del curso Pronunciation Foundation y en el Listening Lab del curso Shadow the Scene logres un resultado de 100% con los videos del curso, o de entre 80 y 100% con videos que saques de YouTube, tu oído ya se habrá familiarizado con los sonidos del inglés real y podrás entender lo suficiente para empezar tu fase de speaking y saltar al nivel 3." },
-    { n: 2, name: "Shy Speaker", icon: "🌱", art: "a", min: 21,
+    { n: 2, name: "Shy Speaker", icon: "🌱", art: "a", min: 31,
       phrase: "I'm starting to understand, but speaking still scares me.",
       desc: "Ser Shy Speaker significa que entiendes el inglés, sabes lo que quieres decir, incluso tienes la respuesta en tu cabeza, pero cuando llega el momento de hablar… simplemente te quedas en blanco. Por ahora observas más de lo que participas, no te atreves mucho a hablar, te da pena equivocarte, te cuesta iniciar conversaciones y tu boca no responde igual de rápido que tu cabeza. Te entiendo perfectamente (yo estuve ahí). Fui parte del equipo «Entiendo, pero no hablo» 😂, ¡pero logré salir! Y te prometo que tú también lo puedes lograr.",
       challenge: "Estás en el punto en el que entiendes bien cuando lees y tu oído ya empieza a reconocer sonidos, reducciones y conexiones que antes ignoraba. Ya no te falta vocabulario (aunque lo seguiremos construyendo): te falta pronunciación, entrenamiento vocal, activación de las palabras y repetición. Por eso, tu reto más grande ahora es conectar el conocimiento que tienes con tu boca y empezar a reducir el miedo a equivocarte o a quedarte en blanco. Para hacerlo, vas a usar tu voz con intención y a entrenar tu boca en un espacio seguro, poco a poco, sin presión. Así vas a lograr que tu cerebro active lo que ya sabe y se prepare para el speaking.",
       week: "Cada semana, haz 1 análisis de Shadow the Scene, 1 ejercicio de Listening Lab y 3 sesiones de Read Along With Me leyendo en voz alta conmigo. Leer en voz alta es la forma más segura de empezar a soltar la boca, sin que nadie te escuche.",
       up: "Tu meta es dejar de evitar el inglés y que tu boca y tu cerebro estén listos para hablarlo, aunque todavía cometas errores gramaticales. El secreto para desbloquear tu speaking no es hablar sin errores, sino hablar a pesar de ellos. Para eso necesitas perder el miedo y acostumbrar a tu cerebro y a tu boca a hablar en inglés.\n\nPara subir de nivel, tu claridad al hablar tiene que aumentar, y eso solo se logra con repetición. Tus sonidos deben ser claros y tienes que estar acostumbrado a escucharte en inglés: ya no te debe dar vergüenza escuchar tu voz." },
-    { n: 3, name: "Brave Speaker", icon: "🔥", art: "a", min: 41,
+    { n: 3, name: "Brave Speaker", icon: "🔥", art: "a", min: 51,
       phrase: "I speak, even if I make mistakes.",
       desc: "Ser Brave Speaker significa que ya te atreves a hablar, y eso es lo más difícil. A veces todavía traduces del español, te trabas o cometes errores, pero no dejas que el miedo decida por ti. ¡Me encanta verte aquí!",
       challenge: "Tu reto más grande ahora es dejar de traducir. Ya hablas, pero muchas veces armas la frase en español primero y luego la pasas al inglés, y eso te hace ir lento y trabarte. Necesitas que las frases te salgan directo en inglés, como te salen en español.",
       week: "Tu semana debe estar llena de práctica de speaking. Quiero animarte a que te unas a sesiones en la plataforma [Episoden](https://www.episoden.com/), donde hablas con personas de todo el mundo. Son gratuitas y puedes unirte cuando quieras.",
       up: "Vas a ser Fluent Speaker cuando puedas mantener una conversación de 20 o 30 minutos en inglés sobre tu vida, tu trabajo o tus planes, sin armar las frases en español primero. Todavía vas a cometer errores y a veces te va a faltar una palabra, pero ya no te vas a quedar en blanco: la vas a explicar con otras palabras y vas a seguir. Vas a entender series y podcasts sin subtítulos, aunque se te escape algún detalle, y vas a poder conversar con una persona que no conoces sin que el miedo decida por ti." },
-    { n: 4, name: "Fluent Speaker", icon: "🌊", art: "a", min: 61,
+    { n: 4, name: "Fluent Speaker", icon: "🌊", art: "a", min: 76,
       phrase: "I understand real English and speak without translating.",
       desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
       challenge: "Tu reto más grande ahora es pulir los detalles: la entonación, el énfasis y esos sonidos que todavía delatan al español. También es momento de entender el inglés más rápido, el de las conversaciones reales entre nativos, sin ningún filtro.",
@@ -1203,13 +1203,21 @@ strong.course { font-weight: 800; color: var(--ink); }
     const dictPts = DICT_TOTAL ? dictSum / DICT_TOTAL * DICT_WEIGHT : 0;
     raw += dictPts; bases += dictPts;
     let max = SCORED_MAX;
-    if (!speakOff && spkDone) { raw += spkSum / spkDone * SPEAK_WEIGHT; max += SPEAK_WEIGHT; }
+    // Strict: reading aloud only adds points above a 60% clarity score (60% → 0, 95% or more → all 6 points).
+    if (!speakOff && spkDone) { raw += Math.max(0, Math.min(1, (spkSum / spkDone - 0.6) / 0.35)) * SPEAK_WEIGHT; max += SPEAK_WEIGHT; }
     const score = Math.round(raw / max * 100);
-    const idx = score <= 20 ? 0 : score <= 40 ? 1 : score <= 60 ? 2 : 3;
+    let idx = score <= 30 ? 0 : score <= 50 ? 1 : score <= 75 ? 2 : 3;
+    // Strict caps: if the ear still doesn't understand native English (conversation and podcast: "casi nada" or
+    // "palabras sueltas / solo si es lento") and the dictations stay under 40%, the student is still an Observer.
+    const dictAvg = DICT_TOTAL ? dictSum / DICT_TOTAL : 0;
+    if (ear / earN <= 1 && dictAvg < 0.4) idx = 0;
+    // Someone who avoids speaking or blocks ("Lo evito" / "Me bloqueo") can't be Brave or Fluent yet.
+    if (idx >= 2 && pointsOf(qIndex("speak")) <= 1) idx = 1;
+    const shown = Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100);
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
-    const toNext = next ? next.min - score : 0;
-    const progress = next ? Math.max(0, Math.min(1, (score - level.min) / (next.min - level.min))) : 1;
-    return { score, bases, earAvg: ear / earN, reading, level, next, toNext, progress };
+    const toNext = next ? next.min - shown : 0;
+    const progress = next ? Math.max(0, Math.min(1, (shown - level.min) / (next.min - level.min))) : 1;
+    return { score: shown, bases, earAvg: ear / earN, reading, level, next, toNext, progress };
   }
 
   function finish() {
@@ -1881,8 +1889,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   // The test is closed for now: the main page shows a notice; result links (with their level password) still work.
   const QUIZ_CLOSED = true;
-  function checkClosed() { $("qclosed").hidden = !(QUIZ_CLOSED && !parseResultHash()); }
-  if (QUIZ_CLOSED) $("start").addEventListener("click", (e) => { e.stopImmediatePropagation(); checkClosed(); }, true);
+  function checkClosed() { $("qclosed").hidden = !(QUIZ_CLOSED && !parseResultHash() && !/[?&]probar\b/.test(location.search)); }
+  if (QUIZ_CLOSED && !/[?&]probar\b/.test(location.search)) $("start").addEventListener("click", (e) => { e.stopImmediatePropagation(); checkClosed(); }, true);
   checkClosed();
   previewFromHash();
   window.addEventListener("hashchange", () => { checkClosed(); previewFromHash(); });
