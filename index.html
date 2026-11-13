@@ -1222,7 +1222,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const notReadyToSpeak = sel("freq").includes(0) || one("feel") <= 1 || sp.some((o) => o <= 3);
     // Floors
     if (conv === 3 && pod === 3) idx = Math.max(idx, 1);   // understands almost everything → ready to practice speaking (Shy)
-    if (sel("subs").includes(3)) idx = notReadyToSpeak ? 1 : Math.max(idx, 2); // understands without subtitles → Brave/Fluent, or Shy to get ready to speak
+    if (sel("subs").includes(3)) idx = notReadyToSpeak ? (vocab50 ? 1 : 0) : Math.max(idx, 2); // with fear: Shy only if the vocabulary is there (reading 50 %+) // understands without subtitles → Brave/Fluent, or Shy to get ready to speak
     // Ceilings
     if (dictAvg < 0.6) idx = 0;                            // dictations under 60 % → Observer / Observer Alpha
     if (conv <= 1 || pod <= 1) idx = 0;                    // conversation / podcast A–B → Observer
