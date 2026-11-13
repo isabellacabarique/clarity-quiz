@@ -1207,10 +1207,10 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (!speakOff && spkDone) { raw += Math.max(0, Math.min(1, (spkSum / spkDone - 0.6) / 0.35)) * SPEAK_WEIGHT; max += SPEAK_WEIGHT; }
     const score = Math.round(raw / max * 100);
     let idx = score <= 30 ? 0 : score <= 50 ? 1 : score <= 75 ? 2 : 3;
-    // Strict caps: if the ear still doesn't understand native English (conversation and podcast: "casi nada" or
-    // "palabras sueltas / solo si es lento") and the dictations stay under 40%, the student is still an Observer.
+    // Dictations are the objective check: under 60% right, the student is Observer / Observer Alpha whatever they marked.
+    // (Observer vs Observer Alpha is decided by the reading question: see isVocabObs.)
     const dictAvg = DICT_TOTAL ? dictSum / DICT_TOTAL : 0;
-    if (ear / earN <= 1 && dictAvg < 0.4) idx = 0;
+    if (dictAvg < 0.6) idx = 0;
     // Someone who avoids speaking or blocks ("Lo evito" / "Me bloqueo") can't be Brave or Fluent yet.
     if (idx >= 2 && pointsOf(qIndex("speak")) <= 1) idx = 1;
     const shown = Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100);
@@ -1307,7 +1307,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   // Observer who already understands when reading is called "Observer Alpha"; the one who still needs vocabulary is plain "Observer". Bars keep "Observer".
   function shownLevel(n) { return n === 1 ? 1 : n + 1; }
-  function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 1; }
+  function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 0; } // only "Muy poco, necesito traductor" → Observer
   function pageName(r) { return r.level.n === 1 && !isVocabObs(r) ? "Observer Alpha" : r.level.name; }
   // Keep "Hoy eres un …" on one line: shrink the title until it fits its column.
   function fitTitle() {
