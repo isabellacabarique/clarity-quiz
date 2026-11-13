@@ -1880,7 +1880,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     show("result");
   }
   // The test is closed for now: the main page shows a notice; result links (with their level password) still work.
-  const QUIZ_CLOSED = true;
+  const QUIZ_CLOSED = false;
   function checkClosed() { $("qclosed").hidden = !(QUIZ_CLOSED && !parseResultHash()); }
   if (QUIZ_CLOSED) $("start").addEventListener("click", (e) => { e.stopImmediatePropagation(); checkClosed(); }, true);
   checkClosed();
