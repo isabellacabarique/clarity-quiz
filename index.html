@@ -559,6 +559,14 @@ strong.course { font-weight: 800; color: var(--ink); }
     <p class="pop-quote">«Quien tiene un plan, toma acción masiva y ve resultados.»</p>
   </div>
 </div>
+<div class="rgate" id="qclosed" hidden role="dialog" aria-modal="true" aria-labelledby="qc-title">
+  <div class="card">
+    <div class="lock" aria-hidden="true">⏳</div>
+    <div class="eyebrow">Clarity · teacher Isa</div>
+    <h2 id="qc-title">El test abre pronto</h2>
+    <p>Todavía no puedes hacer el test «¿Qué tipo de speaker eres hoy?». Te avisaremos en la comunidad cuando esté abierto.</p>
+  </div>
+</div>
 <div class="rgate" id="rgate" hidden role="dialog" aria-modal="true" aria-labelledby="rg-title">
   <div class="card">
     <div class="lock" aria-hidden="true">🔒</div>
@@ -1871,8 +1879,13 @@ strong.course { font-weight: 800; color: var(--ink); }
     renderResult();
     show("result");
   }
+  // The test is closed for now: the main page shows a notice; result links (with their level password) still work.
+  const QUIZ_CLOSED = true;
+  function checkClosed() { $("qclosed").hidden = !(QUIZ_CLOSED && !parseResultHash()); }
+  if (QUIZ_CLOSED) $("start").addEventListener("click", (e) => { e.stopImmediatePropagation(); checkClosed(); }, true);
+  checkClosed();
   previewFromHash();
-  window.addEventListener("hashchange", previewFromHash);
+  window.addEventListener("hashchange", () => { checkClosed(); previewFromHash(); });
 })();
 </script>
 <div id="print-sheet" aria-hidden="true"></div>
