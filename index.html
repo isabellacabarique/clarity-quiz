@@ -1852,7 +1852,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   function previewFromHash() {
     const r = parseResultHash();
     if (!r) return;
-    if (rgUnlocked(r.key)) { $("rgate").hidden = true; openSample(r.n, r.b); return; }
+    const ALWAYS_ASK = ["shy-speaker"]; // these levels ask for the password every time the link is opened
+    if (rgUnlocked(r.key) && !ALWAYS_ASK.includes(r.key)) { $("rgate").hidden = true; openSample(r.n, r.b); return; }
     rgPending = r;
     $("rg-name").textContent = r.name; $("rg-name2").textContent = r.name;
     $("rg-wa").href = "https://wa.me/573023629834?text=" + encodeURIComponent("Hola Santi, soy " + r.name + " y necesito la contraseña de mi plan del test de Clarity. Te envío el pantallazo del resultado del test.");
