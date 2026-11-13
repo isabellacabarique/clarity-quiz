@@ -420,6 +420,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 .rgate .help{margin-top:12px;font-size:13px;color:var(--ink-soft)}
 .rgate .help a{color:var(--teal-dark);font-weight:600}
 .rgate .help2{margin-top:6px;font-size:12px}
+.in-link { color: var(--teal-dark); font-weight: 600; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -685,7 +686,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       phrase: "I speak, even if I make mistakes.",
       desc: "Ser Brave Speaker significa que ya te atreves a hablar, y eso es lo más difícil. A veces todavía traduces del español, te trabas o cometes errores, pero no dejas que el miedo decida por ti. ¡Me encanta verte aquí!",
       challenge: "Tu reto más grande ahora es dejar de traducir. Ya hablas, pero muchas veces armas la frase en español primero y luego la pasas al inglés, y eso te hace ir lento y trabarte. Necesitas que las frases te salgan directo en inglés, como te salen en español.",
-      week: "Tu semana debe estar llena de práctica de speaking. Quiero animarte a que te unas a sesiones en la plataforma Episoden, donde hablas con personas de todo el mundo. Son gratuitas y puedes unirte cuando quieras.",
+      week: "Tu semana debe estar llena de práctica de speaking. Quiero animarte a que te unas a sesiones en la plataforma [Episoden](https://www.episoden.com/), donde hablas con personas de todo el mundo. Son gratuitas y puedes unirte cuando quieras.",
       up: "Vas a ser Fluent Speaker cuando puedas mantener una conversación de 20 o 30 minutos en inglés sobre tu vida, tu trabajo o tus planes, sin armar las frases en español primero. Todavía vas a cometer errores y a veces te va a faltar una palabra, pero ya no te vas a quedar en blanco: la vas a explicar con otras palabras y vas a seguir. Vas a entender series y podcasts sin subtítulos, aunque se te escape algún detalle, y vas a poder conversar con una persona que no conoces sin que el miedo decida por ti." },
     { n: 4, name: "Fluent Speaker", icon: "🌊", art: "a", min: 61,
       phrase: "I understand real English and speak without translating.",
@@ -1282,7 +1283,10 @@ strong.course { font-weight: 800; color: var(--ink); }
     el.textContent = "";
     String(text).split(COURSES).forEach((part, i) => {
       if (i % 2) { const b = document.createElement("strong"); b.className = "course"; b.textContent = part; el.appendChild(b); }
-      else if (part) el.appendChild(document.createTextNode(part));
+      else if (part) part.split(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/).forEach((t, j, arr) => {
+        if (j % 3 === 1) { const l = document.createElement("a"); l.href = arr[j + 1]; l.target = "_blank"; l.rel = "noopener"; l.className = "in-link"; l.textContent = t; el.appendChild(l); }
+        else if (j % 3 === 0 && t) el.appendChild(document.createTextNode(t));
+      });
     });
   }
   // Observer who already understands when reading is called "Observer Alpha"; the one who still needs vocabulary is plain "Observer". Bars keep "Observer".
@@ -1359,7 +1363,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const ul = $("r-path"); ul.textContent = "";
     if (L.n === 3) {
       items[0] = ["", { text: "Ya debiste haber terminado los módulos y retos de Pronunciation Foundation. Ese entrenamiento auditivo y vocal es muy importante para que puedas ganar claridad al hablar y al escuchar.\n\nTambién ya debes haber terminado los módulos y retos de Shadow the Scene, y ya debes estar más que familiarizado con el Listening Lab. Si todavía no se ha convertido en tu mejor amigo, estás desperdiciando una gran herramienta.\n\nPara superar todos los retos que vas a enfrentar en este nivel, lo que más nos interesa es que practiques. Por eso vas a desbloquear el acceso al Speaking Club, un espacio donde vas a practicar en sesiones en vivo, hablando con personas reales. Esto te va a ayudar a pensar directo en inglés, porque en una conversación real no hay tiempo para traducir; a acostumbrarte a distintos acentos y ritmos, y a perderle el miedo a equivocarte frente a otros. Cada sesión hace que las palabras que ya conoces te salgan solas cuando las necesitas.\n\nPara entrar, toma un pantallazo de tu resultado y envíalo a mi equipo por WhatsApp con el botón de abajo.", button: { label: "Me gustaría entrar al Speaking Club", title: "¡Desbloqueaste el Speaking Club!", sub: "Sesiones en vivo para practicar hablando con personas reales", href: "https://wa.me/573023629834?text=Hola%20Santi%2C%20hice%20el%20test%20y%20soy%20Brave%20Speaker.%20Me%20gustar%C3%ADa%20entrar%20al%20Speaking%20Club.%20Te%20env%C3%ADo%20el%20pantallazo%20del%20resultado%20del%20test." } }];
-      items[items.length - 1] = ["Nos vemos los martes y los jueves", "Te espero en la clase en vivo de los martes, de 7:00 a 8:00 p. m. (hora Colombia), donde practicamos juntos y te doy feedback, y en el Speaking Club de los jueves. Cada jueves hay dos sesiones, a las 6:00 a. m. y a las 8:10 a. m. (hora Colombia), y puedes unirte a la que mejor te quede. Revisa el horario en speakingclub.immersa.com.co."];
+      items[items.length - 1] = ["Nos vemos los martes y los jueves", "Te espero en la clase en vivo de los martes, de 7:00 a 8:00 p. m. (hora Colombia), donde practicamos juntos y te doy feedback, y en el Speaking Club de los jueves. Cada jueves hay dos sesiones, a las 6:00 a. m. y a las 8:10 a. m. (hora Colombia), y puedes unirte a la que mejor te quede. Revisa el horario en [speakingclub.immersa.com.co](https://speakingclub.immersa.com.co/)."];
     }
     items.forEach(([k, v]) => {
       const li = document.createElement("li");
