@@ -1108,14 +1108,14 @@ strong.course { font-weight: 800; color: var(--ink); }
         if (lv.length < 10) return null;
         const sorted = lv.slice().sort((a, b) => a - b);
         const floor = sorted[Math.floor(sorted.length * 0.1)], peak = sorted[Math.floor(sorted.length * 0.95)];
-        const thr = floor + (peak - floor) * 0.12;
+        const thr = floor + (peak - floor) * 0.15;
         const on = lv.map((v) => v > thr);
         // speech = at least 100 ms of voice in a row (a tap on the button is not speech)
         const voiced = on.map((v, i) => v && on.slice(i, i + 5).every(Boolean));
         const first = voiced.indexOf(true);
         let last = -1; for (let i = on.length - 1; i >= 0; i--) if (on[i] && on.slice(Math.max(0, i - 4), i + 1).every(Boolean)) { last = i; break; }
         const pauses = []; let run = 0;
-        for (let i = first; i <= last && first >= 0; i++) { if (!on[i]) run++; else { if (run * 20 >= 200) pauses.push({ at: (i - run) * 20, ms: run * 20 }); run = 0; } }
+        for (let i = first; i <= last && first >= 0; i++) { if (!on[i]) run++; else { if (run * 20 >= 160) pauses.push({ at: (i - run) * 20, ms: run * 20 }); run = 0; } }
         return { pauses, speechMs: first >= 0 ? (last - first) * 20 : 0 };
       }
     };
@@ -1333,6 +1333,15 @@ strong.course { font-weight: 800; color: var(--ink); }
       }
       const nPauses = mr ? mr.pauses.length : 0;
       if (mr) flu = Math.min(flu, Math.max(0, 1 - 0.2 * nPauses));
+      // Speaking rate in syllables per second, from the first to the last word: separating every word makes it slow.
+      const sylOf = (w) => { const x = String(w).toLowerCase().replace(/[^a-z]/g, "").replace(/(?<!l)e$/, ""); return Math.max(1, (x.match(/[aeiouy]+/g) || []).length + (/[aeiouy]ing$/.test(x) ? 1 : 0)); };
+      const twr = refWords.filter((w) => typeof w.Offset === "number" && (w.PronunciationAssessment || {}).ErrorType !== "Omission");
+      let rate = null;
+      if (twr.length >= 3) {
+        const span = (twr[twr.length - 1].Offset + (twr[twr.length - 1].Duration || 0) - twr[0].Offset) / 1e7;
+        rate = twr.reduce((a, w) => a + sylOf(w.Word), 0) / Math.max(0.5, span);
+        flu = Math.min(flu, Math.max(0, Math.min(1, (rate - 2.5) / 1.5)));
+      }
       const extras = [link, red].filter((v) => v != null);
       if (extras.length) flu = flu * 0.5 + (extras.reduce((a, b) => a + b, 0) / extras.length) * 0.5;
       flu = Math.max(0, Math.min(1, flu)) * Math.min(1, g.ratio / 0.7);
@@ -1344,7 +1353,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.red = redS;
       s.best = Math.max(s.best || 0, combined); s.combined = s.best;
       if (DEBUG) {
-        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + (redInfo.length ? " red=" + redInfo.join(" ") : "") + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text, "PAUSAS (medidas por el micrófono): " + (mr ? (mr.pauses.length ? mr.pauses.map((x) => x.ms + "ms en " + x.at + "ms").join(", ") : "ninguna") + " · habla " + mr.speechMs + "ms" : "sin datos")];
+        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + (redInfo.length ? " red=" + redInfo.join(" ") : "") + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text, "VELOCIDAD: " + (rate == null ? "-" : rate.toFixed(1) + " sílabas/seg") + " · PAUSAS (medidas por el micrófono): " + (mr ? (mr.pauses.length ? mr.pauses.map((x) => x.ms + "ms en " + x.at + "ms").join(", ") : "ninguna") + " · habla " + mr.speechMs + "ms" : "sin datos")];
         const ins = []; parts.forEach((p) => p.words.forEach((w) => { if ((w.PronunciationAssessment || {}).ErrorType === "Insertion") ins.push(w.Word); }));
         if (ins.length) lines.push("PALABRAS DE MÁS: " + ins.join(", "));
         refWords.forEach((w) => {
