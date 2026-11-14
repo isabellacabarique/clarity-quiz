@@ -980,7 +980,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     btn.disabled = !s.listening && left <= 0;
     $("rec-label").textContent = s.preparing ? "Preparando el micrófono…" : s.listening ? "Toca aquí cuando termines" : left <= 0 ? "Ya usaste tus " + SPEAK_TRIES + " intentos" : s.tries ? "Intentar otra vez" : "Grabar mi voz";
     $("rec-left").textContent = TESTING ? (s.tries ? "Modo prueba · grabación " + s.tries : "") : !s.listening && s.tries && left > 0 ? "Te queda 1 intento" : "";
-    $("sp-live").hidden = !s.listening || !s.live; $("sp-live").textContent = q.ref ? s.live.replace(/\btoo\b/gi, "to") : s.live; // "too" is only an internal trick
+    $("sp-live").hidden = true; // live transcript hidden: it shows the expected sentence, not what was really said $("sp-live").textContent = q.ref ? s.live.replace(/\btoo\b/gi, "to") : s.live; // "too" is only an internal trick
     $("sp-err").hidden = !s.err; $("sp-err").textContent = s.err;
     const res = $("sp-res"); res.hidden = !s.g || s.listening;
     if (s.g && !s.listening) {
