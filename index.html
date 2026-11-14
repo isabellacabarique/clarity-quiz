@@ -648,7 +648,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna" }] },
     { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]],
       reductions: [{ label: "wanna / tə", words: [2], maxMs: 120, heard: "wanna" }] },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]] },
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]],
+      reductions: [{ label: "wanna / want tə", words: [2], maxMs: 120, heard: "wanna" }, { label: "go tə / rə", words: [4], maxMs: 120 }] },
     { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."], contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
       reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 140 }] }
