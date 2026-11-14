@@ -644,7 +644,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     // Isa's accepted pronunciations: any of them counts as right. Only linking (no pause between the joined words) and clarity are required.
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
-    { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]] },
+    { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
+      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna" }] },
     { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]] },
     { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."], contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
@@ -1183,6 +1184,7 @@ strong.course { font-weight: 800; color: var(--ink); }
             redInfo.push(rd.label + "=" + Math.round(sc) + "(max " + rd.maxScore + ")");
             return;
           }
+          if (rd.heard && (" " + text.toLowerCase().replace(/[^a-z' ]/g, " ") + " ").includes(" " + rd.heard + " ")) { redOk++; redInfo.push(rd.label + "=oído(ok)"); return; }
           const ws = rd.words.map((k) => refWords[k]);
           if (ws.some((w) => (w.PronunciationAssessment || {}).ErrorType === "Omission")) { redOk++; redInfo.push(rd.label + "=tragada(ok)"); return; }
           if (ws.some((w) => typeof w.Offset !== "number")) { redInfo.push(rd.label + "=?"); return; }
