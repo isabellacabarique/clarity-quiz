@@ -645,7 +645,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     // Isa's accepted pronunciations: any of them counts as right. Only linking (no pause between the joined words) and clarity are required.
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
-      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna" }] },
+      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
     { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]],
       reductions: [{ label: "wanna / tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]],
@@ -653,7 +653,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
     { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
       contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
-      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", vowel: 4, needShort: true }] },
+      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", vowel: 4, needShort: true, ngWord: 3 }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
       reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 140 }] }
   ];
@@ -1222,6 +1222,17 @@ strong.course { font-weight: 800; color: var(--ink); }
           const avgMs = timedW.length ? timedW.reduce((a, w) => a + w.Duration, 0) / timedW.length / 10000 : 0;
           const rel = avgMs ? ms / (avgMs * rd.words.length) : 9;
           const shortOk = ms <= rd.maxMs * 1.25 || rel <= (rd.needShort ? 0.6 : 0.85);
+          if (rd.ngWord != null) {
+            // gonna: the "-ing" of going disappears (Azure no longer hears "ng"), or going+to is very short.
+            const ng = ((refWords[rd.ngWord] || {}).Phonemes || []).filter((x) => String(x.Phoneme || "").toLowerCase() === "ng").pop();
+            const pa3 = (ng && ng.PronunciationAssessment) || {};
+            const nb = pa3.NBestPhonemes || [];
+            const ngGone = !!ng && ((nb.length && String(nb[0].Phoneme).toLowerCase() !== "ng") || (typeof pa3.AccuracyScore === "number" && pa3.AccuracyScore < 60));
+            const ok = ngGone || ms <= rd.maxMs;
+            if (ok) redOk++;
+            redInfo.push(rd.label + "=" + (ok ? "ok" : "going to (larga)") + " " + Math.round(ms) + "ms(max " + rd.maxMs + ") ng=" + (ng ? Math.round(pa3.AccuracyScore || 0) + "[" + nb.map((x) => x.Phoneme + Math.round(x.Score)).join("/") + "]" : "?"));
+            return;
+          }
           if (rd.tWord != null ? (shortOk || tOk) : shortOk) redOk++;
           redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ", rel " + Math.round(rel * 100) + "%)" + tNote);
         });
