@@ -650,6 +650,10 @@ strong.course { font-weight: 800; color: var(--ink); }
       reductions: [{ label: "wanna / tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]],
       reductions: [{ label: "wanna / want tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }, { label: "go tə / rə", words: [4], maxMs: 120, vowel: 4 }] },
+    // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
+    { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
+      contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
+      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", vowel: 4, needShort: true }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
       reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 140 }] }
   ];
@@ -967,7 +971,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("q-hint").textContent = n === 1
       ? "Presiona «Grabar mi voz», lee la frase con calma y toca el botón otra vez cuando termines. Tienes " + SPEAK_TRIES + " intentos. La primera vez, tu navegador te va a pedir permiso para usar el micrófono."
       : "Tienes " + SPEAK_TRIES + " intentos.";
-    $("sp-sentence").textContent = q.sentence;
+    $("sp-sentence").textContent = q.show || q.sentence;
     const left = SPEAK_TRIES - s.tries;
     const btn = $("rec");
     btn.classList.toggle("on", s.listening);
@@ -1038,7 +1042,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (segs.length && s.live) {
         // Strict: only the browser's first transcript counts (no picking among its guesses).
         s.tries++;
-        const g = grade(s.live, q.sentence);
+        const g = [q.sentence].concat(q.alt || [], q.show ? [q.show] : []).map((a) => grade(s.live, a)).reduce((b, x) => (x.ratio > b.ratio ? x : b));
         // How sure the browser was. Unclear pronunciation lowers it even when the browser "fixes" the words.
         let cw = 0, cs = 0;
         segs.forEach((x) => { if (x.conf > 0) { const w = x.text.length; cw += w; cs += x.conf * w; } });
@@ -1199,9 +1203,9 @@ strong.course { font-weight: 800; color: var(--ink); }
               const full = Math.max(sc("uw"), sc("uh")), weak = Math.max(sc("ax"), sc("ah"), sc("ih"), sc("er"));
               const top = String(nb[0].Phoneme).toLowerCase();
               const isFull = top === "uw" || top === "uh" || full > weak;
-              if (!isFull) redOk++;
-              redInfo.push(rd.label + "=" + (isFull ? "tu: (larga)" : "tə (ok)") + " [" + nb.map((x) => x.Phoneme + " " + Math.round(x.Score)).join(", ") + "]");
-              return;
+              const nbTxt = " [" + nb.map((x) => x.Phoneme + " " + Math.round(x.Score)).join(", ") + "]";
+              if (isFull || !rd.needShort) { if (!isFull) redOk++; redInfo.push(rd.label + "=" + (isFull ? "tu: (larga)" : "tə (ok)") + nbTxt); return; }
+              redInfo.push("vocal tə ok" + nbTxt);
             }
           }
           const last = ws[ws.length - 1];
@@ -1217,7 +1221,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           const timedW = refWords.filter((w) => typeof w.Duration === "number" && (w.PronunciationAssessment || {}).ErrorType !== "Omission");
           const avgMs = timedW.length ? timedW.reduce((a, w) => a + w.Duration, 0) / timedW.length / 10000 : 0;
           const rel = avgMs ? ms / (avgMs * rd.words.length) : 9;
-          const shortOk = ms <= rd.maxMs * 1.25 || rel <= 0.85;
+          const shortOk = ms <= rd.maxMs * 1.25 || rel <= (rd.needShort ? 0.6 : 0.85);
           if (rd.tWord != null ? (shortOk || tOk) : shortOk) redOk++;
           redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ", rel " + Math.round(rel * 100) + "%)" + tNote);
         });
