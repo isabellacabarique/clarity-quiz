@@ -647,9 +647,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna" }] },
     { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]],
-      reductions: [{ label: "wanna / tə", words: [2], maxMs: 120, heard: "wanna" }] },
+      reductions: [{ label: "wanna / tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]],
-      reductions: [{ label: "wanna / want tə", words: [2], maxMs: 120, heard: "wanna" }, { label: "go tə / rə", words: [4], maxMs: 120 }] },
+      reductions: [{ label: "wanna / want tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }, { label: "go tə / rə", words: [4], maxMs: 120, vowel: 4 }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
       reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 140 }] }
   ];
@@ -1104,6 +1104,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const rec = new SDK.SpeechRecognizer(cfg, SDK.AudioConfig.fromDefaultMicrophoneInput());
     const pa = new SDK.PronunciationAssessmentConfig(q.sentence, SDK.PronunciationAssessmentGradingSystem.HundredMark, SDK.PronunciationAssessmentGranularity.Phoneme, true);
     pa.enableProsodyAssessment = true;
+    pa.nbestPhonemeCount = 5; // which sounds Azure actually heard (to tell "tu:" from "tə")
     pa.applyTo(rec);
     azRec = rec;
     const parts = []; let timer = null, hard = null, done = false, partial = "";
@@ -1189,6 +1190,20 @@ strong.course { font-weight: 800; color: var(--ink); }
           const ws = rd.words.map((k) => refWords[k]);
           if (ws.some((w) => (w.PronunciationAssessment || {}).ErrorType === "Omission")) { redOk++; redInfo.push(rd.label + "=tragada(ok)"); return; }
           if (ws.some((w) => typeof w.Offset !== "number")) { redInfo.push(rd.label + "=?"); return; }
+          // "to" said as tə/rə or as tu:? Azure lists the sounds it really heard for the vowel.
+          if (rd.vowel != null) {
+            const vph = ((refWords[rd.vowel] || {}).Phonemes || []).filter((x) => !/^(t|d|dx)$/i.test(String(x.Phoneme || "")));
+            const nb = vph.length ? ((vph[vph.length - 1].PronunciationAssessment || {}).NBestPhonemes || []) : [];
+            if (nb.length) {
+              const sc = (ph) => { const f = nb.find((x) => String(x.Phoneme).toLowerCase() === ph); return f ? f.Score : 0; };
+              const full = Math.max(sc("uw"), sc("uh")), weak = Math.max(sc("ax"), sc("ah"), sc("ih"), sc("er"));
+              const top = String(nb[0].Phoneme).toLowerCase();
+              const isFull = top === "uw" || top === "uh" || full > weak;
+              if (!isFull) redOk++;
+              redInfo.push(rd.label + "=" + (isFull ? "tu: (larga)" : "tə (ok)") + " [" + nb.map((x) => x.Phoneme + " " + Math.round(x.Score)).join(", ") + "]");
+              return;
+            }
+          }
           const last = ws[ws.length - 1];
           const ms = (last.Offset + (last.Duration || 0) - ws[0].Offset) / 10000;
           // wanna: besides being short, the t of "want" has to disappear (low Azure score for that t)
@@ -1251,7 +1266,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         refWords.forEach((w) => {
           const pa = w.PronunciationAssessment || {};
           const br = ((pa.Feedback || {}).Prosody || {}).Break || {};
-          const ph = (w.Phonemes || []).map((x) => (x.Phoneme || "?") + ":" + Math.round((x.PronunciationAssessment || {}).AccuracyScore || 0)).join(" ");
+          const ph = (w.Phonemes || []).map((x) => { const pa2 = x.PronunciationAssessment || {}; const nb = (pa2.NBestPhonemes || []).slice(0, 3).map((y) => y.Phoneme + Math.round(y.Score)).join("/"); return (x.Phoneme || "?") + ":" + Math.round(pa2.AccuracyScore || 0) + (nb ? "[" + nb + "]" : ""); }).join(" ");
           lines.push(w.Word + " acc=" + Math.round(pa.AccuracyScore || 0) + " err=" + (pa.ErrorType || "-") + " off=" + Math.round((w.Offset || 0) / 10000) + " dur=" + Math.round((w.Duration || 0) / 10000) + " brk=" + (typeof br.BreakLength === "number" ? Math.round(br.BreakLength / 10000) : "-") + " " + (br.ErrorTypes || []).join(",") + " | " + ph);
         });
         s.debug = lines.join("\n");
