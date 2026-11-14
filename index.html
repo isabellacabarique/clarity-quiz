@@ -1887,7 +1887,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         { key: "wk", label: "Tu semana", practice: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." },
           days: [
             { d: "Lunes", head: "1 h", prac: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." } },
-            { d: "Martes", head: "1 h + clase 1 h", live: true, prac: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." } },
+            { d: "Martes", head: "1 h", live: true, liveOr: true, prac: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." } },
             { d: "Miércoles", head: "1 h", prac: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." } },
             { d: "Jueves", head: "Speaking Club 1 h", prac: false, club: true },
             { d: "Viernes", head: "Opcional", prac: { cls: "rest", tag: "Opcional", noTime: true, txt: "Una sesión extra de speaking o ponte al día con lo que te faltó." } }
@@ -1989,7 +1989,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (day.pf) bl.appendChild(block(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]));
       if (pr) bl.appendChild(block(pr.cls, prTxt, pr.tag, pr.txt));
       if (plan.daily) bl.appendChild(block("imm", plan.daily.min + " min", plan.daily.tag, plan.daily.txt));
-      if (day.live) bl.appendChild(block("clive", "7:00 p. m. · 1 h", "Clase en vivo", "Practicamos juntos y te doy feedback."));
+      if (day.live) bl.appendChild(block("clive", "7:00 p. m. · 1 h", day.liveOr ? "O clase en vivo" : "Clase en vivo", day.liveOr ? "Si te sirve el horario, practica conmigo en la clase en vivo." : "Practicamos juntos y te doy feedback."));
       if (day.club) bl.appendChild(block("clive", "6:00 a. m. o 8:10 a. m. · 1 h", "Speaking Club", "Practica tu speaking con otros estudiantes."));
       col.append(h, bl);
       cal.appendChild(col);
@@ -2008,7 +2008,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function checklistHTML(stageIdx) {
     const plan = CAL[calKey], st = plan.stages[stageIdx], esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const ck = (t) => '<div class="ck"><i></i><span>' + esc(t) + "</span></div>";
-    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt)) + (plan.daily ? ck(plan.daily.tag + ": " + plan.daily.txt) : "") + (day.live ? ck("Clase en vivo, 7:00 p. m. (hora Colombia)") : "") + (day.club ? ck("Speaking Club, 6:00 a. m. o 8:10 a. m. (hora Colombia)") : "") + "</td></tr>").join("");
+    const rows = (st.days || plan.days).map((day) => "<tr><th>" + day.d + "</th><td>" + (day.pf ? ck(day.pf[2] ? day.pf[2] + ": " + day.pf[1] : day.pf[0] ? "Pronunciation Foundation · " + day.pf[0] + ": " + day.pf[1] : "Pronunciation Foundation: " + day.pf[1]) : "") + (day.prac === false ? "" : ck((day.prac || st.practice).tag + ": " + (day.prac || st.practice).txt + (day.liveOr ? " (o clase en vivo, 7:00 p. m. hora Colombia)" : ""))) + (plan.daily ? ck(plan.daily.tag + ": " + plan.daily.txt) : "") + (day.live && !day.liveOr ? ck("Clase en vivo, 7:00 p. m. (hora Colombia)") : "") + (day.club ? ck("Speaking Club, 6:00 a. m. o 8:10 a. m. (hora Colombia)") : "") + "</td></tr>").join("");
     return '<div class="ps"><img class="ps-logo" src="img/immersa-logo.png" alt="immersa academy"><h1>Mi checklist semanal</h1><p class="sub">Clarity by teacher Isa · ' + esc(pageName(result)) + " · " + esc(st.label) + "</p>" +
       '<div class="fields"><span>Semana del:</span></div><table>' + rows +
       "<tr><th>" + (plan.weekend && plan.weekend.d ? plan.weekend.d : "Fin de semana") + "</th><td>" + ck(plan.weekend ? plan.weekend.tag + ": " + plan.weekend.txt : "Descansa o ponte al día con lo que te faltó") + "</td></tr></table>" +
@@ -2051,7 +2051,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           if (day.pf) bl += blk(day.pf[3] || "pf", pfMin + " min", day.pf[2] || "Pronunciation Foundation", day.pf[1], day.pf[2] ? "" : day.pf[0]);
           if (pr) bl += blk(pr.cls, pr.noTime ? "" : pr.when || (pr.range ? lo + "–" + hi + " min" : lo + " min"), pr.tag, pr.txt);
           if (plan.daily) bl += blk("imm", plan.daily.min + " min", plan.daily.tag, plan.daily.txt);
-          if (day.live) bl += blk("clive", "7:00 p. m. · 1 h", "Clase en vivo", "Practicamos juntos y te doy feedback.");
+          if (day.live) bl += blk("clive", "7:00 p. m. · 1 h", day.liveOr ? "O clase en vivo" : "Clase en vivo", day.liveOr ? "Si te sirve el horario, practica conmigo en la clase en vivo." : "Practicamos juntos y te doy feedback.");
           if (day.club) bl += blk("clive", "6:00 a. m. o 8:10 a. m. · 1 h", "Speaking Club", "Practica tu speaking con otros estudiantes.");
           const dayHtml = '<div class="cal-day"><h4>' + esc(day.d) + "<small>" + esc(head) + '</small></h4><div class="cal-blocks">' + bl + "</div></div>";
           // keep the stage title together with its first day so it never sits alone at the bottom of a page
