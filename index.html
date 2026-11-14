@@ -1321,7 +1321,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     // Strong ear (4+ videos right and 70 %+ in dictations): never having studied pronunciation sends them to Shy
     // (they're ready to prepare to speak and work on clarity there), not back to Observer Alpha.
     const strongEar = compQs.length && compRight >= 4 && dictAvg >= 0.7;
-    const noStudyCap = strongEar ? 1 : 0;
+    const noStudyCap = strongEar ? (sp.some((o) => o <= 3) ? 1 : 3) : 0; // strong ear + no fear → no cap at all
     if ((conv === 2 || pod === 2) && rep <= 1) idx = 0;
     if ((conv === 2 || pod === 2) && !studied) idx = Math.min(idx, noStudyCap); // "la idea general" / "con esfuerzo" + never studied or repeats a lot → Observer Alpha
     if (rep <= 1) idx = 0;                                 // "Muy seguido" / "Con frecuencia" → Observer Alpha
@@ -1330,9 +1330,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (rep === 2 && fear) idx = Math.min(idx, 1);         // "A veces" + fear → Shy at most
     if (sp.some((o) => o <= 3)) idx = Math.min(idx, vocab50 ? 1 : 0); // avoids / blocks / translates / tongue-tied
     if (sp.includes(3) && !studied) idx = Math.min(idx, noStudyCap); // tongue-tied and never studied (Shy with a strong ear)
-    // Brave / Fluent = ready for real conversations: studied pronunciation, no fear when speaking,
+    // Brave / Fluent = ready for real conversations: no fear when speaking,
     // and understands at least 80 % of the videos (4 of 5) and of the dictations. Otherwise → Shy, to prepare to speak.
-    if (idx >= 2 && (!studied || fear || (compQs.length && compRight < 4) || dictAvg < 0.8)) idx = 1;
+    if (idx >= 2 && (fear || (compQs.length && compRight < 4) || dictAvg < 0.8)) idx = 1; // pronunciation study not required for Brave
     // Fluent is hard to reach: all 5 videos right, 90 %+ in dictations, reads 90 %, speaks fluently every day,
     // no longer feels like a robot (or ashamed) and almost never has to repeat. Anyone else stays in Brave.
     const fluentReady = sp.length === 1 && sp[0] === 5 && (!compQs.length || compRight === compQs.length) && dictAvg >= 0.9
