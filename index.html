@@ -644,12 +644,12 @@ strong.course { font-weight: 800; color: var(--ink); }
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", links: [[0, 1], [5, 6], [6, 7]] },
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", reductions: [{ label: "wanna", words: [1, 2], maxMs: 330, tWord: 1, tMax: 80 }] },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", reduce: [["want to", "wanna"]],
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], reductions: [{ label: "wanna", words: [1, 2], maxMs: 330, tWord: 1, tMax: 80 }] },
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], reduce: [["want to", "wanna"]],
       reductions: [{ label: "wanna", words: [1, 2], maxMs: 330, tWord: 1, tMax: 80 }, { label: "to → tə", words: [4], maxMs: 120 }] },
     { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" },
     { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
-    { type: "speak", dim: "Voz", sentence: "What does she mean?", links: [[0, 1]],
+    { type: "speak", dim: "Voz", sentence: "What does she mean?", links: [[0, 1]], alt: ["What's she mean?", "What does he mean?"],
       reductions: [{ label: "T suave en what", word: 0, phoneme: "t", maxScore: 80 }, { label: "does → rəs", words: [1], maxMs: 140 }] }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
@@ -1100,7 +1100,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       const n = parts.reduce((a, p) => a + p.n, 0) || 1;
       const avg = (k) => parts.reduce((a, p) => a + (p[k] == null ? 0 : p[k]) * p.n, 0) / n / 100;
       const text = parts.map((p) => p.text).join(" ");
-      const g = grade(text, q.sentence);
+      // A native may be transcribed in the reduced form ("wanna", "what's she mean"): that counts as right.
+      const g = [q.sentence].concat(q.alt || []).map((a) => grade(text, a)).reduce((b, x) => (x.ratio > b.ratio ? x : b));
       const hasPro = parts.some((p) => p.pro != null), pro = hasPro ? avg("pro") : null;
       // Reference words in order (inserted extra words are left out).
       const refWords = [];
@@ -1114,13 +1115,14 @@ strong.course { font-weight: 800; color: var(--ink); }
       const wordScores = refWords.map((w, wi) => {
         const pa = w.PronunciationAssessment || {};
         const isFunc = FUNC.has(String(w.Word || "").toLowerCase().replace(/[^a-z']/g, "")) || redIdx.has(wi);
-        if (pa.ErrorType === "Omission") return 0;
+        if (pa.ErrorType === "Omission") return redIdx.has(wi) ? null : 0;
         const ph = (w.Phonemes || []).map((x) => x.PronunciationAssessment && x.PronunciationAssessment.AccuracyScore).filter((v) => typeof v === "number");
         if (!ph.length) return typeof pa.AccuracyScore === "number" ? pa.AccuracyScore : 0;
         const mean = ph.reduce((a, b) => a + b, 0) / ph.length;
         return isFunc ? mean : 0.5 * mean + 0.5 * Math.min.apply(null, ph);
       });
-      const rawClar = wordScores.length ? wordScores.reduce((a, b) => a + b, 0) / wordScores.length : avg("acc") * 100;
+      const ws2 = wordScores.filter((v) => v != null);
+      const rawClar = ws2.length ? ws2.reduce((a, b) => a + b, 0) / ws2.length : avg("acc") * 100;
       // Calibrated with real readings (Oct 2026): careless reading ~78, clean native-like ~96.
       const clarity = Math.max(0, Math.min(1, (rawClar - 65) / 30)) * Math.min(1, g.ratio / 0.9);
       // Linking: where a word ends in a consonant and the next starts with a vowel ("turn it off"),
@@ -1162,18 +1164,24 @@ strong.course { font-weight: 800; color: var(--ink); }
             return;
           }
           const ws = rd.words.map((k) => refWords[k]);
-          if (ws.some((w) => typeof w.Offset !== "number" || (w.PronunciationAssessment || {}).ErrorType === "Omission")) { redInfo.push(rd.label + "=?"); return; }
+          if (ws.some((w) => (w.PronunciationAssessment || {}).ErrorType === "Omission")) { redOk++; redInfo.push(rd.label + "=tragada(ok)"); return; }
+          if (ws.some((w) => typeof w.Offset !== "number")) { redInfo.push(rd.label + "=?"); return; }
           const last = ws[ws.length - 1];
           const ms = (last.Offset + (last.Duration || 0) - ws[0].Offset) / 10000;
           // wanna: besides being short, the t of "want" has to disappear (low Azure score for that t)
-          let tOk = true, tNote = "";
+          let tOk = false, tNote = "";
           if (rd.tWord != null) {
             const tp = ((refWords[rd.tWord] || {}).Phonemes || []).filter((x) => String(x.Phoneme || "").toLowerCase() === "t");
             const tSc = tp.length ? (tp[tp.length - 1].PronunciationAssessment || {}).AccuracyScore : null;
             if (typeof tSc === "number") { tOk = tSc <= rd.tMax; tNote = " t=" + Math.round(tSc) + "(max " + rd.tMax + ")"; }
           }
-          if (ms <= rd.maxMs && tOk) redOk++;
-          redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ")" + tNote);
+          // Compare with the speaker's own pace: a fast native has short words everywhere.
+          const timedW = refWords.filter((w) => typeof w.Duration === "number" && (w.PronunciationAssessment || {}).ErrorType !== "Omission");
+          const avgMs = timedW.length ? timedW.reduce((a, w) => a + w.Duration, 0) / timedW.length / 10000 : 0;
+          const rel = avgMs ? ms / (avgMs * rd.words.length) : 9;
+          const shortOk = ms <= rd.maxMs * 1.25 || rel <= 0.85;
+          if (rd.tWord != null ? (shortOk || tOk) : shortOk) redOk++;
+          redInfo.push(rd.label + "=" + Math.round(ms) + "ms(max " + rd.maxMs + ", rel " + Math.round(rel * 100) + "%)" + tNote);
         });
       }
       if (q.contractions) {
@@ -1193,7 +1201,7 @@ strong.course { font-weight: 800; color: var(--ink); }
             const ratio = w.Duration / avgDur;
             const ph = (w.Phonemes || []).map((x) => (x.PronunciationAssessment || {}).AccuracyScore).filter((v) => typeof v === "number");
             const low = ph.length ? Math.min.apply(null, ph) : 100;
-            if (ratio > 1.0 || low < 60) longForm = true;
+            if (ratio > 1.6 && low < 50) longForm = true;
             note = "(dur " + Math.round(ratio * 100) + "% del promedio, sonido más bajo " + Math.round(low) + ")";
           }
           if (!longForm) redOk++;
