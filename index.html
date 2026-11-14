@@ -1110,7 +1110,10 @@ strong.course { font-weight: 800; color: var(--ink); }
         const floor = sorted[Math.floor(sorted.length * 0.1)], peak = sorted[Math.floor(sorted.length * 0.95)];
         const thr = floor + (peak - floor) * 0.12;
         const on = lv.map((v) => v > thr);
-        const first = on.indexOf(true), last = on.lastIndexOf(true);
+        // speech = at least 100 ms of voice in a row (a tap on the button is not speech)
+        const voiced = on.map((v, i) => v && on.slice(i, i + 5).every(Boolean));
+        const first = voiced.indexOf(true);
+        let last = -1; for (let i = on.length - 1; i >= 0; i--) if (on[i] && on.slice(Math.max(0, i - 4), i + 1).every(Boolean)) { last = i; break; }
         const pauses = []; let run = 0;
         for (let i = first; i <= last && first >= 0; i++) { if (!on[i]) run++; else { if (run * 20 >= 200) pauses.push({ at: (i - run) * 20, ms: run * 20 }); run = 0; } }
         return { pauses, speechMs: first >= 0 ? (last - first) * 20 : 0 };
@@ -1183,8 +1186,8 @@ strong.course { font-weight: 800; color: var(--ink); }
         const pa = w.PronunciationAssessment || {};
         if (pa.ErrorType === "Omission") return redIdx.has(wi) || vowIdx.has(wi) ? null : 0;
         if (vowIdx.has(wi)) return null;
-        if ((q.tricky || []).indexOf(wi) !== -1 && typeof wordScores[wi] === "number") return Math.max(0, Math.min(1, (wordScores[wi] - 65) / 30));
-        return pa.ErrorType === "Mispronunciation" || (typeof pa.AccuracyScore === "number" && pa.AccuracyScore < 60) ? 0 : 1;
+        if ((q.tricky || []).indexOf(wi) !== -1 && typeof pa.AccuracyScore === "number") return Math.max(0, Math.min(1, (pa.AccuracyScore - 60) / 30));
+        return typeof pa.AccuracyScore === "number" && pa.AccuracyScore < 40 ? 0 : 1;
       }).filter((v) => v != null);
       const wordsOk = understood.length ? understood.reduce((a, b) => a + b, 0) / understood.length : g.ratio;
       const clarity = Math.max(0, Math.min(1, Math.min(wordsOk, g.ratio)));
@@ -1319,7 +1322,16 @@ strong.course { font-weight: 800; color: var(--ink); }
       const link = pairs ? linked / pairs : null;
       let flu = avg("flu");
       // Pauses we heard ourselves inside the sentence (200 ms or more): each one lowers fluency.
-      const mr = s.meterRes, nPauses = mr ? mr.pauses.length : 0;
+      const mr = s.meterRes;
+      if (mr) {
+        // keep only pauses between the first and the last word Azure heard
+        const tw = refWords.filter((w) => typeof w.Offset === "number" && (w.PronunciationAssessment || {}).ErrorType !== "Omission");
+        if (tw.length) {
+          const a0 = tw[0].Offset / 10000, a1 = (tw[tw.length - 1].Offset + (tw[tw.length - 1].Duration || 0)) / 10000;
+          mr.pauses = mr.pauses.filter((x) => x.at > a0 - 150 && x.at + x.ms < a1 + 150);
+        }
+      }
+      const nPauses = mr ? mr.pauses.length : 0;
       if (mr) flu = Math.min(flu, Math.max(0, 1 - 0.2 * nPauses));
       const extras = [link, red].filter((v) => v != null);
       if (extras.length) flu = flu * 0.5 + (extras.reduce((a, b) => a + b, 0) / extras.length) * 0.5;
