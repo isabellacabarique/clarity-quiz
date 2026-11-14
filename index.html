@@ -422,6 +422,10 @@ strong.course { font-weight: 800; color: var(--ink); }
 .rgate .help2{margin-top:6px;font-size:12px}
 .in-link { color: var(--teal-dark); font-weight: 600; text-decoration: underline; }
 .q-video { width: 100%; max-width: 640px; aspect-ratio: 16 / 9; border-radius: 16px; background: #000; display: block; margin: 0 auto; }
+.vid-intro { display: grid; gap: 12px; background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; padding: 22px 22px 18px; max-width: 640px; }
+.vid-intro p { margin: 0; font-size: 16.5px; line-height: 1.55; color: var(--ink); }
+.vid-intro ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--ink-soft); font-size: 15.5px; line-height: 1.5; }
+.vi-ic { font-size: 34px; line-height: 1; }
 </style>
 </head>
 <body>
@@ -459,6 +463,15 @@ strong.course { font-weight: 800; color: var(--ink); }
     <div class="question">
       <div class="q-title"><h2 id="q-text"></h2><p class="hint" id="q-hint"></p></div>
       <video id="q-video" class="q-video" controls playsinline preload="metadata" hidden></video>
+      <div class="vid-intro" id="vid-intro" hidden>
+        <div class="vi-ic" aria-hidden="true">🎬</div>
+        <p>Vas a ver <b>5 videos cortos</b> de nativos hablando en situaciones reales. Después de cada video hay una pregunta para ver si entendiste el mensaje.</p>
+        <ul>
+          <li>Activa el sonido y, si puedes, usa audífonos.</li>
+          <li>Dale play al video. Puedes verlo las veces que necesites.</li>
+          <li>Luego elige la opción que mejor describe lo que pasa en el video.</li>
+        </ul>
+      </div>
       <div class="options" id="q-opts" role="group" aria-labelledby="q-text"></div>
       <div class="dict" id="dict" hidden>
         <div class="play-row">
@@ -743,11 +756,28 @@ strong.course { font-weight: 800; color: var(--ink); }
   function recall(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
 
   // ---------- quiz ----------
+  // A short notice before the first comprehension video, so the student knows what's coming.
+  const FIRST_VIDEO = QUESTIONS.findIndex((q) => q.video);
+  let vidIntro = false;
+  function renderVidIntro() {
+    $("q-count").textContent = "Pregunta " + (current + 1) + " de " + QUESTIONS.length;
+    $("q-bar").style.width = (current / QUESTIONS.length * 100) + "%";
+    $("q-dim").textContent = "Comprensión";
+    $("q-text").textContent = "Ahora vas a ver unos videos";
+    $("q-hint").hidden = true;
+    $("q-opts").hidden = true; $("dict").hidden = true; $("speak").hidden = true;
+    $("q-video").pause(); $("q-video").hidden = true;
+    $("vid-intro").hidden = false;
+    $("back").disabled = false;
+    $("next").disabled = false;
+    $("next").textContent = "Empezar";
+  }
   function renderQuestion() {
     const q = QUESTIONS[current];
     $("q-count").textContent = "Pregunta " + (current + 1) + " de " + QUESTIONS.length;
     $("q-bar").style.width = (current / QUESTIONS.length * 100) + "%";
     audio.pause();
+    $("vid-intro").hidden = true;
     const isDict = q.type === "dictation", isSpk = q.type === "speak";
     if (!isSpk) stopRecog();
     $("q-opts").hidden = isDict || isSpk; $("dict").hidden = !isDict; $("speak").hidden = !isSpk;
@@ -792,6 +822,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     renderQuestion();
   }
   function goNext() {
+    if (vidIntro) { vidIntro = false; renderQuestion(); return; }
     const q = QUESTIONS[current];
     if (q.type === "dictation") {
       const d = dict[current];
@@ -800,7 +831,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (!spk[current].tries) return;
       stopRecog();
     } else if (!answers[current].length) return;
-    if (current < QUESTIONS.length - 1) { current++; renderQuestion(); }
+    if (current < QUESTIONS.length - 1) { current++; if (current === FIRST_VIDEO) { vidIntro = true; renderVidIntro(); } else renderQuestion(); }
     else { finish(); }
   }
 
@@ -1854,7 +1885,11 @@ strong.course { font-weight: 800; color: var(--ink); }
   // ---------- wiring ----------
   $("start").addEventListener("click", () => { const sp = QUESTIONS.findIndex((q) => q.type === "speak"); current = DEBUG && sp >= 0 ? sp : 0; renderQuestion(); show("quiz"); });
   if (DEBUG) { $("start").textContent = "Probar solo la parte de voz"; }
-  $("back").addEventListener("click", () => { if (current > 0) { current--; renderQuestion(); } });
+  $("back").addEventListener("click", () => {
+    if (vidIntro) { vidIntro = false; current--; renderQuestion(); return; }
+    if (current === FIRST_VIDEO) { vidIntro = true; renderVidIntro(); return; }
+    if (current > 0) { current--; renderQuestion(); }
+  });
   $("next").addEventListener("click", goNext);
   $("play").addEventListener("click", playCurrent);
   $("dict-in").addEventListener("input", (e) => {
@@ -1867,7 +1902,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   $("sp-skip").addEventListener("click", skipSpeaking);
   $("sp-dbg-copy").addEventListener("click", async () => { const t = $("sp-dbg-txt"); try { await navigator.clipboard.writeText(t.value); $("sp-dbg-copy").textContent = "Copiado"; } catch (e) { t.focus(); t.select(); } });
   if (!SR && !USE_AZURE) { $("meta-count").textContent = QUESTIONS.length + " preguntas"; $("meta-mic").hidden = true; }
-  if ($("again")) $("again").addEventListener("click", () => { answers = blank(); dict = blankDict(); stopRecog(); spk = blankSpk(); speakOff = !SR && !USE_AZURE; current = 0; renderQuestion(); show("quiz"); });
+  if ($("again")) $("again").addEventListener("click", () => { answers = blank(); dict = blankDict(); vidIntro = false; stopRecog(); spk = blankSpk(); speakOff = !SR && !USE_AZURE; current = 0; renderQuestion(); show("quiz"); });
   document.addEventListener("keydown", (e) => {
     if (screens.quiz.hidden || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || QUESTIONS[current].type === "dictation" || QUESTIONS[current].type === "speak") return;
     const map = { "1": 0, "2": 1, "3": 2, "4": 3, "5": 4, a: 0, b: 1, c: 2, d: 3, e: 4 };
