@@ -558,7 +558,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 
         <div class="panel">
           <h3>¡Cuéntale a la comunidad!</h3>
-          <p>¡Comparte tu resultado en la comunidad de Telegram! Copia este mensaje y pégalo junto con tu tarjeta.</p>
+          <p id="msg-intro">¡Comparte tu resultado en la comunidad de Telegram! Copia este mensaje y pégalo junto con tu tarjeta.</p>
           <textarea id="msg" class="msg" aria-label="Mensaje para la comunidad"></textarea>
           <div class="save-row"><button class="btn" id="copy">Copiar mensaje</button><span class="copied" id="copied" aria-live="polite"></span></div>
         </div>
@@ -753,8 +753,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       phrase: "I understand real English and speak without translating.",
       desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
       challenge: "Tu reto más grande ahora es pulir los detalles: la entonación, el énfasis y esos sonidos que todavía te quiten claridad y fluidez o sigas trayendo del español.",
-      week: "Cada semana, haz 2 escenas o podcasts de Shadow the Scene y los ejercicios más retadores de Listening Lab. En la clase en vivo trabajemos juntos la entonación, el énfasis y esos sonidos que todavía quieras afinar.",
-      up: "Sigue escuchando inglés real sin subtítulos y habla en inglés siempre que puedas. Y empieza a compartir lo que ya sabes en la comunidad: responder los audios de otros también te hace crecer." }
+      week: "Únete a la clase en vivo de pronunciación de los martes, de 7:00 a 8:00 p. m. (hora Colombia), donde trabajamos juntos la entonación, el énfasis y esos sonidos que todavía quieras afinar. Y practica tu speaking en el Speaking Club de los jueves: hay dos sesiones, a las 6:00 a. m. y a las 8:10 a. m. (hora Colombia), y puedes unirte a la que mejor te quede. Revisa el horario en [speakingclub.immersa.com.co](https://speakingclub.immersa.com.co/).",
+      up: "Sigue escuchando inglés real. Puedes usar subtítulos, pero no dependas de ellos. Habla en inglés siempre que puedas y busca oportunidades para hacerlo. El inglés ya debe ser parte de tu día a día." }
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -1642,6 +1642,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     else if (r.reading !== null && r.reading <= 1) {
       items.splice(2, 0, ["Tu vocabulario", "Me contaste que, cuando lees, todavía se te escapan muchas palabras. Para entender el inglés hay que conocer su vocabulario, así que es muy importante que uses los PDFs de vocabulario de cada lección y te asegures de conocer las palabras que aparecen. Puedes hacer este trabajo al mismo tiempo que te familiarizas con los sonidos, pero no dejes de construir tu vocabulario: cuando conozcas al menos el 60% de las palabras de lo que escuchas, vas a sentir cómo se empieza a desbloquear tu speaking."]);
     }
+    // Fluent: no "Por dónde empezar"; "Tu semana" already has the classes, so no separate "Nos vemos" item.
+    if (L.n === 4) { items.splice(0, 1); items.splice(items.length - 1, 1); }
     const ul = $("r-path"); ul.textContent = "";
     if (L.n === 3) {
       items[0] = ["", { text: "Ya debiste haber terminado los módulos y retos de Pronunciation Foundation. Ese entrenamiento auditivo y vocal es muy importante para que puedas ganar claridad al hablar y al escuchar.\n\nTambién ya debes haber terminado los módulos y retos de Shadow the Scene, y ya debes estar más que familiarizado con el Listening Lab. Si todavía no se ha convertido en tu mejor amigo, estás desperdiciando una gran herramienta.\n\nPara superar todos los retos que vas a enfrentar en este nivel, lo que más nos interesa es que practiques. Por eso vas a desbloquear el acceso al Speaking Club, un espacio donde vas a practicar en sesiones en vivo, hablando con personas reales. Esto te va a ayudar a pensar directo en inglés, porque en una conversación real no hay tiempo para traducir; a acostumbrarte a distintos acentos y ritmos, y a perderle el miedo a equivocarte frente a otros. Cada sesión hace que las palabras que ya conoces te salgan solas cuando las necesitas.\n\nPara entrar, toma un pantallazo de tu resultado y envíalo a mi equipo por WhatsApp con el botón de abajo.", button: { label: "Me gustaría entrar al Speaking Club", title: "¡Desbloqueaste el Speaking Club!", sub: "Sesiones en vivo para practicar hablando con personas reales", href: "https://wa.me/573023629834?text=Hola%20Santi%2C%20hice%20el%20test%20y%20soy%20Brave%20Speaker.%20Me%20gustar%C3%ADa%20entrar%20al%20Speaking%20Club.%20Te%20env%C3%ADo%20el%20pantallazo%20del%20resultado%20del%20test." } }];
@@ -1701,6 +1703,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     calStage = 0; calPath = 0; calKey = vocabObs ? "1v" : L.n;
     if (L.n === 1 && !vocabObs) setPath(0); else renderCal(L);
     $("msg").value = buildMessage();
+    $("msg-intro").textContent = L.n === 4 ? "¡Comparte tu resultado en la comunidad de Telegram! Cuéntanos qué has podido lograr gracias al inglés y cómo ha cambiado tu vida: tu historia puede inspirar a muchos que todavía están en el camino. Copia este mensaje, complétalo y pégalo junto con tu tarjeta." : "¡Comparte tu resultado en la comunidad de Telegram! Copia este mensaje y pégalo junto con tu tarjeta.";
     $("copied").textContent = "";
     store("clarity-quiz-last", String(r.score));
     drawCard();
@@ -1712,6 +1715,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const goal = isVocabObs(r) ? "Mi objetivo es llegar a ser Observer Alpha en los próximos 90 días."
       : r.next ? "Mi objetivo es llegar al nivel " + shownLevel(r.next.n) + " en los próximos " + (L.n === 1 ? 90 : 60) + " días."
       : "Mi objetivo es seguir ayudando a otros a encontrar su voz.";
+    if (L.n === 4) return "I'm a Fluent Speaker! Qué emoción estar aquí, poder entender el inglés, ya no tenerle miedo y hablarlo con confianza. Una de las cosas que he logrado con el inglés es ...";
     return "I'm " + L.art + " " + pageName(r) + "! " + goal + " ¡Vamos con toda! 💪";
   }
 
