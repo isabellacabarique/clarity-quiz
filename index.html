@@ -646,12 +646,12 @@ strong.course { font-weight: 800; color: var(--ink); }
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]],
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", ref: "I want too get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]],
       reductions: [{ label: "wanna / tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }] },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]],
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", ref: "I want too go too the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]],
       reductions: [{ label: "wanna / want tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }, { label: "go tə / rə", words: [4], maxMs: 120, vowel: 4 }] },
     // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
-    { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
+    { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", ref: "I'm sure it's going too be fine.", alt: ["I'm sure it's gonna be fine."],
       contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", vowel: 4, needShort: true, ngWord: 3 }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
@@ -1106,7 +1106,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     cfg.speechRecognitionLanguage = "en-US";
     cfg.setProperty(SDK.PropertyId.Speech_SegmentationSilenceTimeoutMs, "1500");
     const rec = new SDK.SpeechRecognizer(cfg, SDK.AudioConfig.fromDefaultMicrophoneInput());
-    const pa = new SDK.PronunciationAssessmentConfig(q.sentence, SDK.PronunciationAssessmentGradingSystem.HundredMark, SDK.PronunciationAssessmentGranularity.Phoneme, true);
+    const pa = new SDK.PronunciationAssessmentConfig(q.ref || q.sentence, SDK.PronunciationAssessmentGradingSystem.HundredMark, SDK.PronunciationAssessmentGranularity.Phoneme, true);
     pa.enableProsodyAssessment = true;
     pa.nbestPhonemeCount = 5; // which sounds Azure actually heard (to tell "tu:" from "tə")
     pa.applyTo(rec);
@@ -1138,10 +1138,12 @@ strong.course { font-weight: 800; color: var(--ink); }
       // Small function words are naturally reduced by natives (you → yə, are → ər, flapped T in "what"),
       // and Azure marks those sounds down. For them only the average sound counts, not the weakest.
       const FUNC = new Set(["a", "an", "the", "to", "of", "for", "and", "are", "you", "it", "is", "at", "in", "on", "do", "i", "what", "that", "can", "have", "has", "was", "were", "be", "your", "my", "me", "him", "her", "them", "us"]);
+      const vowIdx = new Set((q.reductions || []).filter((rd) => rd.vowel != null).map((rd) => rd.vowel));
       const redIdx = new Set(); (q.reductions || []).forEach((rd) => (rd.words || [rd.word]).forEach((k) => redIdx.add(k)));
       const wordScores = refWords.map((w, wi) => {
         const pa = w.PronunciationAssessment || {};
         const isFunc = FUNC.has(String(w.Word || "").toLowerCase().replace(/[^a-z']/g, "")) || redIdx.has(wi);
+        if (vowIdx.has(wi)) return null; // judged only by the tə/tu: check
         if (pa.ErrorType === "Omission") return redIdx.has(wi) ? null : 0;
         const ph = (w.Phonemes || []).map((x) => x.PronunciationAssessment && x.PronunciationAssessment.AccuracyScore).filter((v) => typeof v === "number");
         if (!ph.length) return typeof pa.AccuracyScore === "number" ? pa.AccuracyScore : 0;
@@ -1202,8 +1204,11 @@ strong.course { font-weight: 800; color: var(--ink); }
               const sc = (ph) => { const f = nb.find((x) => String(x.Phoneme).toLowerCase() === ph); return f ? f.Score : 0; };
               const full = Math.max(sc("uw"), sc("uh")), weak = Math.max(sc("ax"), sc("ah"), sc("ih"), sc("er"));
               const top = String(nb[0].Phoneme).toLowerCase();
-              const isFull = top === "uw" || top === "uh" || full > weak;
-              const nbTxt = " [" + nb.map((x) => x.Phoneme + " " + Math.round(x.Score)).join(", ") + "]";
+              const vexp = String(vph[vph.length - 1].Phoneme || "").toLowerCase();
+              const vacc = (vph[vph.length - 1].PronunciationAssessment || {}).AccuracyScore;
+              // With the reference spelled "too", Azure expects a long "u:": if it still hears u: clearly, the student said tu:.
+              const isFull = vexp === "uw" ? ((top === "uw" || top === "uh") && (typeof vacc !== "number" || vacc >= 70)) : (top === "uw" || top === "uh" || full > weak);
+              const nbTxt = " " + vexp + "=" + Math.round(vacc || 0) + " [" + nb.map((x) => x.Phoneme + " " + Math.round(x.Score)).join(", ") + "]";
               if (isFull || !rd.needShort) { if (!isFull) redOk++; redInfo.push(rd.label + "=" + (isFull ? "tu: (larga)" : "tə (ok)") + nbTxt); return; }
               redInfo.push("vocal tə ok" + nbTxt);
             }
