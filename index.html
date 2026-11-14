@@ -2187,7 +2187,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function previewFromHash() {
     const r = parseResultHash();
     if (!r) return;
-    const ALWAYS_ASK = ["shy-speaker"]; // these levels ask for the password every time the link is opened
+    const ALWAYS_ASK = []; // levels listed here ask for the password every time the link is opened
     if (rgUnlocked(r.key) && !ALWAYS_ASK.includes(r.key)) { $("rgate").hidden = true; openSample(r.n, r.b); return; }
     rgPending = r;
     $("rg-name").textContent = r.name; $("rg-name2").textContent = r.name;
