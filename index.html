@@ -648,7 +648,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]] },
+    // Experiment: Azure compares against "wanna". If the student says "want to", "wanna" scores low or "to" shows up as an extra word.
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", ref: "I wanna get out of here.", alt: ["I wanna get out of here."], links: [[2, 3], [3, 4]],
+      reductions: [{ label: "wanna", refWord: 1, minAcc: 70, notExtra: ["to", "want", "too"] }] },
     { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]] },
     // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
     { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
@@ -1138,8 +1140,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       // Small function words are naturally reduced by natives (you → yə, are → ər, flapped T in "what"),
       // and Azure marks those sounds down. For them only the average sound counts, not the weakest.
       const FUNC = new Set(["a", "an", "the", "to", "of", "for", "and", "are", "you", "it", "is", "at", "in", "on", "do", "i", "what", "that", "can", "have", "has", "was", "were", "be", "your", "my", "me", "him", "her", "them", "us"]);
-      const vowIdx = new Set((q.reductions || []).filter((rd) => rd.vowel != null).map((rd) => rd.vowel));
-      const redIdx = new Set(); (q.reductions || []).forEach((rd) => (rd.words || [rd.word]).forEach((k) => redIdx.add(k)));
+      const vowIdx = new Set((q.reductions || []).filter((rd) => rd.vowel != null || rd.refWord != null).map((rd) => rd.vowel != null ? rd.vowel : rd.refWord));
+      const redIdx = new Set(); (q.reductions || []).forEach((rd) => (rd.words || [rd.word != null ? rd.word : rd.refWord]).forEach((k) => redIdx.add(k)));
       const wordScores = refWords.map((w, wi) => {
         const pa = w.PronunciationAssessment || {};
         const isFunc = FUNC.has(String(w.Word || "").toLowerCase().replace(/[^a-z']/g, "")) || redIdx.has(wi);
@@ -1156,7 +1158,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       const clarity = Math.max(0, Math.min(1, (rawClar - 65) / 30)) * Math.min(1, g.ratio / 0.9);
       // Linking: where a word ends in a consonant and the next starts with a vowel ("turn it off"),
       // a native joins them. A pause between them (> 80 ms) counts as not linked.
-      const sw = q.sentence.split(" ");
+      const sw = (q.ref || q.sentence).split(" ");
       const clean = (w) => w.toLowerCase().replace(/[^a-z']/g, "");
       let pairs = 0, linked = 0;
       if (refWords.length === sw.length) {
@@ -1183,6 +1185,16 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (q.reductions && refWords.length === sw.length) {
         q.reductions.forEach((rd) => {
           redTotal++;
+          if (rd.refWord != null) {
+            const w = refWords[rd.refWord] || {}, pa4 = w.PronunciationAssessment || {};
+            const ins = []; parts.forEach((p) => p.words.forEach((x) => { if ((x.PronunciationAssessment || {}).ErrorType === "Insertion") ins.push(String(x.Word || "").toLowerCase()); }));
+            const acc4 = typeof pa4.AccuracyScore === "number" ? pa4.AccuracyScore : 0;
+            const extra = ins.some((x) => rd.notExtra.indexOf(x) !== -1);
+            const ok = pa4.ErrorType !== "Omission" && acc4 >= rd.minAcc && !extra;
+            if (ok) redOk++;
+            redInfo.push(rd.label + "=" + (ok ? "ok" : "no") + " acc=" + Math.round(acc4) + " err=" + (pa4.ErrorType || "-") + (extra ? " sobra:" + ins.join(",") : ""));
+            return;
+          }
           if (rd.phoneme) {
             const w = refWords[rd.word];
             const ph = ((w && w.Phonemes) || []).filter((x) => String(x.Phoneme || "").toLowerCase() === rd.phoneme);
