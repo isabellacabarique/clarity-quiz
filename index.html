@@ -648,9 +648,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
-    // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
-    { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
-      contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
+    // The student SEES "I am … it is" and should SAY "I'm … it's"; Azure compares against the natural form.
+    { type: "speak", dim: "Voz", show: "I am sure it is going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
+      contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is"], extra: ["is"] }],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
     // Words that are tricky for Spanish speakers: their clarity is judged sound by sound (Azure does catch "com-for-TA-ble", "ner-VOUS").
     { type: "speak", dim: "Voz", sentence: "I don't feel comfortable here.", tricky: [3] },
