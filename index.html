@@ -1297,6 +1297,11 @@ strong.course { font-weight: 800; color: var(--ink); }
         q.contractions.forEach((c) => {
           redTotal++;
           let longForm = c.full.some((f) => heard.includes(" " + f + " ")) || c.extra.some((x) => inserted.indexOf(x) !== -1);
+          // "I am" read slowly is sometimes written as "I'm I'm": the contraction shows up more times than in the sentence.
+          const cnt = (str, w) => str.split(" " + w + " ").length - 1;
+          const sent = " " + q.sentence.toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z' ]/g, " ").replace(/\s+/g, " ") + " ";
+          if (cnt(heard, c.label.toLowerCase()) > cnt(sent, c.label.toLowerCase())) longForm = true;
+          if (refWords.length > sw.length) longForm = true;
           const w = refWords.length === sw.length ? refWords[c.word] : null;
           let note = "";
           if (w && typeof w.Duration === "number" && avgDur) {
