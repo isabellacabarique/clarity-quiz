@@ -1096,6 +1096,30 @@ strong.course { font-weight: 800; color: var(--ink); }
     (q.reduce || []).forEach(([formal, reduced]) => { if (said.includes(" " + formal + " ") && !said.includes(" " + reduced + " ")) p += 0.3; });
     return p;
   }
+  // Our own pause detector: Azure stretches words over short pauses, so we listen to the microphone level ourselves.
+  function startMeter() {
+    let stream = null, ctx = null, timer = null; const lv = []; let t0 = 0;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((st) => {
+      stream = st; ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const an = ctx.createAnalyser(); an.fftSize = 1024; ctx.createMediaStreamSource(st).connect(an);
+      const buf = new Float32Array(an.fftSize); t0 = performance.now();
+      timer = setInterval(() => { an.getFloatTimeDomainData(buf); let e = 0; for (let i = 0; i < buf.length; i++) e += buf[i] * buf[i]; lv.push(Math.sqrt(e / buf.length)); }, 20);
+    }).catch(() => {});
+    return {
+      stop() {
+        clearInterval(timer); try { stream && stream.getTracks().forEach((t) => t.stop()); ctx && ctx.close(); } catch (e) {}
+        if (lv.length < 10) return null;
+        const sorted = lv.slice().sort((a, b) => a - b);
+        const floor = sorted[Math.floor(sorted.length * 0.1)], peak = sorted[Math.floor(sorted.length * 0.95)];
+        const thr = floor + (peak - floor) * 0.12;
+        const on = lv.map((v) => v > thr);
+        const first = on.indexOf(true), last = on.lastIndexOf(true);
+        const pauses = []; let run = 0;
+        for (let i = first; i <= last && first >= 0; i++) { if (!on[i]) run++; else { if (run * 20 >= 200) pauses.push({ at: (i - run) * 20, ms: run * 20 }); run = 0; } }
+        return { pauses, speechMs: first >= 0 ? (last - first) * 20 : 0 };
+      }
+    };
+  }
   async function toggleAzure() {
     const q = QUESTIONS[current], s = spk[current], idx = current;
     if (s.listening) { if (azFinish) azFinish(true); return; }
@@ -1121,7 +1145,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       clearTimeout(timer); clearTimeout(hard);
       const close = () => { try { rec.close(); } catch (e) {} azRec = null; azFinish = null; };
       // give the service a moment to return the last segment after the student taps
-      const wrap = () => { close(); s.listening = false; s.preparing = false; score(); if (current === idx) renderSpeak(q); };
+      const wrap = () => { close(); s.listening = false; s.preparing = false; s.meterRes = meter ? meter.stop() : null; meter = null; score(); if (current === idx) renderSpeak(q); };
       try { rec.stopContinuousRecognitionAsync(() => setTimeout(wrap, 150), wrap); } catch (e) { wrap(); }
     };
     azFinish = finish;
@@ -1292,6 +1316,9 @@ strong.course { font-weight: 800; color: var(--ink); }
       const red = redTotal ? redOk / redTotal : null;
       const link = pairs ? linked / pairs : null;
       let flu = avg("flu");
+      // Pauses we heard ourselves inside the sentence (200 ms or more): each one lowers fluency.
+      const mr = s.meterRes, nPauses = mr ? mr.pauses.length : 0;
+      if (mr) flu = Math.min(flu, Math.max(0, 1 - 0.2 * nPauses));
       const extras = [link, red].filter((v) => v != null);
       if (extras.length) flu = flu * 0.5 + (extras.reduce((a, b) => a + b, 0) / extras.length) * 0.5;
       flu = Math.max(0, Math.min(1, flu)) * Math.min(1, g.ratio / 0.7);
@@ -1303,7 +1330,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.red = redS;
       s.best = Math.max(s.best || 0, combined); s.combined = s.best;
       if (DEBUG) {
-        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + (redInfo.length ? " red=" + redInfo.join(" ") : "") + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text];
+        const lines = ["FRASE: " + q.sentence, "AZURE acc=" + Math.round(avg("acc") * 100) + " flu=" + Math.round(avg("flu") * 100) + " pro=" + (pro == null ? "-" : Math.round(pro * 100)) + " | rawClar=" + Math.round(rawClar) + " link=" + linked + "/" + pairs + (redInfo.length ? " red=" + redInfo.join(" ") : "") + " => clar=" + Math.round(clarity * 100) + " flu=" + Math.round(flu * 100) + " pro=" + (proS == null ? "-" : Math.round(proS * 100)) + " | dijo: " + text, "PAUSAS (medidas por el micrófono): " + (mr ? (mr.pauses.length ? mr.pauses.map((x) => x.ms + "ms en " + x.at + "ms").join(", ") : "ninguna") + " · habla " + mr.speechMs + "ms" : "sin datos")];
         const ins = []; parts.forEach((p) => p.words.forEach((w) => { if ((w.PronunciationAssessment || {}).ErrorType === "Insertion") ins.push(w.Word); }));
         if (ins.length) lines.push("PALABRAS DE MÁS: " + ins.join(", "));
         refWords.forEach((w) => {
@@ -1336,7 +1363,9 @@ strong.course { font-weight: 800; color: var(--ink); }
       }
       finish(false);
     };
+    let meter = null;
     rec.startContinuousRecognitionAsync(() => {
+      meter = startMeter();
       s.preparing = false; s.listening = true; quiet(9000);
       hard = setTimeout(() => finish(false), 25000);
       if (current === idx) renderSpeak(q);
