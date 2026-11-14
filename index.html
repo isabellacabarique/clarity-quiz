@@ -474,11 +474,10 @@ strong.course { font-weight: 800; color: var(--ink); }
       </div>
       <div class="vid-intro" id="vid-intro" hidden>
         <div class="vi-ic" aria-hidden="true">🎬</div>
-        <p>Vas a ver <b>5 videos cortos</b> de nativos hablando en situaciones reales. Después de cada video hay una pregunta para ver si entendiste el mensaje.</p>
+        <p>Vas a ver <b>5 videos cortos</b> de nativos hablando en situaciones reales. Después de cada video hay una pregunta de comprensión en inglés.</p>
         <ul>
           <li>Activa el sonido y, si puedes, usa audífonos.</li>
-          <li><b>Cada video lo puedes ver una sola vez</b>, así que pon mucha atención antes de darle play.</li>
-          <li>Luego elige la opción que mejor describe lo que pasa en el video. <b>Las preguntas y las respuestas están en inglés.</b></li>
+          <li><b>Cada video lo puedes ver una sola vez.</b></li>
         </ul>
       </div>
       <div class="options" id="q-opts" role="group" aria-labelledby="q-text"></div>
@@ -770,7 +769,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function showVidState() {
     const st = vidSeen[current], vid = $("q-video");
     $("qv-play").hidden = !!st;
-    $("qv-note").textContent = st === "done" ? "Ya viste este video. Ahora elige tu respuesta." : st === "playing" ? "Mira con atención: el video no se puede repetir." : "Solo puedes ver este video una vez.";
+    $("qv-note").textContent = st ? "" : "Solo puedes ver este video una vez.";
     if (st === "done" && !vid.ended) { try { vid.currentTime = Math.max(0, (vid.duration || 0) - 0.05); } catch (e) {} }
   }
   $("qv-play").addEventListener("click", () => {
