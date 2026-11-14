@@ -686,12 +686,30 @@ strong.course { font-weight: 800; color: var(--ink); }
     // [{word (as written), toks: [canonical tokens]}]
     return text.split(/\s+/).filter(Boolean).map((w) => ({ word: w, toks: canonWord(w) })).filter((t) => t.toks.length);
   }
+  // Spelling doesn't count: a word with small typos ("rainning", "chrismas") is still right.
+  // Short words (3 letters or less) must match; 4-7 letters allow 1 mistake; 8+ letters allow 2.
+  function editDist(x, y) {
+    // letters added, missing, changed or swapped ("becuase") each count as 1 mistake
+    const d = Array.from({ length: x.length + 1 }, (_, i) => [i]);
+    for (let j = 1; j <= y.length; j++) d[0][j] = j;
+    for (let i = 1; i <= x.length; i++) for (let j = 1; j <= y.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && x[i - 1] === y[j - 2] && x[i - 2] === y[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+    return d[x.length][y.length];
+  }
+  function sameWord(x, y) {
+    if (x === y) return true;
+    const L = Math.max(x.length, y.length);
+    if (Math.min(x.length, y.length) <= 3 || /\d/.test(x + y)) return false;
+    return editDist(x, y) <= (L >= 8 ? 2 : 1);
+  }
   function lcsMatch(a, b) {
     const n = a.length, m = b.length, dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
-    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = sameWord(a[i], b[j]) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
     const ma = new Array(n).fill(false), mb = new Array(m).fill(false);
     let i = 0, j = 0;
-    while (i < n && j < m) { if (a[i] === b[j]) { ma[i] = mb[j] = true; i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++; }
+    while (i < n && j < m) { if (sameWord(a[i], b[j])) { ma[i] = mb[j] = true; i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++; }
     return [ma, mb];
   }
   function grade(typed, answer) {
