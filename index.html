@@ -655,7 +655,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", vowel: 4, needShort: true, ngWord: 3 }] },
     { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
-      reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 140 }] }
+      reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 150, strict: true }] }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
@@ -1226,7 +1226,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           const timedW = refWords.filter((w) => typeof w.Duration === "number" && (w.PronunciationAssessment || {}).ErrorType !== "Omission");
           const avgMs = timedW.length ? timedW.reduce((a, w) => a + w.Duration, 0) / timedW.length / 10000 : 0;
           const rel = avgMs ? ms / (avgMs * rd.words.length) : 9;
-          const shortOk = ms <= rd.maxMs * 1.25 || rel <= (rd.needShort ? 0.6 : 0.85);
+          const shortOk = rd.strict ? ms <= rd.maxMs : (ms <= rd.maxMs * 1.25 || rel <= (rd.needShort ? 0.6 : 0.85));
           if (rd.ngWord != null) {
             // gonna: the "-ing" of going disappears (Azure no longer hears "ng"), or going+to is very short.
             const ng = ((refWords[rd.ngWord] || {}).Phonemes || []).filter((x) => String(x.Phoneme || "").toLowerCase() === "ng").pop();
