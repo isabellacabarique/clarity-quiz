@@ -1999,6 +1999,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   function checkClosed() { $("qclosed").hidden = !(QUIZ_CLOSED && !parseResultHash() && !/[?&]probar\b/.test(location.search)); }
   if (QUIZ_CLOSED && !/[?&]probar\b/.test(location.search)) $("start").addEventListener("click", (e) => { e.stopImmediatePropagation(); checkClosed(); }, true);
   checkClosed();
+  // Review shortcut: ?probar&videos opens the test right at the notice before the comprehension videos.
+  if (/[?&]videos\b/.test(location.search) && !parseResultHash()) { $("qclosed").hidden = true; current = FIRST_VIDEO; vidIntro = true; show("quiz"); renderVidIntro(); }
   previewFromHash();
   window.addEventListener("hashchange", () => { checkClosed(); previewFromHash(); });
 })();
