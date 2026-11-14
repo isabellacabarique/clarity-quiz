@@ -959,11 +959,11 @@ strong.course { font-weight: 800; color: var(--ink); }
       const c = Math.round((s.clar || 0) * 100), f = Math.round((s.flu || 0) * 100);
       $("m-clar").textContent = c + "%"; $("m-clar-bar").style.width = c + "%";
       $("m-flu").textContent = f + "%"; $("m-flu-bar").style.width = f + "%";
-      $("m-pro-row").hidden = s.pro == null;
+      $("m-pro-row").hidden = true; // entonación no se evalúa
       if (s.pro != null) { const pv = Math.round(s.pro * 100); $("m-pro").textContent = pv + "%"; $("m-pro-bar").style.width = pv + "%"; }
       $("sp-dbg").hidden = !(DEBUG && s.debug); if (DEBUG && s.debug) $("sp-dbg-txt").value = s.debug;
       $("m-red-row").hidden = s.red == null;
-      $("m-red-label").textContent = q.contractions && !q.reductions ? "Contracciones" : "Reducciones";
+      $("m-red-label").textContent = "Reducciones";
       if (s.red != null) { const rv = Math.round(s.red * 100); $("m-red").textContent = rv + "%"; $("m-red-bar").style.width = rv + "%"; }
       $("m-link-row").hidden = s.link == null;
       if (s.link != null) { const lv = Math.round(s.link * 100); $("m-link").textContent = lv + "%"; $("m-link-bar").style.width = lv + "%"; }
@@ -1217,7 +1217,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       const proS = pro == null ? null : Math.max(0, Math.min(1, (pro - 0.5) / 0.45)) * Math.min(1, g.ratio / 0.7);
       const linkS = link == null ? null : link * Math.min(1, g.ratio / 0.7);
       const redS = red == null ? null : red * Math.min(1, g.ratio / 0.7);
-      const combined = proS == null ? clarity * 0.7 + flu * 0.3 : clarity * 0.5 + flu * 0.25 + proS * 0.25;
+      const combined = clarity * 0.7 + flu * 0.3; // entonación (prosodia) no cuenta
       s.tries++; s.err = "";
       s.g = g; s.clar = clarity; s.flu = flu; s.pro = proS; s.link = linkS; s.red = redS;
       s.best = Math.max(s.best || 0, combined); s.combined = s.best;
