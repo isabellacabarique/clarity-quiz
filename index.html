@@ -503,7 +503,7 @@ strong.course { font-weight: 800; color: var(--ink); }
           <div class="metric"><span class="m-label">Fluidez</span><span class="m-val" id="m-flu"></span><div class="m-bar"><div id="m-flu-bar"></div></div></div>
           <div class="metric" id="m-pro-row" hidden><span class="m-label">Entonación</span><span class="m-val" id="m-pro"></span><div class="m-bar"><div id="m-pro-bar"></div></div></div>
           <div class="metric" id="m-link-row" hidden><span class="m-label">Linking</span><span class="m-val" id="m-link"></span><div class="m-bar"><div id="m-link-bar"></div></div></div>
-          <div class="metric" id="m-red-row" hidden><span class="m-label" id="m-red-label">Reducciones</span><span class="m-val" id="m-red"></span><div class="m-bar"><div id="m-red-bar"></div></div></div>
+          <div class="metric" id="m-red-row" hidden><span class="m-label" id="m-red-label">Contracciones</span><span class="m-val" id="m-red"></span><div class="m-bar"><div id="m-red-bar"></div></div></div>
         </div>
         <div class="dbg" id="sp-dbg" hidden><p class="hint">Diagnóstico (solo lo ves tú con ?debug): copia este texto y pégalo en el chat con Claude.</p><textarea id="sp-dbg-txt" readonly rows="10"></textarea><button class="btn ghost" id="sp-dbg-copy" type="button">Copiar diagnóstico</button></div>
         <button class="linkbtn" id="sp-skip" type="button">No puedo grabar ahora (saltar esta parte)</button>
@@ -643,19 +643,18 @@ strong.course { font-weight: 800; color: var(--ink); }
     { type: "dictation", dim: "Bases", src: "audio/audio-6.mp3", prefix: "If you ask me, as long as you got this job,", answer: "you got nothing pushing you to get another one",
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
     // Isa's accepted pronunciations: any of them counts as right. Only linking (no pause between the joined words) and clarity are required.
+    // Graded: clarity, fluency, linking (no pause between the joined words) and contractions (I'm, gonna).
+    // Vowel reductions (tə vs tu:, dəs vs das) are NOT graded: Azure can't tell them apart reliably (tests Nov 2026).
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", ref: "I want too get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]],
-      reductions: [{ label: "wanna / tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }] },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", ref: "I want too go too the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]],
-      reductions: [{ label: "wanna / want tə", words: [2], maxMs: 120, heard: "wanna", vowel: 2 }, { label: "go tə / rə", words: [4], maxMs: 120, vowel: 4 }] },
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]] },
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]] },
     // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
-    { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", ref: "I'm sure it's going too be fine.", alt: ["I'm sure it's gonna be fine."],
+    { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
       contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
-      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", vowel: 4, needShort: true, ngWord: 3 }] },
-    { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
-      reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 150, strict: true }] }
+      reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
+    { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]] }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
@@ -990,7 +989,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (s.pro != null) { const pv = Math.round(s.pro * 100); $("m-pro").textContent = pv + "%"; $("m-pro-bar").style.width = pv + "%"; }
       $("sp-dbg").hidden = !(DEBUG && s.debug); if (DEBUG && s.debug) $("sp-dbg-txt").value = s.debug;
       $("m-red-row").hidden = s.red == null;
-      $("m-red-label").textContent = "Reducciones";
+      $("m-red-label").textContent = "Contracciones";
       if (s.red != null) { const rv = Math.round(s.red * 100); $("m-red").textContent = rv + "%"; $("m-red-bar").style.width = rv + "%"; }
       $("m-link-row").hidden = s.link == null;
       if (s.link != null) { const lv = Math.round(s.link * 100); $("m-link").textContent = lv + "%"; $("m-link-bar").style.width = lv + "%"; }
