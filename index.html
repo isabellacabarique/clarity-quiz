@@ -651,7 +651,6 @@ strong.course { font-weight: 800; color: var(--ink); }
     // Experiment: Azure compares against "wanna". If the student says "want to", "wanna" scores low or "to" shows up as an extra word.
     { type: "speak", dim: "Voz", sentence: "I want to get out of here.", ref: "I wanna get out of here.", alt: ["I wanna get out of here."], links: [[2, 3], [3, 4]],
       reductions: [{ label: "wanna", refWord: 1, minAcc: 70, notExtra: ["to", "want", "too"] }] },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]] },
     // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
     { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
       contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
