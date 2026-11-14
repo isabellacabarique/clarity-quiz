@@ -472,14 +472,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         <p class="qv-note" id="qv-note">Solo puedes ver este video una vez.</p>
       </div>
       <div class="q-title"><h2 id="q-text"></h2><p class="hint" id="q-hint"></p></div>
-      <div class="vid-intro" id="vid-intro" hidden>
-        <div class="vi-ic" aria-hidden="true">🎬</div>
-        <p>Vas a ver <b>5 videos cortos</b> de nativos hablando en situaciones reales. Después de cada video hay una pregunta de comprensión.</p>
-        <ul>
-          <li>Activa el sonido y, si puedes, usa audífonos.</li>
-          <li><b>Cada video lo puedes ver una sola vez.</b></li>
-        </ul>
-      </div>
+      <div class="vid-intro" id="vid-intro" hidden></div>
       <div class="options" id="q-opts" role="group" aria-labelledby="q-text"></div>
       <div class="dict" id="dict" hidden>
         <div class="play-row">
@@ -781,12 +774,21 @@ strong.course { font-weight: 800; color: var(--ink); }
   $("q-video").addEventListener("pause", () => { const v = $("q-video"); if (vidSeen[current] === "playing" && !v.ended && !document.hidden && !$("qv-wrap").hidden) v.play().catch(() => {}); });
   // A short notice before the first comprehension video, so the student knows what's coming.
   const FIRST_VIDEO = QUESTIONS.findIndex((q) => q.video);
+  const FIRST_DICT = QUESTIONS.findIndex((q) => q.type === "dictation");
+  // Notice screens shown before a new kind of question: [dimension label, title, body HTML, button].
+  const INTROS = {};
+  INTROS[FIRST_VIDEO] = ["Comprensión", "Ahora vas a ver unos videos",
+    '<div class="vi-ic" aria-hidden="true">🎬</div><p>Vas a ver <b>5 videos cortos</b> de nativos hablando en situaciones reales. Después de cada video hay una pregunta de comprensión.</p><ul><li>Activa el sonido y, si puedes, usa audífonos.</li><li><b>Cada video lo puedes ver una sola vez.</b></li></ul>'];
+  INTROS[FIRST_DICT] = ["Dictado", "Ahora vas a escuchar unos audios",
+    '<div class="vi-ic" aria-hidden="true">🎧</div><p>Vas a escuchar <b>6 audios cortos</b> de nativos hablando. En cada uno, escribe en inglés lo que escuchas.</p><ul><li>Activa el sonido y, si puedes, usa audífonos.</li><li><b>Cada audio lo puedes escuchar 2 veces.</b></li><li>Escribe todo lo que entiendas, aunque no sea la frase completa. No te preocupes por la ortografía perfecta.</li><li>Cuando termines, dale a <b>Comprobar</b> para ver qué palabras escribiste bien.</li></ul>'];
   let vidIntro = false;
   function renderVidIntro() {
+    const it = INTROS[current];
     $("q-count").textContent = "Pregunta " + (current + 1) + " de " + QUESTIONS.length;
     $("q-bar").style.width = (current / QUESTIONS.length * 100) + "%";
-    $("q-dim").textContent = "Comprensión";
-    $("q-text").textContent = "Ahora vas a ver unos videos";
+    $("q-dim").textContent = it[0];
+    $("q-text").textContent = it[1];
+    $("vid-intro").innerHTML = it[2];
     $("q-hint").hidden = true;
     $("q-opts").hidden = true; $("dict").hidden = true; $("speak").hidden = true;
     $("q-video").pause(); $("qv-wrap").hidden = true;
@@ -858,7 +860,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (!spk[current].tries) return;
       stopRecog();
     } else if (!answers[current].length) return;
-    if (current < QUESTIONS.length - 1) { current++; if (current === FIRST_VIDEO) { vidIntro = true; renderVidIntro(); } else renderQuestion(); }
+    if (current < QUESTIONS.length - 1) { current++; if (INTROS[current]) { vidIntro = true; renderVidIntro(); } else renderQuestion(); }
     else { finish(); }
   }
 
@@ -1312,9 +1314,12 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (conv <= 1 || pod <= 1) idx = 0;                    // conversation / podcast A–B → Observer
     if ((conv === 2 || pod === 2) && (!studied || rep <= 1)) idx = 0; // "la idea general" / "con esfuerzo" + never studied or repeats a lot → Observer Alpha
     if (rep <= 1) idx = 0;                                 // "Muy seguido" / "Con frecuencia" → Observer Alpha
-    if (rep === 2) idx = Math.min(idx, studied ? 1 : 0);   // "A veces": Shy only if they studied pronunciation
+    const fear = sp.some((o) => o <= 3);                   // avoids / blocks / translates / tongue-tied
+    if (rep === 2 && !studied) idx = 0;                    // "A veces" + never studied pronunciation → Observer Alpha
+    if (rep === 2 && fear) idx = Math.min(idx, 1);         // "A veces" + fear → Shy at most
     if (sp.some((o) => o <= 3)) idx = Math.min(idx, vocab50 ? 1 : 0); // avoids / blocks / translates / tongue-tied
     if (sp.includes(3) && !studied) idx = 0;               // tongue-tied and never studied pronunciation
+    if (idx === 3 && !sp.includes(5)) idx = 2;             // Fluent only for "Hablo con fluidez, sin traducir"
     const shown = Math.max(LEVELS[idx].min, Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100)); // keep the score inside the level's range
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const toNext = next ? next.min - shown : 0;
@@ -1409,7 +1414,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   // Observer who already understands when reading is called "Observer Alpha"; the one who still needs vocabulary is plain "Observer". Bars keep "Observer".
   function shownLevel(n) { return n === 1 ? 1 : n + 1; }
-  function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && (r.obsEar || r.reading <= 1); } // reading 0–25 %, or conversation/podcast A–B → Observer
+  function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 1; } // reading 0–25 %, or conversation/podcast A–B → Observer
   function pageName(r) { return r.level.n === 1 && !isVocabObs(r) ? "Observer Alpha" : r.level.name; }
   // Keep "Hoy eres un …" on one line: shrink the title until it fits its column.
   function fitTitle() {
@@ -1915,7 +1920,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   $("back").addEventListener("click", () => {
     leaveVideo();
     if (vidIntro) { vidIntro = false; current--; renderQuestion(); return; }
-    if (current === FIRST_VIDEO) { vidIntro = true; renderVidIntro(); return; }
+    if (INTROS[current] && !vidIntro) { vidIntro = true; renderVidIntro(); return; }
     if (current > 0) { current--; renderQuestion(); }
   });
   $("next").addEventListener("click", goNext);
