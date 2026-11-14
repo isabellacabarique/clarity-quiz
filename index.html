@@ -642,15 +642,14 @@ strong.course { font-weight: 800; color: var(--ink); }
       notes: ["«had to» se reduce y suena como «hadda».", "«make a» se pega en una sola palabra: «may-ka»."] },
     { type: "dictation", dim: "Bases", src: "audio/audio-6.mp3", prefix: "If you ask me, as long as you got this job,", answer: "you got nothing pushing you to get another one",
       notes: ["«If you» se reduce y suena como «if-ya».", "«as long as» se pega: «a-zlong-az».", "En «got this» y «got nothing», la T casi desaparece.", "«get another» se pega: «ge-da-nother»."] },
-    { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up." },
-    { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", links: [[0, 1], [5, 6], [6, 7]] },
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], reductions: [{ label: "wanna", words: [1, 2], maxMs: 330, tWord: 1, tMax: 80 }] },
-    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], reduce: [["want to", "wanna"]],
-      reductions: [{ label: "wanna", words: [1, 2], maxMs: 330, tWord: 1, tMax: 80 }, { label: "to → tə", words: [4], maxMs: 120 }] },
-    { type: "speak", dim: "Voz", sentence: "Really? You did that? That's amazing!" },
-    { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
-    { type: "speak", dim: "Voz", sentence: "What does she mean?", links: [[0, 1]], alt: ["What's she mean?", "What does he mean?"],
-      reductions: [{ label: "T suave en what", word: 0, phoneme: "t", maxScore: 80 }, { label: "does → rəs", words: [1], maxMs: 140 }] }
+    // Isa's accepted pronunciations: any of them counts as right. Only linking (no pause between the joined words) and clarity are required.
+    { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
+    { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]] },
+    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", alt: ["I wanna get out of here."], links: [[3, 4], [4, 5]] },
+    { type: "speak", dim: "Voz", sentence: "I want to go to the bank for a minute.", alt: ["I wanna go to the bank for a minute."], links: [[7, 8]] },
+    { type: "speak", dim: "Voz", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."], contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }, { label: "it's", word: 2, full: ["it is", "it has"], extra: ["is", "has"] }] },
+    { type: "speak", dim: "Voz", sentence: "What does she mean?", alt: ["What's she mean?", "What does he mean?"], links: [[0, 1], [1, 2]],
+      reductions: [{ label: "does → dəs / rəs", words: [1], maxMs: 140 }] }
   ];
   // Reading aloud needs the browser's speech recognition (Chrome, Edge, Safari). Without it, that part is left out.
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
