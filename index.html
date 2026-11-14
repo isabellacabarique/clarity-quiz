@@ -1207,8 +1207,8 @@ strong.course { font-weight: 800; color: var(--ink); }
               const top = String(nb[0].Phoneme).toLowerCase();
               const vexp = String(vph[vph.length - 1].Phoneme || "").toLowerCase();
               const vacc = (vph[vph.length - 1].PronunciationAssessment || {}).AccuracyScore;
-              // With the reference spelled "too", Azure expects a long "u:": if it still hears u: clearly, the student said tu:.
-              const isFull = vexp === "uw" ? ((top === "uw" || top === "uh") && (typeof vacc !== "number" || vacc >= 70)) : (top === "uw" || top === "uh" || full > weak);
+              // With the reference spelled "too", Azure expects a long "u:". Test data (Nov 2026): tə → u: score 40, top ax; tu: → u: score 100 (top uw or ow).
+              const isFull = vexp === "uw" ? ((typeof vacc !== "number" || vacc >= 70) && !["ax", "ah", "ih", "er", "eh"].includes(top)) : (top === "uw" || top === "uh" || full > weak);
               const nbTxt = " " + vexp + "=" + Math.round(vacc || 0) + " [" + nb.map((x) => x.Phoneme + " " + Math.round(x.Score)).join(", ") + "]";
               if (isFull || !rd.needShort) { if (!isFull) redOk++; redInfo.push(rd.label + "=" + (isFull ? "tu: (larga)" : "tə (ok)") + nbTxt); return; }
               redInfo.push("vocal tə ok" + nbTxt);
