@@ -972,7 +972,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("q-text").textContent = "Lee esta frase en voz alta";
     $("q-hint").hidden = false;
     $("q-hint").textContent = n === 1
-      ? "Presiona «Grabar mi voz», lee la frase con calma y toca el botón otra vez cuando termines. " + (TESTING ? "Modo prueba: intentos ilimitados." : "Tienes " + SPEAK_TRIES + " intentos.") + " La primera vez, tu navegador te va a pedir permiso para usar el micrófono."
+      ? "Presiona «Grabar mi voz» y toca el botón otra vez cuando termines."
       : TESTING ? "Modo prueba: puedes grabar todas las veces que quieras." : "Tienes " + SPEAK_TRIES + " intentos.";
     $("sp-sentence").textContent = q.show || q.sentence;
     const left = SPEAK_TRIES - s.tries;
