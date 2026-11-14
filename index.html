@@ -421,6 +421,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 .rgate .help a{color:var(--teal-dark);font-weight:600}
 .rgate .help2{margin-top:6px;font-size:12px}
 .in-link { color: var(--teal-dark); font-weight: 600; text-decoration: underline; }
+.q-video { width: 100%; max-width: 640px; aspect-ratio: 16 / 9; border-radius: 16px; background: #000; display: block; margin: 0 auto; }
 </style>
 </head>
 <body>
@@ -447,7 +448,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       </ol>
     </div>
 
-    <div class="meta"><span id="meta-count">22 preguntas</span><span>8 minutos</span><span id="meta-mic">Necesitas micrófono</span><span>Repítelo cada 30 días</span></div>
+    <div class="meta"><span id="meta-count">27 preguntas</span><span>10 minutos</span><span id="meta-mic">Necesitas micrófono</span><span>Repítelo cada 30 días</span></div>
     <div><button class="btn" id="start">Empezar el quiz</button></div>
   </section>
 
@@ -457,6 +458,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     <div class="bar" aria-hidden="true"><div id="q-bar"></div></div>
     <div class="question">
       <div class="q-title"><h2 id="q-text"></h2><p class="hint" id="q-hint"></p></div>
+      <video id="q-video" class="q-video" controls playsinline preload="metadata" hidden></video>
       <div class="options" id="q-opts" role="group" aria-labelledby="q-text"></div>
       <div class="dict" id="dict" hidden>
         <div class="play-row">
@@ -602,6 +604,17 @@ strong.course { font-weight: 800; color: var(--ink); }
       opts: [["Muy seguido", 0], ["Con frecuencia", 1], ["A veces", 2], ["Casi nunca", 3]] },
     { dim: "Voz", key: "feel", text: "¿Cómo te sientes con la forma en que suenas en inglés?",
       opts: [["Me da vergüenza escucharme", 0], ["Siento que sueno como un robot", 1], ["Sueno bien, pero todavía no natural", 2], ["Me siento cómodo y natural", 3]] },
+    // Comprehension videos (teacher Isa's recordings): one question each, "correct" is the right option.
+    { dim: "Comprensión", key: "comp1", max: 1, score: false, video: "video/v1.mp4?v=1", correct: 0, text: "¿Quién convenció a quién de quedarse a vivir en ese lugar?",
+      opts: [["Ella lo convenció a él.", 0], ["Él la convenció a ella.", 0], ["Ambos decidieron quedarse por igual.", 0]] },
+    { dim: "Comprensión", key: "comp2", max: 1, score: false, video: "video/v2.mp4?v=1", correct: 1, text: "¿Qué tiene de especial esta casa de muñecas?",
+      opts: [["Es una casa de muñecas antigua que perteneció a su mamá.", 0], ["Su mamá personalizó cada casa de muñecas según los gustos de cada familiar.", 0], ["Es una casa de muñecas que compraron durante un viaje familiar.", 0]] },
+    { dim: "Comprensión", key: "comp3", max: 1, score: false, video: "video/v3.mp4?v=1", correct: 1, text: "¿Qué relación tiene la mujer con las redes sociales últimamente?",
+      opts: [["Quiere pasar más tiempo interactuando con sus seguidores.", 0], ["Quiere alejarse un poco de las redes sociales.", 0], ["Quiere empezar a compartir más contenido personal.", 0]] },
+    { dim: "Comprensión", key: "comp4", max: 1, score: false, video: "video/v4.mp4?v=1", correct: 0, text: "¿Qué provoca la risa durante la conversación?",
+      opts: [["La sorpresa al descubrir que alguien no tiene hijos.", 0], ["Un comentario sobre la dificultad de criar hijos.", 0], ["Una pregunta sobre por qué decidió tener hijos tan tarde.", 0]] },
+    { dim: "Comprensión", key: "comp5", max: 1, score: false, video: "video/v5.mp4?v=1", correct: 2, text: "¿Para qué usa principalmente su iPad?",
+      opts: [["Para leer libros y documentos.", 0], ["Para trabajar.", 0], ["Para ver películas y tomar notas.", 0]] },
     { type: "dictation", dim: "Bases", src: "audio/audio-1.mp3", answer: "And I gotta go sell some Christmas trees",
       notes: ["«gotta» es la forma reducida de «got to» (tengo que).", "«And I» se pega y suena casi como «an-ai»."] },
     { type: "dictation", dim: "Bases", src: "audio/audio-2.mp3", answer: "OMG! Where did you get this?",
@@ -635,7 +648,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   let speakOff = !SR && !USE_AZURE;
   // The 6 dictations together are worth 6 points (the weight of the two questions they replaced).
   const DICT_WEIGHT = 6;
-  const SCORED_MAX = QUESTIONS.filter((q) => q.score !== false && q.type !== "dictation" && q.type !== "speak").length * 3 + DICT_WEIGHT;
+  const COMP_WEIGHT = 6; // the five comprehension videos
+  const SCORED_MAX = QUESTIONS.filter((q) => q.score !== false && q.type !== "dictation" && q.type !== "speak").length * 3 + DICT_WEIGHT + COMP_WEIGHT;
   const MAX_PLAYS = 2;
   const qIndex = (key) => QUESTIONS.findIndex((q) => q.key === key);
 
@@ -737,9 +751,13 @@ strong.course { font-weight: 800; color: var(--ink); }
     const isDict = q.type === "dictation", isSpk = q.type === "speak";
     if (!isSpk) stopRecog();
     $("q-opts").hidden = isDict || isSpk; $("dict").hidden = !isDict; $("speak").hidden = !isSpk;
+    if (isDict || isSpk) { $("q-video").pause(); $("q-video").hidden = true; }
     $("back").disabled = current === 0;
     if (isDict) { renderDictation(q); return; }
     if (isSpk) { renderSpeak(q); return; }
+    const vid = $("q-video");
+    if (q.video) { if (vid.dataset.src !== q.video) { vid.src = q.video; vid.dataset.src = q.video; } vid.hidden = false; }
+    else { vid.pause(); vid.hidden = true; }
     const max = maxOf(q), sel = answers[current];
     $("q-dim").textContent = q.dim;
     $("q-text").textContent = q.text;
@@ -1200,6 +1218,10 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (q.dim === "Bases") bases += pts;
       if (q.dim === "Oído") { ear += pts; earN++; }
     });
+    // Comprehension videos: worth COMP_WEIGHT points together.
+    const compQs = QUESTIONS.map((q, i) => [q, i]).filter(([q]) => q.video);
+    const compRight = compQs.filter(([q, i]) => answers[i].includes(q.correct)).length;
+    raw += compQs.length ? compRight / compQs.length * COMP_WEIGHT : 0;
     const dictPts = DICT_TOTAL ? dictSum / DICT_TOTAL * DICT_WEIGHT : 0;
     raw += dictPts; bases += dictPts;
     let max = SCORED_MAX;
@@ -1228,6 +1250,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (sel("subs").includes(3)) idx = notReadyToSpeak ? (vocab50 ? 1 : 0) : Math.max(idx, 2); // with fear: Shy only if the vocabulary is there (reading 50 %+) // understands without subtitles → Brave/Fluent, or Shy to get ready to speak
     // Ceilings
     if (dictAvg < 0.6) idx = 0;                            // dictations under 60 % → Observer / Observer Alpha
+    if (compQs.length && compRight <= 2) idx = 0;          // 2 or fewer comprehension videos right → Observer / Observer Alpha
     if (conv <= 1 || pod <= 1) idx = 0;                    // conversation / podcast A–B → Observer
     if ((conv === 2 || pod === 2) && (!studied || rep <= 1)) idx = 0; // "la idea general" / "con esfuerzo" + never studied or repeats a lot → Observer Alpha
     if (rep <= 1) idx = 0;                                 // "Muy seguido" / "Con frecuencia" → Observer Alpha
