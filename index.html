@@ -1155,7 +1155,16 @@ strong.course { font-weight: 800; color: var(--ink); }
       const ws2 = wordScores.filter((v) => v != null);
       const rawClar = ws2.length ? ws2.reduce((a, b) => a + b, 0) / ws2.length : avg("acc") * 100;
       // Calibrated with real readings (Oct 2026): careless reading ~78, clean native-like ~96.
-      const clarity = Math.max(0, Math.min(1, (rawClar - 65) / 30)) * Math.min(1, g.ratio / 0.9);
+      // Clarity = did the platform understand each word? A word lowers it only if Azure couldn't make it out
+      // (missing, or marked as mispronounced: accuracy under 60). Native reductions of small words don't count against it.
+      const understood = refWords.map((w, wi) => {
+        const pa = w.PronunciationAssessment || {};
+        if (pa.ErrorType === "Omission") return redIdx.has(wi) || vowIdx.has(wi) ? null : 0;
+        if (vowIdx.has(wi)) return null;
+        return pa.ErrorType === "Mispronunciation" || (typeof pa.AccuracyScore === "number" && pa.AccuracyScore < 60) ? 0 : 1;
+      }).filter((v) => v != null);
+      const wordsOk = understood.length ? understood.reduce((a, b) => a + b, 0) / understood.length : g.ratio;
+      const clarity = Math.max(0, Math.min(1, Math.min(wordsOk, g.ratio)));
       // Linking: where a word ends in a consonant and the next starts with a vowel ("turn it off"),
       // a native joins them. A pause between them (> 80 ms) counts as not linked.
       const sw = (q.ref || q.sentence).split(" ");
