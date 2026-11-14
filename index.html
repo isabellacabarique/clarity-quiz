@@ -859,7 +859,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const q = QUESTIONS[current];
     if (q.type === "dictation") {
       const d = dict[current];
-      if (!d.checked) { if (d.text.trim()) checkDictation(); return; }
+      if (!d.checked) { if (!d.text.trim()) return; d.g = grade(d.text, q.answer); d.checked = true; }
     } else if (q.type === "speak") {
       if (!spk[current].tries) return;
       stopRecog();
@@ -881,9 +881,9 @@ strong.course { font-weight: 800; color: var(--ink); }
       : "Puedes escucharlo " + MAX_PLAYS + " veces.";
     const left = MAX_PLAYS - d.plays;
     const play = $("play");
-    play.disabled = !d.checked && left <= 0;
-    $("play-label").textContent = d.checked ? "Escuchar otra vez" : left <= 0 ? "Ya lo escuchaste " + MAX_PLAYS + " veces" : (d.plays === 0 ? "Escuchar el audio" : "Escuchar otra vez");
-    $("play-left").textContent = d.checked ? "" : left > 0 ? (left === 1 ? "Te queda 1 vez" : "Te quedan " + left + " veces") : "";
+    play.disabled = left <= 0;
+    $("play-label").textContent = left <= 0 ? "Ya lo escuchaste " + MAX_PLAYS + " veces" : (d.plays === 0 ? "Escuchar el audio" : "Escuchar otra vez");
+    $("play-left").textContent = left > 0 ? (left === 1 ? "Te queda 1 vez" : "Te quedan " + left + " veces") : "";
     const inp = $("dict-in");
     $("dict-prefix").hidden = !q.prefix; $("dict-prefix").textContent = q.prefix ? q.prefix + " …" : "";
     if (q.prefix) $("q-text").textContent = "Escucha el audio y completa la frase";
@@ -892,8 +892,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("dict-skip").hidden = d.checked;
     renderDictResult(q, d);
     const nx = $("next");
-    if (!d.checked) { nx.textContent = "Comprobar"; nx.disabled = !d.text.trim(); }
-    else { nx.disabled = false; nx.textContent = current === QUESTIONS.length - 1 ? "Ver mi resultado" : "Siguiente"; }
+    nx.disabled = !d.checked && !d.text.trim(); nx.textContent = current === QUESTIONS.length - 1 ? "Ver mi resultado" : "Siguiente";
   }
   function wordsInto(el, list, hits, missCls) {
     el.textContent = "";
@@ -906,8 +905,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   function renderDictResult(q, d) {
     const box = $("dict-res");
-    box.hidden = !d.checked;
-    if (!d.checked) return;
+    box.hidden = true; // el estudiante no ve la respuesta correcta
+    return;
     const g = d.g;
     wordsInto($("dict-you"), g.you, g.youHit, "extra");
     wordsInto($("dict-ok"), g.ok, g.okHit, "miss");
@@ -926,8 +925,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   function playCurrent() {
     const q = QUESTIONS[current], d = dict[current];
-    if (!d.checked && d.plays >= MAX_PLAYS) return;
-    if (!d.checked) d.plays++;
+    if (d.plays >= MAX_PLAYS) return;
+    d.plays++;
     if (!audio.src.endsWith(q.src)) audio.src = q.src;
     audio.currentTime = 0;
     const pr = audio.play(); if (pr && pr.catch) pr.catch(() => {});
@@ -1948,7 +1947,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     d.text = e.target.value;
     $("next").disabled = !d.text.trim();
   });
-  $("dict-skip").addEventListener("click", () => { dict[current].text = ""; dict[current].g = grade("", QUESTIONS[current].answer); dict[current].checked = true; renderQuestion(); });
+  $("dict-skip").addEventListener("click", () => { dict[current].text = ""; dict[current].g = grade("", QUESTIONS[current].answer); dict[current].checked = true; goNext(); });
   $("rec").addEventListener("click", () => { if (USE_AZURE) toggleAzure(); else if (SR) toggleRecord(); });
   $("sp-skip").addEventListener("click", skipSpeaking);
   $("sp-dbg-copy").addEventListener("click", async () => { const t = $("sp-dbg-txt"); try { await navigator.clipboard.writeText(t.value); $("sp-dbg-copy").textContent = "Copiado"; } catch (e) { t.focus(); t.select(); } });
