@@ -1128,7 +1128,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       const avg = (k) => parts.reduce((a, p) => a + (p[k] == null ? 0 : p[k]) * p.n, 0) / n / 100;
       const text = parts.map((p) => p.text).join(" ");
       // A native may be transcribed in the reduced form ("wanna", "what's she mean"): that counts as right.
-      const g = [q.sentence].concat(q.alt || []).map((a) => grade(text, a)).reduce((b, x) => (x.ratio > b.ratio ? x : b));
+      const g = [q.sentence].concat(q.alt || [], q.ref ? [q.ref] : []).map((a) => grade(text, a)).reduce((b, x) => (x.ratio > b.ratio ? x : b));
       const hasPro = parts.some((p) => p.pro != null), pro = hasPro ? avg("pro") : null;
       // Reference words in order (inserted extra words are left out).
       const refWords = [];
