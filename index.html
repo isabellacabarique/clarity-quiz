@@ -478,7 +478,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         <ul>
           <li>Activa el sonido y, si puedes, usa audífonos.</li>
           <li><b>Cada video lo puedes ver una sola vez</b>, así que pon mucha atención antes de darle play.</li>
-          <li>Luego elige la opción que mejor describe lo que pasa en el video.</li>
+          <li>Luego elige la opción que mejor describe lo que pasa en el video. <b>Las preguntas y las respuestas están en inglés.</b></li>
         </ul>
       </div>
       <div class="options" id="q-opts" role="group" aria-labelledby="q-text"></div>
@@ -627,16 +627,16 @@ strong.course { font-weight: 800; color: var(--ink); }
     { dim: "Voz", key: "feel", text: "¿Cómo te sientes con la forma en que suenas en inglés?",
       opts: [["Me da vergüenza escucharme", 0], ["Siento que sueno como un robot", 1], ["Sueno bien, pero todavía no natural", 2], ["Me siento cómodo y natural", 3]] },
     // Comprehension videos (teacher Isa's recordings): one question each, "correct" is the right option.
-    { dim: "Comprensión", key: "comp1", max: 1, score: false, video: "video/v1.mp4?v=1", correct: 0, text: "¿Quién convenció a quién de quedarse a vivir en ese lugar?",
-      opts: [["Ella lo convenció a él.", 0], ["Él la convenció a ella.", 0], ["Ambos decidieron quedarse por igual.", 0]] },
-    { dim: "Comprensión", key: "comp2", max: 1, score: false, video: "video/v2.mp4?v=1", correct: 1, text: "¿Qué tiene de especial esta casa de muñecas?",
-      opts: [["Es una casa de muñecas antigua que perteneció a su mamá.", 0], ["Su mamá personalizó cada casa de muñecas según los gustos de cada familiar.", 0], ["Es una casa de muñecas que compraron durante un viaje familiar.", 0]] },
-    { dim: "Comprensión", key: "comp3", max: 1, score: false, video: "video/v3.mp4?v=1", correct: 1, text: "¿Qué relación tiene la mujer con las redes sociales últimamente?",
-      opts: [["Quiere pasar más tiempo interactuando con sus seguidores.", 0], ["Quiere alejarse un poco de las redes sociales.", 0], ["Quiere empezar a compartir más contenido personal.", 0]] },
-    { dim: "Comprensión", key: "comp4", max: 1, score: false, video: "video/v4.mp4?v=1", correct: 0, text: "¿Qué provoca la risa durante la conversación?",
-      opts: [["La sorpresa al descubrir que alguien no tiene hijos.", 0], ["Un comentario sobre la dificultad de criar hijos.", 0], ["Una pregunta sobre por qué decidió tener hijos tan tarde.", 0]] },
-    { dim: "Comprensión", key: "comp5", max: 1, score: false, video: "video/v5.mp4?v=1", correct: 2, text: "¿Para qué usa principalmente su iPad?",
-      opts: [["Para leer libros y documentos.", 0], ["Para trabajar.", 0], ["Para ver películas y tomar notas.", 0]] },
+    { dim: "Comprensión", key: "comp1", max: 1, score: false, video: "video/v1.mp4?v=1", correct: 0, text: "Who convinced whom to stay and live there?",
+      opts: [["She convinced him.", 0], ["He convinced her.", 0], ["They both decided to stay equally.", 0]] },
+    { dim: "Comprensión", key: "comp2", max: 1, score: false, video: "video/v2.mp4?v=1", correct: 1, text: "What is special about this dollhouse?",
+      opts: [["It's an old dollhouse that belonged to her mom.", 0], ["Her mom customized each dollhouse to match each family member's tastes.", 0], ["It's a dollhouse they bought on a family trip.", 0]] },
+    { dim: "Comprensión", key: "comp3", max: 1, score: false, video: "video/v3.mp4?v=1", correct: 1, text: "How does the woman feel about social media lately?",
+      opts: [["She wants to spend more time interacting with her followers.", 0], ["She wants to distance herself from social media.", 0], ["She wants to take a short break from social media.", 0]] },
+    { dim: "Comprensión", key: "comp4", max: 1, score: false, video: "video/v4.mp4?v=1", correct: 0, text: "What makes them laugh during the conversation?",
+      opts: [["The surprise of finding out that someone doesn't have kids.", 0], ["A comment about how hard it is to raise kids.", 0], ["A question about why he decided to have kids so late.", 0]] },
+    { dim: "Comprensión", key: "comp5", max: 1, score: false, video: "video/v5.mp4?v=1", correct: 2, text: "What does she mainly use her iPad for?",
+      opts: [["To read books and documents.", 0], ["To work.", 0], ["To watch movies and take notes.", 0]] },
     { type: "dictation", dim: "Bases", src: "audio/audio-1.mp3", answer: "And I gotta go sell some Christmas trees",
       notes: ["«gotta» es la forma reducida de «got to» (tengo que).", "«And I» se pega y suena casi como «an-ai»."] },
     { type: "dictation", dim: "Bases", src: "audio/audio-2.mp3", answer: "OMG! Where did you get this?",
