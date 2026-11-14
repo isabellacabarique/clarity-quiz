@@ -601,23 +601,23 @@ strong.course { font-weight: 800; color: var(--ink); }
 
   // max: how many options can be chosen (1 = single choice). score:false = not counted in the level.
   const QUESTIONS = [
-    { dim: "Bases", max: 2, key: "studied", text: "¿Has estudiado pronunciación en inglés, es decir, cómo suenan los sonidos?",
+    { dim: "Bases", max: 2, excl: [0], key: "studied", text: "¿Has estudiado pronunciación en inglés, es decir, cómo suenan los sonidos?",
       opts: [["Nunca", 0], ["He visto videos sueltos en redes como Instagram o YouTube", 1], ["He estudiado algunos temas y tengo conocimiento básico", 2], ["Conozco bien los sonidos del inglés y sus reglas", 3]] },
     { dim: "Oído", max: 1, key: "subs", text: "Cuando ves una serie, video o película en inglés, ¿qué subtítulos usas?",
       opts: [["En español, siempre", 0], ["En español casi siempre, a veces en inglés", 1], ["En inglés", 2], ["La entiendo sin subtítulos", 3], ["No suelo ver contenido en inglés", 0]] },
     { dim: "Lectura", max: 1, score: false, key: "reading", text: "Cuando lees un texto en inglés, como un artículo, un post o los subtítulos de una serie, ¿cuánto entiendes?",
       opts: [["0 % · Nada", 0], ["25 % · Muy poco, solo palabras sueltas", 1], ["50 % · Entiendo la idea general, pero se me escapan muchos detalles", 2], ["75 % · Entiendo bastante, aunque todavía necesito los subtítulos", 3], ["90 % · Entiendo casi todo, sin esfuerzo", 3]] },
-    { dim: "Oído", key: "conv", text: "Sin subtítulos, ¿cuánto entiendes de una conversación entre nativos?",
+    { dim: "Oído", key: "conv", max: 1, text: "Sin subtítulos, ¿cuánto entiendes de una conversación entre nativos?",
       opts: [["Casi nada", 0], ["Algunas palabras sueltas", 1], ["La idea general", 2], ["Casi todo", 3]] },
-    { dim: "Oído", key: "pod", text: "¿Cuánto entiendes de un podcast o audio en inglés, sin imagen?",
+    { dim: "Oído", key: "pod", max: 1, text: "¿Cuánto entiendes de un podcast o audio en inglés, sin imagen?",
       opts: [["Casi nada", 0], ["Solo si es lento o hecho para estudiantes", 1], ["Entiendo podcasts normales, con esfuerzo", 2], ["Entiendo sin esfuerzo", 3]] },
-    { dim: "Voz", key: "speak", text: "Cuando tienes que hablar en inglés, ¿qué te pasa?",
+    { dim: "Voz", key: "speak", excl: [5], text: "Cuando tienes que hablar en inglés, ¿qué te pasa?",
       opts: [["Lo evito siempre que puedo", 0], ["Me bloqueo o me quedo en blanco", 1], ["Hablo, pero lento y traduciendo del español", 2], ["Se me enreda la boca y me cuesta pronunciar", 1], ["Hablo, pero sé que cometo muchos errores gramaticales", 2], ["Hablo con fluidez, sin traducir", 3]] },
-    { dim: "Voz", max: 2, key: "freq", text: "¿Con qué frecuencia hablas en inglés? Cuenta todo: conversaciones, clases, grabarte respondiendo preguntas, hacer shadowing o leer en voz alta.",
+    { dim: "Voz", max: 2, excl: [0], key: "freq", text: "¿Con qué frecuencia hablas en inglés? Cuenta todo: conversaciones, clases, grabarte respondiendo preguntas, hacer shadowing o leer en voz alta.",
       opts: [["Nunca", 0], ["Muy poco, solo cuando me toca", 1], ["Algunas veces por semana", 2], ["A diario o casi a diario", 3]] },
-    { dim: "Voz", key: "repeat", text: "Cuando hablas en inglés, ¿qué tan seguido tienes que repetir algo porque no te entienden?",
+    { dim: "Voz", key: "repeat", max: 1, text: "Cuando hablas en inglés, ¿qué tan seguido tienes que repetir algo porque no te entienden?",
       opts: [["Muy seguido", 0], ["Con frecuencia", 1], ["A veces", 2], ["Casi nunca", 3]] },
-    { dim: "Voz", key: "feel", text: "¿Cómo te sientes con la forma en que suenas en inglés?",
+    { dim: "Voz", key: "feel", max: 1, text: "¿Cómo te sientes con la forma en que suenas en inglés?",
       opts: [["Me da vergüenza escucharme", 0], ["Siento que sueno como un robot", 1], ["Sueno bien, pero todavía no natural", 2], ["Me siento cómodo y natural", 3]] },
     // Comprehension videos (teacher Isa's recordings): one question each, "correct" is the right option.
     { dim: "Comprensión", key: "comp1", max: 1, score: false, video: "video/v1.mp4?v=1", correct: 0, text: "¿Quién convenció a quién de quedarse a vivir en ese lugar?",
@@ -825,12 +825,12 @@ strong.course { font-weight: 800; color: var(--ink); }
     const full = max > 1 && sel.length >= max;
     const box = $("q-opts"); box.textContent = "";
     q.opts.forEach(([label], i) => {
-      const on = sel.includes(i);
+      const on = sel.includes(i), off = full && !on && !(q.excl || []).includes(i);
       const b = document.createElement("button");
-      b.className = "opt" + (on ? " on" : "") + (full && !on ? " off" : "");
+      b.className = "opt" + (on ? " on" : "") + (off ? " off" : "");
       b.setAttribute("role", max === 1 ? "radio" : "checkbox");
       b.setAttribute("aria-checked", on ? "true" : "false");
-      if (full && !on) b.setAttribute("aria-disabled", "true");
+      if (off) b.setAttribute("aria-disabled", "true");
       const k = document.createElement("kbd"); k.textContent = "ABCDE"[i];
       const s = document.createElement("span"); s.textContent = label;
       b.append(k, s);
@@ -845,8 +845,10 @@ strong.course { font-weight: 800; color: var(--ink); }
   function choose(i) {
     const q = QUESTIONS[current], max = maxOf(q), sel = answers[current];
     if (i >= q.opts.length) return;
-    if (max === 1) answers[current] = [i];
+    const excl = q.excl || [];   // options that can't be combined with others ("Nunca", "Hablo con fluidez")
+    if (max === 1 || excl.includes(i)) answers[current] = sel.includes(i) && max > 1 ? [] : [i];
     else if (sel.includes(i)) answers[current] = sel.filter((x) => x !== i);
+    else if (sel.some((x) => excl.includes(x))) answers[current] = [i];
     else if (sel.length < max) answers[current] = sel.concat(i).sort();
     renderQuestion();
   }
@@ -1328,6 +1330,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (rep === 2 && fear) idx = Math.min(idx, 1);         // "A veces" + fear → Shy at most
     if (sp.some((o) => o <= 3)) idx = Math.min(idx, vocab50 ? 1 : 0); // avoids / blocks / translates / tongue-tied
     if (sp.includes(3) && !studied) idx = Math.min(idx, noStudyCap); // tongue-tied and never studied (Shy with a strong ear)
+    // Brave / Fluent = ready for real conversations: studied pronunciation, no fear when speaking,
+    // and understands at least 80 % of the videos (4 of 5) and of the dictations. Otherwise → Shy, to prepare to speak.
+    if (idx >= 2 && (!studied || fear || (compQs.length && compRight < 4) || dictAvg < 0.8)) idx = 1;
     if (idx === 3 && !sp.includes(5)) idx = 2;             // Fluent only for "Hablo con fluidez, sin traducir"
     const shown = Math.max(LEVELS[idx].min, Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100)); // keep the score inside the level's range
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
