@@ -763,7 +763,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function showVidState() {
     const st = vidSeen[current], vid = $("q-video");
     $("qv-play").hidden = !!st;
-    $("qv-note").textContent = st ? "" : "Solo puedes ver este video una vez.";
+    $("qv-note").textContent = "Solo puedes ver este video una vez.";
     if (st === "done" && !vid.ended) { try { vid.currentTime = Math.max(0, (vid.duration || 0) - 0.05); } catch (e) {} }
   }
   $("qv-play").addEventListener("click", () => {
