@@ -648,9 +648,6 @@ strong.course { font-weight: 800; color: var(--ink); }
     { type: "speak", dim: "Voz", sentence: "Turn it off and pick it up.", links: [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6]] },
     { type: "speak", dim: "Voz", sentence: "What are you going to do about it?", alt: ["What are you gonna do about it?"], links: [[0, 1], [6, 7]],
       reductions: [{ label: "gonna", words: [3, 4], maxMs: 300, heard: "gonna", ngWord: 3 }] },
-    // Experiment: Azure compares against "wanna". If the student says "want to", "wanna" scores low or "to" shows up as an extra word.
-    { type: "speak", dim: "Voz", sentence: "I want to get out of here.", ref: "I wanna get out of here.", alt: ["I wanna get out of here."], links: [[2, 3], [3, 4]],
-      reductions: [{ label: "wanna", refWord: 1, minAcc: 70, notExtra: ["to", "want", "too"] }] },
     // The student SEES "I am" and should SAY "I'm"; Azure compares against the natural form.
     { type: "speak", dim: "Voz", show: "I am sure it's going to be fine.", sentence: "I'm sure it's going to be fine.", alt: ["I'm sure it's gonna be fine."],
       contractions: [{ label: "I'm", word: 0, full: ["i am"], extra: ["am"] }],
