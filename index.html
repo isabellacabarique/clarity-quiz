@@ -1316,13 +1316,18 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (dictAvg < 0.6) idx = 0;                            // dictations under 60 % → Observer / Observer Alpha
     if (compQs.length && compRight <= 2) idx = 0;          // 2 or fewer comprehension videos right → Observer / Observer Alpha
     if (conv <= 1 || pod <= 1) idx = 0;                    // conversation / podcast A–B → Observer
-    if ((conv === 2 || pod === 2) && (!studied || rep <= 1)) idx = 0; // "la idea general" / "con esfuerzo" + never studied or repeats a lot → Observer Alpha
+    // Strong ear (4+ videos right and 70 %+ in dictations): never having studied pronunciation sends them to Shy
+    // (they're ready to prepare to speak and work on clarity there), not back to Observer Alpha.
+    const strongEar = compQs.length && compRight >= 4 && dictAvg >= 0.7;
+    const noStudyCap = strongEar ? 1 : 0;
+    if ((conv === 2 || pod === 2) && rep <= 1) idx = 0;
+    if ((conv === 2 || pod === 2) && !studied) idx = Math.min(idx, noStudyCap); // "la idea general" / "con esfuerzo" + never studied or repeats a lot → Observer Alpha
     if (rep <= 1) idx = 0;                                 // "Muy seguido" / "Con frecuencia" → Observer Alpha
     const fear = sp.some((o) => o <= 3);                   // avoids / blocks / translates / tongue-tied
-    if (rep === 2 && !studied) idx = 0;                    // "A veces" + never studied pronunciation → Observer Alpha
+    if (rep === 2 && !studied) idx = Math.min(idx, noStudyCap); // "A veces" + never studied → Observer Alpha (Shy with a strong ear)
     if (rep === 2 && fear) idx = Math.min(idx, 1);         // "A veces" + fear → Shy at most
     if (sp.some((o) => o <= 3)) idx = Math.min(idx, vocab50 ? 1 : 0); // avoids / blocks / translates / tongue-tied
-    if (sp.includes(3) && !studied) idx = 0;               // tongue-tied and never studied pronunciation
+    if (sp.includes(3) && !studied) idx = Math.min(idx, noStudyCap); // tongue-tied and never studied (Shy with a strong ear)
     if (idx === 3 && !sp.includes(5)) idx = 2;             // Fluent only for "Hablo con fluidez, sin traducir"
     const shown = Math.max(LEVELS[idx].min, Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100)); // keep the score inside the level's range
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
