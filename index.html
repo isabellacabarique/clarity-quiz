@@ -1333,7 +1333,11 @@ strong.course { font-weight: 800; color: var(--ink); }
     // Brave / Fluent = ready for real conversations: studied pronunciation, no fear when speaking,
     // and understands at least 80 % of the videos (4 of 5) and of the dictations. Otherwise → Shy, to prepare to speak.
     if (idx >= 2 && (!studied || fear || (compQs.length && compRight < 4) || dictAvg < 0.8)) idx = 1;
-    if (idx === 3 && !sp.includes(5)) idx = 2;             // Fluent only for "Hablo con fluidez, sin traducir"
+    // Fluent is hard to reach: all 5 videos right, 90 %+ in dictations, reads 90 %, speaks fluently every day,
+    // no longer feels like a robot (or ashamed) and almost never has to repeat. Anyone else stays in Brave.
+    const fluentReady = sp.length === 1 && sp[0] === 5 && (!compQs.length || compRight === compQs.length) && dictAvg >= 0.9
+      && one("reading") >= 4 && sel("freq").includes(3) && one("feel") >= 2 && rep === 3;
+    if (idx === 3 && !fluentReady) idx = 2;
     const shown = Math.max(LEVELS[idx].min, Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100)); // keep the score inside the level's range
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const toNext = next ? next.min - shown : 0;
