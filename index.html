@@ -753,8 +753,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       phrase: "I understand real English and speak without translating.",
       desc: "Ser Fluent Speaker significa que entiendes inglés real y hablas con soltura, sin traducir del español. Ya no estás aprendiendo a hablar: estás aprendiendo a sonar como tú, con toda la naturalidad. ¡Qué nivel!",
       challenge: "Tu reto más grande ahora es pulir los detalles: la entonación, el énfasis y esos sonidos que todavía te quiten claridad y fluidez o sigas trayendo del español.",
-      week: "Únete a la clase en vivo de pronunciación de los martes, de 7:00 a 8:00 p. m. (hora Colombia), donde trabajamos juntos la entonación, el énfasis y esos sonidos que todavía quieras afinar. Y practica tu speaking en el Speaking Club de los jueves: hay dos sesiones, a las 6:00 a. m. y a las 8:10 a. m. (hora Colombia), y puedes unirte a la que mejor te quede. Revisa el horario en [speakingclub.immersa.com.co](https://speakingclub.immersa.com.co/).",
-      up: "Sigue escuchando inglés real. Puedes usar subtítulos, pero no dependas de ellos. Habla en inglés siempre que puedas y busca oportunidades para hacerlo. El inglés ya debe ser parte de tu día a día." }
+      week: "Si todavía tienes módulos sin completar en la plataforma (Pronunciation Foundation, Shadow the Scene o Listening Lab), termínalos: son los detalles que te van a dar todavía más claridad. Cada semana, únete a la clase en vivo de pronunciación de los martes, de 7:00 a 8:00 p. m. (hora Colombia), y al Speaking Club de los jueves, a las 6:00 a. m. o a las 8:10 a. m. (hora Colombia) [speakingclub.immersa.com.co](https://speakingclub.immersa.com.co/). Practica speaking por lo menos 4 veces por semana, por ejemplo en [Episoden](https://www.episoden.com/), donde conversas con personas de todo el mundo, y sigue buscando oportunidades para hablar inglés en tu día a día.",
+      up: "Sigue escuchando inglés real. Puedes usar subtítulos, pero no dependas de ellos. Habla en inglés siempre que puedas y busca oportunidades para hacerlo. El inglés ya debe ser parte de tu día a día.\n\nY ahora tienes un rol muy especial: ayudar a los que vienen detrás. Cuando te encuentres con alguien que está aprendiendo inglés, dale ánimos, respóndele, practica con él. Tú sabes lo que se siente estar en ese lugar: el miedo, los bloqueos, la sensación de que nunca vas a lograrlo. Compartir tu experiencia, lo que te funcionó y lo que te costó, puede ser justo lo que otra persona necesita para no rendirse. Lo que aprendiste no es solo tuyo: cuando lo compartes, crece." }
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -1901,6 +1901,23 @@ strong.course { font-weight: 800; color: var(--ink); }
       weekend: { tag: "Inmersión", txt: "Ve videos, series o podcasts en inglés." },
       note: "",
       hint: "Este es un ejemplo de cómo organizar tu semana. Practica speaking 4 veces por semana: 3 días de práctica en Episoden (1 hora cada uno) y el Speaking Club de los jueves, que desbloqueaste en este nivel. Puedes mover los días según tu horario, siempre que completes las 4 prácticas. Si puedes invertir más tiempo, aumenta los tiempos."
+    },
+    // Fluent Speaker: speaking at least 4 times a week, pronunciation class on Tuesday, Speaking Club on Thursday.
+    4: {
+      stages: [
+        { key: "wk", label: "Tu semana", practice: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." },
+          days: [
+            { d: "Lunes", head: "1 h", prac: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." } },
+            { d: "Martes", head: "Clase 1 h", live: true, prac: false },
+            { d: "Miércoles", head: "1 h", prac: { cls: "ep", tag: "Speaking en Episoden", when: "1 h", txt: "Practica conversando con personas de todo el mundo." } },
+            { d: "Jueves", head: "Speaking Club 1 h", prac: false, club: true },
+            { d: "Viernes", head: "Módulos pendientes", prac: { cls: "ss", tag: "Plataforma", noTime: true, txt: "Avanza en los módulos que todavía no has completado." } }
+          ] }
+      ],
+      days: [],
+      weekend: { tag: "Inmersión", txt: "Ve videos, series o podcasts en inglés y busca oportunidades para hablar." },
+      note: "",
+      hint: "Este es un ejemplo de cómo organizar tu semana. Practica speaking 4 veces por semana: la clase de pronunciación de los martes, el Speaking Club de los jueves y por lo menos 2 días de práctica en Episoden (1 hora cada uno). Puedes mover los días según tu horario, siempre que completes las 4 prácticas. Si puedes invertir más tiempo, aumenta los tiempos."
     },
     // Observer Alpha who already knows the pronunciation basics (or comes from Observer): Shadow the Scene first.
     "1b": {
