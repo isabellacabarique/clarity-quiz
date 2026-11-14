@@ -431,6 +431,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 .vid-intro p { margin: 0; font-size: 16.5px; line-height: 1.55; color: var(--ink); }
 .vid-intro ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--ink-soft); font-size: 15.5px; line-height: 1.5; }
 .vi-ic { font-size: 34px; line-height: 1; }
+.hint.multi { justify-self: start; background: var(--teal-pale); color: var(--teal-dark); font-weight: 700; font-size: 15px; padding: 7px 14px; border-radius: 999px; }
 </style>
 </head>
 <body>
@@ -818,8 +819,9 @@ strong.course { font-weight: 800; color: var(--ink); }
     const max = maxOf(q), sel = answers[current];
     $("q-dim").textContent = q.dim;
     $("q-text").textContent = q.text;
-    const hint = max === 1 ? "" : (max < q.opts.length ? "Puedes elegir hasta " + max + " opciones." : "Puedes elegir más de una opción.");
+    const hint = max === 1 ? "" : (max < q.opts.length ? "☑ Puedes marcar hasta " + max + " respuestas" : "☑ Puedes marcar todas las respuestas que apliquen");
     $("q-hint").textContent = hint; $("q-hint").hidden = !hint;
+    $("q-hint").classList.toggle("multi", !!hint);
     const full = max > 1 && sel.length >= max;
     const box = $("q-opts"); box.textContent = "";
     q.opts.forEach(([label], i) => {
@@ -867,6 +869,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   // ---------- dictation questions ----------
   function dictNumber(i) { return QUESTIONS.slice(0, i + 1).filter((q) => q.type === "dictation").length; }
   function renderDictation(q) {
+    $("q-hint").classList.remove("multi");
     const d = dict[current], n = dictNumber(current);
     $("q-dim").textContent = "Dictado " + n + " de " + DICT_TOTAL;
     $("q-text").textContent = "Escucha el audio y escribe lo que dice";
@@ -933,6 +936,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function spkNumber(i) { return QUESTIONS.slice(0, i + 1).filter((q) => q.type === "speak").length; }
   const SPK_TOTAL = QUESTIONS.filter((q) => q.type === "speak").length;
   function renderSpeak(q) {
+    $("q-hint").classList.remove("multi");
     const s = spk[current], n = spkNumber(current);
     $("q-dim").textContent = "Tu voz · Frase " + n + " de " + SPK_TOTAL;
     $("q-text").textContent = "Lee esta frase en voz alta";
