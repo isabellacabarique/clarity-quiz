@@ -1217,7 +1217,10 @@ strong.course { font-weight: 800; color: var(--ink); }
     const studied = one("studied") > 0;                    // has studied pronunciation (anything but "Nunca")
     const vocab50 = one("reading") >= 2;                   // reads at 50 % or more
     const sp = sel("speak");
-    const conv = one("conv"), pod = one("pod"), rep = one("repeat");
+    // Dictations correct a student who underrates their ear: with 80 %+ right, "casi nada / palabras sueltas"
+    // in conversation or podcast counts as "la idea general" (C).
+    const earFix = (v) => (dictAvg >= 0.8 ? Math.max(v, 2) : v);
+    const conv = earFix(one("conv")), pod = earFix(one("pod")), rep = one("repeat");
     // Fear / no practice speaking: never speaks, shame or robot, avoids / blocks / translates / tongue-tied.
     const notReadyToSpeak = sel("freq").includes(0) || one("feel") <= 1 || sp.some((o) => o <= 3);
     // Floors
@@ -1235,7 +1238,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const toNext = next ? next.min - shown : 0;
     const progress = next ? Math.max(0, Math.min(1, (shown - level.min) / (next.min - level.min))) : 1;
-    return { score: shown, bases, earAvg: ear / earN, reading, level, next, toNext, progress, obsEar: one("conv") <= 1 || one("pod") <= 1 };
+    return { score: shown, bases, earAvg: ear / earN, reading, level, next, toNext, progress, obsEar: conv <= 1 || pod <= 1 };
   }
 
   function finish() {
