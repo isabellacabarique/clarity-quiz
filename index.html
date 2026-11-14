@@ -1049,7 +1049,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         segs.forEach((x) => { if (x.conf > 0) { const w = x.text.length; cw += w; cs += x.conf * w; } });
         const conf = cw ? cs / cw : 0;
         const confFactor = cw ? Math.max(0, Math.min(1, (conf - 0.5) / 0.4)) : 0.8;
-        const clarity = Math.max(0, Math.min(1, g.ratio)); // only words the platform did not understand lower it
+        const clarity = Math.max(0, Math.min(1, g.ratio * confFactor));
         // Fluency: speaking pace and long pauses, minus missed reductions (saying "want to" where a native says "wanna").
         const words = q.sentence.split(" ").length;
         const secs = Math.max(0.8, (lastT - firstT) / 1000 + 0.6);
@@ -1154,8 +1154,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       const ws2 = wordScores.filter((v) => v != null);
       const rawClar = ws2.length ? ws2.reduce((a, b) => a + b, 0) / ws2.length : avg("acc") * 100;
       // Calibrated with real readings (Oct 2026): careless reading ~78, clean native-like ~96.
-      // Clarity = did the platform understand what was said? Only words it could not recognize lower it.
-      const clarity = Math.max(0, Math.min(1, g.ratio));
+      const clarity = Math.max(0, Math.min(1, (rawClar - 65) / 30)) * Math.min(1, g.ratio / 0.9);
       // Linking: where a word ends in a consonant and the next starts with a vowel ("turn it off"),
       // a native joins them. A pause between them (> 80 ms) counts as not linked.
       const sw = q.sentence.split(" ");
