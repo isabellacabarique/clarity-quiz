@@ -288,6 +288,8 @@ p { margin: 0; }
 .pp h3 { font: 700 13px/1.2 var(--font-body); margin: 12px 0 6px; }
 .pp p { margin: 0 0 6px; white-space: pre-line; }
 .pp-week { margin: 4px 0 10px; }
+.pp-next { margin-top: 14px; padding: 10px 14px; border: 1.5px solid #CFE5E1; border-radius: 12px; break-inside: avoid; page-break-inside: avoid; }
+.pp-next h2 { margin-top: 0; }
 .pp-stage { break-inside: avoid; page-break-inside: avoid; }
 .pp-stage h3 { margin-top: 14px; }
 .pp-week .cal-day { page-break-inside: avoid; break-inside: avoid; grid-template-columns: 30mm minmax(0, 1fr); padding: 8px 0; }
@@ -409,10 +411,6 @@ strong.course { font-weight: 800; color: var(--ink); }
 /* password gate for result links opened directly (not after taking the test) */
 .rgate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px))}
 .rgate[hidden]{display:none}
-.next-date{text-align:center}
-.next-date .nd-ic{width:52px;height:52px;margin:0 auto 8px;border-radius:50%;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;font-size:24px}
-.next-date .nd-date{font:700 22px/1.3 var(--font-display, inherit);color:var(--teal-dark);margin:6px 0 8px}
-.next-date .btn{margin-top:14px}
 .rgate .qi-card{width:min(520px,100%);text-align:left;max-height:calc(100vh - 40px);overflow:auto}
 .rgate .qi-card .lock,.rgate .qi-card .eyebrow,.rgate .qi-card h2{text-align:center}
 .rgate .qi-card p{text-align:center}
@@ -567,13 +565,6 @@ strong.course { font-weight: 800; color: var(--ink); }
           <div class="save-row"><button class="btn" id="print-cl" type="button">Guardar mi plan en PDF</button></div>
         </div>
 
-        <div class="panel next-date" id="next-date" hidden>
-          <div class="nd-ic" aria-hidden="true">📅</div>
-          <h3>Tu próxima cita con este test</h3>
-          <p class="nd-date" id="nd-date"></p>
-          <p id="nd-text"></p>
-          <button class="btn" id="nd-cal" type="button">Agregar a mi calendario</button>
-        </div>
 
 
         <div class="panel">
@@ -1648,30 +1639,14 @@ strong.course { font-weight: 800; color: var(--ink); }
   let fromQuiz = false;
   // Days each plan lasts: after them, the student comes back and takes the test again.
   function planDays(r) { return isVocabObs(r) ? 90 : ({ 1: 90, 2: 60 })[r.level.n] || 30; }
+  // Date to repeat the test: shown only at the end of the plan PDF, and only after taking the quiz from the main link.
+  let nextDateTxt = "", nextDateDays = 0;
   function renderNextDate(r) {
-    $("next-date").hidden = !fromQuiz;
+    nextDateTxt = "";
     if (!fromQuiz) return;
-    const days = planDays(r), when = new Date(); when.setHours(9, 0, 0, 0); when.setDate(when.getDate() + days);
+    const days = planDays(r), when = new Date(); when.setDate(when.getDate() + days);
     let txt = when.toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).replace(",", "");
-    txt = txt.charAt(0).toUpperCase() + txt.slice(1);
-    $("nd-date").textContent = txt;
-    $("nd-text").textContent = "Ese día habrás completado tus " + days + " días de práctica. Regresa a este quiz, hazlo otra vez y mira cuánto avanzaste.";
-    $("nd-cal").onclick = () => {
-      const pad = (n) => String(n).padStart(2, "0");
-      const d0 = when.getFullYear() + pad(when.getMonth() + 1) + pad(when.getDate());
-      const e = new Date(when); e.setDate(e.getDate() + 1);
-      const d1 = e.getFullYear() + pad(e.getMonth() + 1) + pad(e.getDate());
-      const title = "Repetir el test de Clarity", desc = "Hoy completas tus " + days + " días de práctica. Haz el test otra vez y mira cuánto avanzaste.";
-      if (/Android/i.test(navigator.userAgent)) {
-        window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(title) + "&dates=" + d0 + "/" + d1 + "&details=" + encodeURIComponent(desc), "_blank", "noopener");
-        return;
-      }
-      const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Clarity//Test//ES", "BEGIN:VEVENT", "UID:clarity-" + d0 + "-" + Date.now() + "@immersa", "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
-        "DTSTART;VALUE=DATE:" + d0, "DTEND;VALUE=DATE:" + d1, "SUMMARY:" + title, "DESCRIPTION:" + desc,
-        "BEGIN:VALARM", "TRIGGER:PT9H", "ACTION:DISPLAY", "DESCRIPTION:" + title, "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
-      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" })); a.download = "Repetir-test-Clarity.ics";
-      document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    };
+    nextDateTxt = txt.charAt(0).toUpperCase() + txt.slice(1); nextDateDays = days;
   }
   function renderResult() {
     const r = result, L = r.level, NM = pageName(r);
@@ -2176,6 +2151,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       });
     }
     h += "</div>";
+    if (nextDateTxt) h += '<div class="pp-next"><h2>📅 Tu próxima cita con este test</h2><p><b>' + esc(nextDateTxt) + '</b></p><p>Ese día habrás completado tus ' + nextDateDays + ' días de práctica. Regresa a este quiz, hazlo otra vez y mira cuánto avanzaste.</p></div>';
     if (plan) plan.stages.forEach((_, i) => { h += checklistHTML(i); });
     return h;
   }
