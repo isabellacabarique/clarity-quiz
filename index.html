@@ -413,6 +413,9 @@ strong.course { font-weight: 800; color: var(--ink); }
 /* password gate for result links opened directly (not after taking the test) */
 .rgate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px))}
 .rgate[hidden]{display:none}
+.ph{display:block;height:calc(var(--n,3) * 1.65em);border-radius:6px;background:repeating-linear-gradient(to bottom,#DDEBE8 0,#DDEBE8 .95em,transparent .95em,transparent 1.65em);margin:4px 0;max-width:100%}
+.ph-chip{display:inline-block;min-width:5em;padding:0 .35em;border-bottom:3px dashed currentColor;font-style:italic;opacity:.7}
+.cal-b:empty{min-height:38px}
 .rgate .qi-card{width:min(520px,100%);text-align:left;max-height:calc(100vh - 40px);overflow:auto}
 .rgate .qi-card .lock,.rgate .qi-card .eyebrow,.rgate .qi-card h2{text-align:center}
 .rgate .qi-card p{text-align:center}
@@ -1606,7 +1609,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   document.querySelectorAll(".stairs .em").forEach((e) => { e.innerHTML = faceSVG(Number(e.dataset.face), 44); });
   // The goal is where the next level starts (21, 41, 61); a Fluent Speaker is measured out of 100.
   function progressPct(r) { return r.next ? Math.max(0, Math.min(99, Math.round(r.progress * 100))) : 100; }
-  function ptsTxt(n) { return n + (n === 1 ? " punto" : " puntos"); }
+  function ptsTxt(n) { return EXAMPLE ? "__ puntos" : n + (n === 1 ? " punto" : " puntos"); }
   function scoreLabel(r) { return r.next ? progressPct(r) + "%" : "¡Nivel máximo!"; }
 
   // Course names in bold wherever they appear in result text.
@@ -1629,7 +1632,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   // Observer who already understands when reading is called "Observer Alpha"; the one who still needs vocabulary is plain "Observer". Bars keep "Observer".
   function shownLevel(n) { return n === 1 ? 1 : n + 1; }
   function isVocabObs(r) { return r.level.n === 1 && r.reading !== null && r.reading <= 1; } // reading 0–25 %, or conversation/podcast A–B → Observer
-  function pageName(r) { return r.level.n === 1 && !isVocabObs(r) ? "Observer Alpha" : r.level.name; }
+  let EXAMPLE = false; // #ejemplo: a sample result with blank boxes instead of the real texts (for Isa's lesson)
+  function pageName(r) { return EXAMPLE ? "Tu nivel" : r.level.n === 1 && !isVocabObs(r) ? "Observer Alpha" : r.level.name; }
   // Keep "Hoy eres un …" on one line: shrink the title until it fits its column.
   function fitTitle() {
     const h = $("r-name"); if (!h || !h.offsetParent) return;
@@ -1638,6 +1642,25 @@ strong.course { font-weight: 800; color: var(--ink); }
     while (h.scrollWidth > h.clientWidth + 1 && size > 18) { size -= 1; h.style.fontSize = size + "px"; }
   }
   window.addEventListener("resize", fitTitle);
+  // Blank boxes for the sample result: keep the layout and headings, hide the level-specific texts.
+  function phBox(len) { const b = document.createElement("span"); b.className = "ph"; b.style.setProperty("--n", Math.max(2, Math.min(5, Math.round((len || 0) / 90)))); return b; }
+  function blankOut(el) { if (!el || el.querySelector(":scope > .ph")) return; const n = el.textContent.trim().length; el.textContent = ""; el.appendChild(phBox(n)); }
+  function exampleize(root) {
+    if (!root) return;
+    ["#r-intro", "#r-desc", "#r-challenge", "#r-roadmap", "#cal-hint", "#cal-note"].forEach((q) => { const el = root.querySelector(q); if (el && el.textContent.trim()) blankOut(el); });
+    root.querySelectorAll("#r-path > li, .pp-path > li").forEach((li) => {
+      if (li.querySelector(":scope > .ph")) return;
+      const n = li.textContent.length; [...li.children].forEach((c) => { if (c.tagName !== "B") c.remove(); }); li.appendChild(phBox(n));
+    });
+    root.querySelectorAll(".cal-b").forEach((b) => { b.textContent = ""; });
+    root.querySelectorAll(".cal-day h4 small").forEach((sm) => { sm.textContent = ""; });
+    root.querySelectorAll(".ck span").forEach((sp) => { sp.textContent = ""; });
+    root.querySelectorAll(".pp > p:not(.sub), .pp-roadmap p, .pp-next p:not(.pp-line), .ps p.foot").forEach(blankOut);
+    root.querySelectorAll(".pp h2").forEach((h) => { if (/^¿Qué significa ser/.test(h.textContent)) h.textContent = "¿Qué significa tu nivel?"; });
+    const t = root.querySelector("#r-mean-title"); if (t) t.textContent = "¿Qué significa tu nivel?";
+    const nm = root.querySelector("#r-name"); if (nm) { nm.textContent = "Hoy eres "; const c = document.createElement("span"); c.className = "lvl ph-chip"; c.textContent = "tu nivel"; nm.appendChild(c); }
+    const m = root.querySelector("#msg"); if (m) { m.value = ""; m.placeholder = "Aquí aparece un mensaje listo para copiar y compartir en la comunidad."; }
+  }
   let fromQuiz = false;
   // Days each plan lasts: after them, the student comes back and takes the test again.
   function planDays(r) { return isVocabObs(r) ? 90 : ({ 1: 90, 2: 60 })[r.level.n] || 0; } // Brave/Fluent: weekly plan, no fixed length
@@ -1836,7 +1859,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     let size = 118; ctx.font = "600 " + size + "px " + D;
     while (ctx.measureText(pageName(r)).width > IW - 96 - 130 && size > 60) { size -= 4; ctx.font = "600 " + size + "px " + D; }
     ctx.fillStyle = C.white; ctx.textBaseline = "middle"; ctx.fillText(pageName(r), X + 48, boxY + boxH / 2 + 6);
-    drawFace(ctx, L.n, X + IW - 40 - 104, boxY + (boxH - 104) / 2, 104, C.white);
+    if (!EXAMPLE) drawFace(ctx, L.n, X + IW - 40 - 104, boxY + (boxH - 104) / 2, 104, C.white);
     ctx.textBaseline = "alphabetic";
 
     // ladder panel (white): bars + the progress box, all in one panel
@@ -1888,7 +1911,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     ctx.fillStyle = C.tealDark; ctx.font = "600 30px " + D; ctx.textAlign = "right"; ctx.textBaseline = "middle";
     ctx.fillText(ptsTxt(r.score), px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
     ctx.fillStyle = C.white; ctx.font = "700 26px " + B;
-    ctx.fillText(isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + shownLevel(r.next.n) + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
+    ctx.fillText(EXAMPLE ? "Te faltan __ puntos para subir al siguiente nivel" : isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + shownLevel(r.next.n) + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
@@ -2161,6 +2184,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   function savePlan() {
     $("print-sheet").innerHTML = planHTML();
+    if (EXAMPLE) exampleize($("print-sheet"));
     document.body.classList.add("print-mode");
     const off = () => { document.body.classList.remove("print-mode"); window.removeEventListener("afterprint", off); };
     window.addEventListener("afterprint", off);
@@ -2224,6 +2248,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   const RLINKS = {"observer": {"n": "1", "b": "b", "name": "Observer", "h": ["573bf11496a00cf4b7ea2690ca4a40ae7a85962aa58a7b272fca435f4f7df863"]}, "observer-alpha": {"n": "1", "b": "", "name": "Observer Alpha", "h": ["2d4579245afed2da70a5d698f719984a353f71067c6ba97daf98f22f3044c9b0"]}, "shy-speaker": {"n": "2", "b": "", "name": "Shy Speaker", "h": ["c231de566e9da2ab7f955fae6e7e98b708db993fead8cb8d6cb14cc678901b42"]}, "brave-speaker": {"n": "3", "b": "", "name": "Brave Speaker", "h": ["872ba0d479445360601287951e30762ac7a75f771fa04f09c670d9b90535cd18"]}, "fluent-speaker": {"n": "4", "b": "", "name": "Fluent Speaker", "h": ["dca478e3c28a358aeac02960abdd204b9c93098c4ff0875ca0abc83c966aeec8", "4d3a1ac738b6203aa034a98fd74804f85f58d9a423dfdc49a1d9616a2eb30314"]}};
   function parseResultHash() {
     const h = location.hash.replace(/^#/, "").toLowerCase();
+    if (h === "ejemplo") return { key: "ejemplo", n: "2", b: "", name: "Ejemplo" };
     if (RLINKS[h]) return Object.assign({ key: h }, RLINKS[h]);
     const m = /^resultado-([1-4])(b?)$/.exec(h);
     if (!m) return null;
@@ -2252,6 +2277,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function previewFromHash() {
     const r = parseResultHash();
     if (!r) return;
+    if (r.key === "ejemplo") { EXAMPLE = true; $("rgate").hidden = true; openSample(r.n, r.b); return; }
     const ALWAYS_ASK = []; // levels listed here ask for the password every time the link is opened
     if (rgUnlocked(r.key) && !ALWAYS_ASK.includes(r.key)) { $("rgate").hidden = true; openSample(r.n, r.b); return; }
     rgPending = r;
@@ -2270,6 +2296,12 @@ strong.course { font-weight: 800; color: var(--ink); }
     isRepeat = false;
     fromQuiz = false;
     renderResult();
+    if (EXAMPLE) {
+      exampleize($("result"));
+      // the calendar redraws when a tab is clicked: blank it again each time
+      let busy = false;
+      new MutationObserver(() => { if (busy) return; busy = true; exampleize($("cal-panel")); busy = false; }).observe($("cal-panel"), { childList: true, subtree: true });
+    }
     show("result");
   }
   // The test is closed for now: the main page shows a notice; result links (with their level password) still work.
