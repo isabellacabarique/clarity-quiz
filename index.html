@@ -882,7 +882,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       b.setAttribute("role", max === 1 ? "radio" : "checkbox");
       b.setAttribute("aria-checked", on ? "true" : "false");
       if (off) b.setAttribute("aria-disabled", "true");
-      const k = document.createElement("kbd"); k.textContent = "ABCDE"[i];
+      const k = document.createElement("kbd"); k.textContent = "ABCDEFGHIJ"[i];
       const s = document.createElement("span"); s.textContent = label;
       b.append(k, s);
       b.addEventListener("click", () => choose(i));
