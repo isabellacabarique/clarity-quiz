@@ -1512,7 +1512,19 @@ strong.course { font-weight: 800; color: var(--ink); }
 
   function finish() {
     isRepeat = recall("clarity-quiz-last") !== null;
-    result = compute();
+    // At most 2 different results per day on the same device (silent: from the 3rd time on, the last result is shown again).
+    const today = new Date().toLocaleDateString("en-CA");
+    let day = null; try { day = JSON.parse(recall("cq-day") || "null"); } catch (e) {}
+    if (!day || day.d !== today) day = { d: today, n: 0, r: null };
+    if (!TESTING && day.n >= 2 && day.r) {
+      const saved = day.r;
+      result = Object.assign({}, saved, { level: LEVELS[saved.level], next: saved.next == null ? null : LEVELS[saved.next] });
+    } else {
+      result = compute();
+      day.n++;
+      day.r = Object.assign({}, result, { level: LEVELS.indexOf(result.level), next: result.next ? LEVELS.indexOf(result.next) : null });
+      if (!TESTING) store("cq-day", JSON.stringify(day));
+    }
     renderResult();
     show("result");
     const k = Object.keys(RLINKS).find((x) => RLINKS[x].n === String(result.level.n) && RLINKS[x].b === (isVocabObs(result) ? "b" : ""));
