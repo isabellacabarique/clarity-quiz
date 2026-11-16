@@ -593,6 +593,14 @@ strong.course { font-weight: 800; color: var(--ink); }
     <p>Todavía no puedes hacer el test «¿Qué tipo de speaker eres hoy?». Te avisaremos en la comunidad cuando esté abierto.</p>
   </div>
 </div>
+<div class="rgate" id="qlimit" hidden role="dialog" aria-modal="true" aria-labelledby="ql-title">
+  <div class="card">
+    <div class="lock" aria-hidden="true">📅</div>
+    <div class="eyebrow">Clarity · teacher Isa</div>
+    <h2 id="ql-title">Repite este test en 30 días</h2>
+    <p>Así vas a poder ver cuánto has avanzado. Mientras tanto, sigue tu plan. 💪</p>
+  </div>
+</div>
 <div class="rgate" id="qintro" hidden role="dialog" aria-modal="true" aria-labelledby="qi-title">
   <div class="card qi-card">
     <div class="lock" aria-hidden="true">📝</div>
@@ -2243,6 +2251,15 @@ strong.course { font-weight: 800; color: var(--ink); }
   }
   // The test is closed for now: the main page shows a notice; result links (with their level password) still work.
   const QUIZ_CLOSED = true;
+  // Max 2 times a day on the same device: from the 3rd visit that day the quiz shows "repite este test en 30 días".
+  (function () {
+    if (TESTING || parseResultHash()) return;
+    let day = null; try { day = JSON.parse(recall("cq-day") || "null"); } catch (e) {}
+    if (day && day.d === new Date().toLocaleDateString("en-CA") && day.n >= 2) {
+      $("qlimit").hidden = false;
+      $("start").addEventListener("click", (e) => { e.stopImmediatePropagation(); $("qlimit").hidden = false; }, true);
+    }
+  })();
   function checkClosed() { $("qclosed").hidden = !(QUIZ_CLOSED && !parseResultHash() && !/[?&]probar\b/.test(location.search)); }
   if (QUIZ_CLOSED && !/[?&]probar\b/.test(location.search)) $("start").addEventListener("click", (e) => { e.stopImmediatePropagation(); checkClosed(); }, true);
   checkClosed();
