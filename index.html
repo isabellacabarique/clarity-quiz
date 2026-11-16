@@ -288,8 +288,9 @@ p { margin: 0; }
 .pp h3 { font: 700 13px/1.2 var(--font-body); margin: 12px 0 6px; }
 .pp p { margin: 0 0 6px; white-space: pre-line; }
 .pp-week { margin: 4px 0 10px; }
-.pp-next { margin-top: 14px; padding: 10px 14px; border: 1.5px solid #CFE5E1; border-radius: 12px; break-inside: avoid; page-break-inside: avoid; }
-.pp-next h2 { margin-top: 0; }
+.pp-next { margin-top: 12px; padding: 8px 12px; border: 1.5px solid #CFE5E1; border-radius: 10px; break-inside: avoid; page-break-inside: avoid; font-size: 12px; }
+.pp-next p { margin: 0 0 4px; }
+.pp-next .pp-next-t { font-weight: 700; font-size: 12px; }
 .pp-line { display: flex; align-items: flex-end; gap: 8px; margin: 10px 0 8px !important; }
 .pp-line span { flex: 1; border-bottom: 1.5px solid #15302B; height: 18px; }
 .pp-stage { break-inside: avoid; page-break-inside: avoid; }
@@ -1655,7 +1656,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     root.querySelectorAll(".cal-b").forEach((b) => { b.textContent = ""; });
     root.querySelectorAll(".cal-day h4 small").forEach((sm) => { sm.textContent = ""; });
     root.querySelectorAll(".ck span").forEach((sp) => { sp.textContent = ""; });
-    root.querySelectorAll(".pp > p:not(.sub), .pp-roadmap p, .pp-next p:not(.pp-line), .ps p.foot").forEach(blankOut);
+    root.querySelectorAll(".pp > p:not(.sub), .pp-roadmap p, .pp-next p.pp-rec, .ps p.foot").forEach(blankOut);
     root.querySelectorAll(".pp h2").forEach((h) => { if (/^¿Qué significa ser/.test(h.textContent)) h.textContent = "¿Qué significa tu nivel?"; });
     const t = root.querySelector("#r-mean-title"); if (t) t.textContent = "¿Qué significa tu nivel?";
     const nm = root.querySelector("#r-name"); if (nm) { nm.textContent = "Hoy eres "; const c = document.createElement("span"); c.className = "lvl ph-chip"; c.textContent = "tu nivel"; nm.appendChild(c); }
@@ -2177,8 +2178,10 @@ strong.course { font-weight: 800; color: var(--ink); }
     }
     h += "</div>";
     // A line for the student to write when they'll repeat the test; a recommended date only when the plan has a set length.
-    h += '<div class="pp-next"><h2>📅 ¿Cuándo vas a repetir este test?</h2><p class="pp-line">Escribe la fecha: <span></span></p>'
-      + (nextDateTxt ? '<p><b>Recomendación:</b> vuelve el ' + esc(nextDateTxt.charAt(0).toLowerCase() + nextDateTxt.slice(1)) + ', cuando completes tus ' + nextDateDays + ' días de práctica.</p>' : "") + "</div>";
+    const nextBox = '<div class="pp-next"><p class="pp-next-t">Tu próxima cita con este test:</p><p class="pp-line">Escribe la fecha: <span></span></p>'
+      + (nextDateTxt ? '<p class="pp-rec"><b>Recomendación:</b> vuelve el ' + esc(nextDateTxt.charAt(0).toLowerCase() + nextDateTxt.slice(1)) + ', cuando completes tus ' + nextDateDays + ' días de práctica.</p>' : "") + "</div>";
+    // Right after the calendar, before the checklist pages.
+    h += nextBox;
     if (plan) plan.stages.forEach((_, i) => { h += checklistHTML(i); });
     return h;
   }
