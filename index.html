@@ -290,6 +290,8 @@ p { margin: 0; }
 .pp-week { margin: 4px 0 10px; }
 .pp-next { margin-top: 14px; padding: 10px 14px; border: 1.5px solid #CFE5E1; border-radius: 12px; break-inside: avoid; page-break-inside: avoid; }
 .pp-next h2 { margin-top: 0; }
+.pp-line { display: flex; align-items: flex-end; gap: 8px; margin: 10px 0 8px !important; }
+.pp-line span { flex: 1; border-bottom: 1.5px solid #15302B; height: 18px; }
 .pp-stage { break-inside: avoid; page-break-inside: avoid; }
 .pp-stage h3 { margin-top: 14px; }
 .pp-week .cal-day { page-break-inside: avoid; break-inside: avoid; grid-template-columns: 30mm minmax(0, 1fr); padding: 8px 0; }
@@ -1638,12 +1640,12 @@ strong.course { font-weight: 800; color: var(--ink); }
   window.addEventListener("resize", fitTitle);
   let fromQuiz = false;
   // Days each plan lasts: after them, the student comes back and takes the test again.
-  function planDays(r) { return isVocabObs(r) ? 90 : ({ 1: 90, 2: 60 })[r.level.n] || 30; }
+  function planDays(r) { return isVocabObs(r) ? 90 : ({ 1: 90, 2: 60 })[r.level.n] || 0; } // Brave/Fluent: weekly plan, no fixed length
   // Date to repeat the test: shown only at the end of the plan PDF, and only after taking the quiz from the main link.
   let nextDateTxt = "", nextDateDays = 0;
   function renderNextDate(r) {
     nextDateTxt = "";
-    if (!fromQuiz) return;
+    if (!fromQuiz || !planDays(r)) return;
     const days = planDays(r), when = new Date(); when.setDate(when.getDate() + days);
     let txt = when.toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).replace(",", "");
     nextDateTxt = txt.charAt(0).toUpperCase() + txt.slice(1); nextDateDays = days;
@@ -2151,7 +2153,9 @@ strong.course { font-weight: 800; color: var(--ink); }
       });
     }
     h += "</div>";
-    if (nextDateTxt) h += '<div class="pp-next"><h2>📅 Tu próxima cita con este test</h2><p><b>' + esc(nextDateTxt) + '</b></p><p>Ese día habrás completado tus ' + nextDateDays + ' días de práctica. Regresa a este quiz, hazlo otra vez y mira cuánto avanzaste.</p></div>';
+    // A line for the student to write when they'll repeat the test; a recommended date only when the plan has a set length.
+    h += '<div class="pp-next"><h2>📅 ¿Cuándo vas a repetir este test?</h2><p class="pp-line">Escribe la fecha: <span></span></p>'
+      + (nextDateTxt ? '<p><b>Recomendación:</b> vuelve el ' + esc(nextDateTxt.charAt(0).toLowerCase() + nextDateTxt.slice(1)) + ', cuando completes tus ' + nextDateDays + ' días de práctica.</p>' : "") + "</div>";
     if (plan) plan.stages.forEach((_, i) => { h += checklistHTML(i); });
     return h;
   }
