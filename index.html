@@ -2299,7 +2299,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (rgUnlocked(r.key) && !ALWAYS_ASK.includes(r.key)) { $("rgate").hidden = true; openSample(r.n, r.b); return; }
     rgPending = r;
     $("rg-name").textContent = r.name; $("rg-name2").textContent = r.name;
-    $("rg-wa").href = "https://wa.me/573023629834?text=" + encodeURIComponent("Hola Santi, soy " + r.name + " y necesito la contraseña de mi plan del test de Clarity. Te envío el pantallazo de mi resultado del test.");
+    $("rg-wa").href = "https://wa.me/573023629834?text=" + encodeURIComponent("Hola Santi, soy " + r.name + " y necesito la contraseña de mi plan. Te envío el pantallazo de mi resultado del test. Muchas gracias");
     $("rg-err").textContent = "";
     $("rgate").hidden = false;
     setTimeout(() => $("rg-pass").focus(), 50);
