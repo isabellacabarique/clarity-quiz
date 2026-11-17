@@ -288,6 +288,10 @@ p { margin: 0; }
 .pp h3 { font: 700 13px/1.2 var(--font-body); margin: 12px 0 6px; }
 .pp p { margin: 0 0 6px; white-space: pre-line; }
 .pp-week { margin: 4px 0 10px; }
+.pp-retos { break-inside: avoid; page-break-inside: avoid; margin-top: 10px; }
+.pp-retos .reto-lv { padding: 7px 0; }
+.pp-retos .reto-names { font-size: 13px; }
+.pp-retos .reto-wa { padding: 4px 10px; font-size: 11.5px; }
 .pp-next { margin-top: 12px; padding: 8px 12px; border: 1.5px solid #CFE5E1; border-radius: 10px; break-inside: avoid; page-break-inside: avoid; font-size: 12px; }
 .pp-next p { margin: 0 0 4px; }
 .pp-next .pp-next-t { font-weight: 700; font-size: 12px; }
@@ -2232,7 +2236,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     });
     path.querySelectorAll("[hidden]").forEach((e) => e.remove());
     h += '<div class="pp-roadmap">' + rm.outerHTML + path.outerHTML + "</div>";
-    h += '<h2>🏆 Tus retos</h2><div class="pp-retos">' + retosHTML(result) + "</div>";
+    h += '<div class="pp-retos"><h2>🏆 Tus retos</h2>' + retosHTML(result) + "</div>";
     const plan = CAL[calKey];
     if (plan) {
       h += "<h2>Tu semana en Clarity</h2><p class=\"pp-calhint\">" + txt($("cal-hint")) + "</p>";
