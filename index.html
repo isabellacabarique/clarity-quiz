@@ -1705,7 +1705,10 @@ strong.course { font-weight: 800; color: var(--ink); }
 
     const sl = $("r-score"); sl.textContent = "";
     // Progress shown as how far along the student is toward the next level, in percent.
-    if (r.next) {
+    if (!fromQuiz) {
+      // Opened from a result link (password), not from taking the test: no points.
+      if (isVocabObs(r)) sl.append("Tu siguiente meta: llegar a ser Observer Alpha."); else if (r.next) sl.append("Tu siguiente meta: llegar a ser " + r.next.name + "."); else sl.append("¡Llegaste al nivel más alto!");
+    } else if (r.next) {
       const st = document.createElement("strong"); st.textContent = ptsTxt(r.score);
       const tn = document.createElement("strong"); tn.textContent = ptsTxt(r.toNext);
       sl.append("Tienes ", st, ". Te ", r.toNext === 1 ? "falta " : "faltan ", tn, " para ser " + r.next.name + ".");
@@ -1824,7 +1827,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     $("msg").value = buildMessage();
     $("msg-intro").textContent = L.n === 4 ? "¡Comparte tu resultado en la comunidad de Telegram! Cuéntanos qué has podido lograr gracias al inglés y cómo ha cambiado tu vida: tu historia puede inspirar a muchos que todavía están en el camino. Copia este mensaje, complétalo y pégalo junto con tu tarjeta." : "¡Comparte tu resultado en la comunidad de Telegram! Copia este mensaje y pégalo junto con tu tarjeta.";
     $("copied").textContent = "";
-    store("clarity-quiz-last", String(r.score));
+    if (fromQuiz) store("clarity-quiz-last", String(r.score));
     drawCard();
     setTimeout(() => { $("save-pop").hidden = false; $("pop-close").focus(); }, 900);
   }
@@ -1937,16 +1940,16 @@ strong.course { font-weight: 800; color: var(--ink); }
     const fw = Math.max(pw_ * pct / 100, 170);
     rr(ctx, px_, py_, fw, ph_, 25); ctx.fillStyle = C.white; ctx.fill();
     ctx.fillStyle = C.tealDark; ctx.font = "600 30px " + D; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    ctx.fillText(ptsTxt(r.score), px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    if (fromQuiz || EXAMPLE) ctx.fillText(ptsTxt(r.score), px_ + fw - 20, py_ + ph_ / 2 + 1); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
     ctx.fillStyle = C.white; ctx.font = "700 26px " + B;
-    ctx.fillText(EXAMPLE ? "Te faltan __ puntos para subir al siguiente nivel" : isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + shownLevel(r.next.n) + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
+    ctx.fillText(EXAMPLE ? "Te faltan __ puntos para subir al siguiente nivel" : isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : !fromQuiz && r.next ? "Tu siguiente meta: subir al nivel " + shownLevel(r.next.n) + ": " + r.next.name : isVocabObs(r) ? "Tu siguiente meta: llegar a ser Observer Alpha" : r.next ? "Te " + (r.toNext === 1 ? "falta " : "faltan ") + ptsTxt(r.toNext) + " para subir al nivel " + shownLevel(r.next.n) + ": " + r.next.name : "¡Llegaste al nivel más alto!", px_, py_ + ph_ + 40);
 
     // footer
     const date = new Date().toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
     ctx.fillStyle = C.soft; ctx.font = "600 26px " + B; ctx.fillText(date, X, 1310);
 
     $("card").src = cv.toDataURL("image/png");
-    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + (L.n === 1 && !isVocabObs(r) ? 2 : shownLevel(L.n)) + " de 5. " + (r.next ? "Tiene " + ptsTxt(r.score) + "; le faltan " + ptsTxt(r.toNext) + " para ser " + r.next.name + "." : "Nivel máximo.");
+    $("card").alt = startPhrase() + " un " + L.name + ". Nivel " + (L.n === 1 && !isVocabObs(r) ? 2 : shownLevel(L.n)) + " de 5. " + (!fromQuiz && isVocabObs(r) ? "Su siguiente meta: Observer Alpha." : r.next && !fromQuiz ? "Su siguiente meta: " + r.next.name + "." : r.next ? "Tiene " + ptsTxt(r.score) + "; le faltan " + ptsTxt(r.toNext) + " para ser " + r.next.name + "." : "Nivel máximo.");
     cardBlob = await new Promise((res) => cv.toBlob(res, "image/png"));
   }
 
