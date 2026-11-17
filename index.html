@@ -594,7 +594,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         </div>
 
         <div class="panel retos-panel" id="retos-panel">
-          <h3>Tus retos</h3>
+          <h3>🏆 Tus retos</h3>
           <p class="retos-sub">Cada nivel desbloquea retos exclusivos. Aquí ves los que ya tienes y los que vienen.</p>
           <div id="retos-list"></div>
         </div>
@@ -1814,9 +1814,6 @@ strong.course { font-weight: 800; color: var(--ink); }
     const items = [["Por dónde empezar", startVal], ...(L.n === 1 && !vocabObs ? [OBS_VOCAB.items[1]] : L.n === 1 ? [OBS_VOCAB.items[1]] : L.n === 2 ? [] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el test" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
     if (vocabObs) {
       items.splice(0, items.length, ...OBS_VOCAB.items);
-      // Observer's prize: the "Despierta tu oído" challenge
-      items.splice(3, 0, ["Tu premio de este nivel", { text: "En este nivel desbloqueas el Reto Despierta tu oído. Ya está disponible para ti.",
-        button: { title: "¡Reto desbloqueado!", sub: "Reto Despierta tu oído", note: "Lo encuentras disponible al final de cada módulo del curso Pronunciation Foundation." } }]);
     }
     // Reading question: "Muy poco" or "La idea general, pero se me escapan muchas palabras" -> vocabulary still needs work.
     else if (r.reading !== null && r.reading <= 1) {
@@ -2235,7 +2232,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     });
     path.querySelectorAll("[hidden]").forEach((e) => e.remove());
     h += '<div class="pp-roadmap">' + rm.outerHTML + path.outerHTML + "</div>";
-    h += '<h2>Tus retos</h2><div class="pp-retos">' + retosHTML(result) + "</div>";
+    h += '<h2>🏆 Tus retos</h2><div class="pp-retos">' + retosHTML(result) + "</div>";
     const plan = CAL[calKey];
     if (plan) {
       h += "<h2>Tu semana en Clarity</h2><p class=\"pp-calhint\">" + txt($("cal-hint")) + "</p>";
