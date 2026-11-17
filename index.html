@@ -2129,23 +2129,15 @@ strong.course { font-weight: 800; color: var(--ink); }
     },
     // Observer who still doesn't understand when reading: vocabulary first.
     "1v": {
-      // Months 1-2: vocabulary first (one BONUS lesson every Monday). Pronunciation Foundation starts in month 3.
+      // Observer: vocabulary only (one BONUS lesson every Monday); no Pronunciation Foundation at this level.
       stages: [
-        { key: "m12", label: "Meses 1 y 2 · días 1 a 60", practice: { cls: "ra", min: 30, tag: "Práctica de vocabulario", txt: "Lee 1 capítulo de Read Along With Me y repasa el PDF de vocabulario." },
+        { key: "wk", label: "Tu semana", practice: { cls: "ra", min: 30, tag: "Práctica de vocabulario", txt: "Lee 1 capítulo de Read Along With Me y repasa el PDF de vocabulario." },
           days: [
             { d: "Lunes", head: "Lección BONUS + vocabulario", bonus: "Mira una lección BONUS.", noDaily: true },
             { d: "Martes", live: true },
             { d: "Miércoles" },
             { d: "Jueves" },
             { d: "Viernes" }
-          ] },
-        { key: "m3", label: "Mes 3 · días 61 a 90", practice: { cls: "ra", tag: "Práctica de vocabulario", txt: "Lee 1 capítulo de Read Along With Me y repasa el PDF de vocabulario." },
-          days: [
-            { d: "Lunes", pf: ["", "Revisa la lección del día."] },
-            { d: "Martes", pf: ["", "Revisa la lección del día."], live: true },
-            { d: "Miércoles", pf: ["", "Revisa la lección del día."] },
-            { d: "Jueves", pf: ["", "Revisa la lección del día."] },
-            { d: "Viernes", pf: ["", "Revisa la lección del día."] }
           ] }
       ],
       days: [
