@@ -379,6 +379,22 @@ strong.course { font-weight: 800; color: var(--ink); }
 .unlock-ic { font-size: 30px; grid-row: span 2; }
 .unlock-ok { color: var(--teal); display: flex; filter: drop-shadow(0 3px 6px rgba(45,122,114,.25)); }
 .unlock-ok svg { display: block; }
+.retos-sub { margin: 4px 0 12px; color: var(--ink-soft); font-size: 15px; }
+.reto-lv { display: grid; grid-template-columns: 34px 1fr; gap: 4px 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.reto-lv:first-child { border-top: 0; }
+.reto-ic { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; margin-top: 2px; }
+.reto-ic.ok { background: #3F9C92; }
+.reto-ic.lock { background: #E6EEEC; color: #8AA19C; font-size: 14px; }
+.reto-lvname { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.reto-pill { font-size: 11px; letter-spacing: .03em; padding: 2px 9px; border-radius: 999px; text-transform: none; font-weight: 700; }
+.reto-pill.new { background: #F26B4F; color: #fff; }
+.reto-pill.have { background: #CDEAE5; color: #2D7A72; }
+.reto-pill.soon { background: #EEF2F1; color: #7C918D; }
+.reto-pill.locked { background: #EEF2F1; color: #7C918D; }
+.reto-names { grid-column: 2; display: grid; gap: 2px; font-weight: 700; color: var(--ink); font-size: 15.5px; line-height: 1.4; }
+.reto-extra { grid-column: 2; margin-top: 6px; font-size: 13px; font-weight: 600; color: #8AA19C; line-height: 1.4; }
+.reto-where { grid-column: 2; font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
+.reto-lv.is-locked .reto-names { color: #8AA19C; }
 .unlock-list { display: grid; gap: 2px; margin-top: 6px; font-size: 13.5px; font-weight: 600; line-height: 1.45; color: #7A5A1A; }
 .unlock-list > span, #r-path .unlock-list > span, .pp-path .unlock-list > span { position: relative; padding-left: 14px; color: #7A5A1A; }
 .unlock-list > span::before { content: ""; position: absolute; left: 2px; top: .6em; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
@@ -569,6 +585,12 @@ strong.course { font-weight: 800; color: var(--ink); }
           <h3 id="r-path-title"></h3>
           <p class="roadmap" id="r-roadmap"></p>
           <ul class="path" id="r-path"></ul>
+        </div>
+
+        <div class="panel retos-panel" id="retos-panel">
+          <h3>Tus retos</h3>
+          <p class="retos-sub">Cada nivel desbloquea retos exclusivos. Aquí ves los que ya tienes y los que vienen.</p>
+          <div id="retos-list"></div>
         </div>
 
         <div class="panel cal-panel" id="cal-panel" hidden>
@@ -1683,6 +1705,29 @@ strong.course { font-weight: 800; color: var(--ink); }
     const nm = root.querySelector("#r-name"); if (nm) { nm.textContent = "Hoy eres "; const c = document.createElement("span"); c.className = "lvl ph-chip"; c.textContent = "tu nivel"; nm.appendChild(c); }
     const m = root.querySelector("#msg"); if (m) { m.value = ""; m.placeholder = "Aquí aparece un mensaje listo para copiar y compartir en la comunidad."; }
   }
+  // "Tus retos": every level's challenges, with what the student already has, just unlocked, or still has to reach.
+  const RETOS = [
+    { lv: "Nivel 1 · Observer", names: ["Reto Despierta tu oído"], where: "Al final de cada módulo del curso Pronunciation Foundation." },
+    { lv: "Nivel 2 · Observer Alpha", names: ["Reto 15 días: entiende inglés sin subtítulos"], soon: true },
+    { lv: "Nivel 3 · Shy Speaker", names: ["Reto Linking sounds", "Reto Reductions", "Reto Grammar (past tense)"], where: "Dentro del curso Shadow the Scene.", extra: "Reto 30 días de speaking: se desbloquea cuando termines los 3 retos." },
+    { lv: "Nivel 4 · Brave Speaker", names: ["Speaking Club"], where: "Todos los jueves, a las 6:00 a. m. o a las 8:10 a. m. (hora Colombia)." },
+    { lv: "Nivel 5 · Fluent Speaker", names: ["Nuevo reto"], soon: true }
+  ];
+  const OK_SVG = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M5.5 12.5l4 4 9-9" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function retosHTML(r) {
+    const cur = r.level.n === 1 ? (isVocabObs(r) ? 0 : 1) : r.level.n;
+    const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    return RETOS.map((rt, i) => {
+      const have = i <= cur && !rt.soon, isNew = i === cur;
+      const pill = rt.soon ? '<span class="reto-pill soon">Próximamente</span>'
+        : isNew ? '<span class="reto-pill new">¡Acabas de desbloquear' + (rt.names.length > 1 ? "los" : "lo") + "!</span>" : have ? '<span class="reto-pill have">Desbloqueado</span>' : '<span class="reto-pill locked">Bloqueado</span>';
+      const ic = have ? '<span class="reto-ic ok" aria-hidden="true">' + OK_SVG + "</span>" : '<span class="reto-ic lock" aria-hidden="true">🔒</span>';
+      const names = rt.names.map((n) => "<span>" + esc(n) + "</span>").join("");
+      const extra = rt.extra && have ? '<span class="reto-extra">🔒 ' + esc(rt.extra) + "</span>" : "";
+      const where = have && rt.where ? '<span class="reto-where">' + esc(rt.where) + "</span>" : !have && !rt.soon ? '<span class="reto-where">Se desbloquea cuando llegues a este nivel.</span>' : "";
+      return '<div class="reto-lv' + (have ? "" : " is-locked") + '">' + ic + '<span class="reto-lvname">' + esc(rt.lv) + " " + pill + '</span><span class="reto-names">' + names + "</span>" + where + extra + "</div>";
+    }).join("");
+  }
   let fromQuiz = false;
   // Days each plan lasts: after them, the student comes back and takes the test again.
   function planDays(r) { return isVocabObs(r) ? 90 : ({ 1: 90, 2: 60 })[r.level.n] || 0; } // Brave/Fluent: weekly plan, no fixed length
@@ -1698,6 +1743,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   function renderResult() {
     const r = result, L = r.level, NM = pageName(r);
     renderNextDate(r);
+    $("retos-list").innerHTML = retosHTML(r);
     requestAnimationFrame(() => requestAnimationFrame(fitTitle));
     const h = $("r-name"); h.textContent = startPhrase() + " ";
     const lvl = document.createElement("span"); lvl.className = "lvl"; lvl.textContent = "un " + NM + " "; lvl.appendChild(faceEl(L.n, 52));
@@ -2176,6 +2222,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     });
     path.querySelectorAll("[hidden]").forEach((e) => e.remove());
     h += '<div class="pp-roadmap">' + rm.outerHTML + path.outerHTML + "</div>";
+    h += '<h2>Tus retos</h2><div class="pp-retos">' + retosHTML(result) + "</div>";
     const plan = CAL[calKey];
     if (plan) {
       h += "<h2>Tu semana en Clarity</h2><p class=\"pp-calhint\">" + txt($("cal-hint")) + "</p>";
