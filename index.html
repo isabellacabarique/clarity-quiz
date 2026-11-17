@@ -2317,7 +2317,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     show("result");
   }
   // The test is closed for now: the main page shows a notice; result links (with their level password) still work.
-  const QUIZ_CLOSED = true;
+  const QUIZ_CLOSED = false;
   // Max 2 times a day on the same device: from the 3rd visit that day the quiz shows "repite este test en 30 días".
   (function () {
     if (TESTING || parseResultHash()) return;
