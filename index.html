@@ -1651,7 +1651,15 @@ strong.course { font-weight: 800; color: var(--ink); }
     ["#r-intro", "#r-desc", "#r-challenge", "#r-roadmap", "#cal-hint", "#cal-note"].forEach((q) => { const el = root.querySelector(q); if (el && el.textContent.trim()) blankOut(el); });
     root.querySelectorAll("#r-path > li, .pp-path > li").forEach((li) => {
       if (li.querySelector(":scope > .ph")) return;
-      const n = li.textContent.length; [...li.children].forEach((c) => { if (c.tagName !== "B") c.remove(); }); li.appendChild(phBox(n));
+      const n = li.textContent.length, un = li.querySelector(".unlock:not(.soon)");
+      [...li.children].forEach((c) => { if (c.tagName !== "B") c.remove(); }); li.appendChild(phBox(n));
+      if (un) {
+        // sample of how an unlocked challenge looks
+        un.querySelector("b").textContent = "¡Reto desbloqueado!";
+        const sm = un.querySelector("small"); if (sm) sm.textContent = "Nombre del reto";
+        const bt = un.querySelector("a"); if (bt) { bt.textContent = "Quiero empezar el reto"; bt.href = "#ejemplo"; bt.removeAttribute("target"); bt.addEventListener("click", (e) => e.preventDefault()); }
+        li.appendChild(un);
+      }
     });
     root.querySelectorAll(".cal-b").forEach((b) => { b.textContent = ""; });
     root.querySelectorAll(".cal-day h4 small").forEach((sm) => { sm.textContent = ""; });
