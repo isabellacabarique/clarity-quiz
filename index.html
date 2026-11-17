@@ -658,7 +658,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       opts: [["Nunca", 0], ["Muy poco, solo cuando me toca", 1], ["Algunas veces por semana", 2], ["A diario o casi a diario", 3]] },
     { dim: "Voz", key: "repeat", max: 1, text: "Cuando hablas en inglés, ¿qué tan seguido tienes que repetir algo porque no te entienden?",
       opts: [["Muy seguido", 0], ["Con frecuencia", 1], ["A veces", 2], ["Casi nunca", 3]] },
-    { dim: "Voz", key: "feel", max: 1, text: "¿Cómo te sientes con la forma en que suenas en inglés?",
+    { dim: "Voz", key: "feel", max: 2, excl: [3], text: "¿Cómo te sientes con la forma en que suenas en inglés?",
       opts: [["Me da vergüenza escucharme", 0], ["Siento que sueno como un robot", 1], ["Sueno bien, pero todavía no natural", 2], ["Me siento cómodo y natural", 3]] },
     // Comprehension videos (teacher Isa's recordings): one question each, "correct" is the right option.
     { dim: "Comprensión", key: "comp1", max: 1, score: false, video: "video/v1.mp4?v=1", correct: 0, text: "¿Quién convenció a quién de quedarse a vivir en ese lugar?",
