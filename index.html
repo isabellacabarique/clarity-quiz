@@ -405,6 +405,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 .reto-wa::before { content: ""; width: 16px; height: 16px; flex: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2325D366' d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.4.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.4-.3z'/%3E%3C/svg%3E") center / contain no-repeat; }
 .reto-extra .reto-wa { margin-top: 8px; background: #EEF2F1; color: #2D7A72 !important; }
 .reto-extra .reto-wa::before { filter: grayscale(1); opacity: .55; }
+.reto-note { display: block; font-size: 13px; font-weight: 400; color: var(--ink-soft); line-height: 1.4; margin: 1px 0 8px; }
 .reto-extra { grid-column: 2; margin-top: 12px; display: grid; justify-items: start; gap: 2px; }
 .reto-extra-name { font-size: 15.5px; font-weight: 700; color: #7E938F; line-height: 1.4; }
 .reto-extra-note { font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
@@ -1727,8 +1728,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   // "Tus retos": every level's challenges, with what the student already has, just unlocked, or still has to reach.
   const RETOS = [
     { lv: "Nivel 1 · Observer", names: ["Nuevo reto"], soon: true, placeholder: true },
-    { lv: "Nivel 2 · Observer Alpha", names: ["Reto Despierta tu oído", { t: "Reto 15 días: entiende inglés sin subtítulos", soon: true }],
-      where: "El Reto Despierta tu oído lo encuentras al final de cada módulo del curso Pronunciation Foundation. El Reto 15 días estará disponible pronto: te lo haremos saber.",
+    { lv: "Nivel 2 · Observer Alpha", names: [{ t: "Reto Despierta tu oído", note: "Lo encuentras al final de cada módulo del curso Pronunciation Foundation." }, { t: "Reto 15 días: entiende inglés sin subtítulos", soon: true, note: "Estará disponible pronto: te lo haremos saber." }],
       wa: ["Quiero unirme al Reto 15 días", "Quiero tener acceso al Reto 15 días: entiende inglés sin subtítulos."] },
     { lv: "Nivel 3 · Shy Speaker", names: ["Reto Linking sounds", "Reto Reductions", "Reto Grammar (past tense)"], where: "Los encuentras al final de cada módulo del curso Shadow the Scene.", extra: ["Reto 30 días de speaking", "Se desbloquea cuando termines los 3 retos de Shadow the Scene."],
       wa: ["Quiero empezar los retos", "Quiero desbloquear los retos Linking sounds, Reductions y Grammar (past tense)."],
@@ -1746,7 +1746,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       const pill = !have ? (rt.soon ? '<span class="reto-pill soon">Próximamente</span>' : '<span class="reto-pill locked">Bloqueado</span>')
         : (isNew ? '<span class="reto-pill new">¡Acabas de desbloquear' + (rt.names.length > 1 ? "los" : "lo") + "!</span>" : '<span class="reto-pill have">Desbloqueado</span>') + soonPill;
       const ic = have ? '<span class="reto-ic ok" aria-hidden="true">' + OK_SVG + "</span>" : '<span class="reto-ic lock" aria-hidden="true">🔒</span>';
-      const names = rt.names.map((n) => typeof n === "string" ? "<span>" + esc(n) + "</span>" : "<span>" + esc(n.t) + (n.soon ? ' <span class="reto-pill soon">Próximamente</span>' : "") + "</span>").join("");
+      const names = rt.names.map((n) => typeof n === "string" ? "<span>" + esc(n) + "</span>" : "<span>" + esc(n.t) + (n.soon ? ' <span class="reto-pill soon">Próximamente</span>' : "") + (n.note && have ? '<span class="reto-note">' + esc(n.note) + "</span>" : "") + "</span>").join("");
       const waLink = (label, text) => '<a class="reto-wa" target="_blank" rel="noopener" href="https://wa.me/573023629834?text=' + encodeURIComponent(text) + '">' + esc(label) + " →</a>";
       const wa = isNew && rt.wa ? waLink(rt.wa[0], "Hola Santi, hice el test y soy " + pageName(r) + ". " + rt.wa[1] + " Te envío el pantallazo de mi resultado del test. Muchas gracias") : "";
       const extra = rt.extra && have ? '<span class="reto-extra"><span class="reto-extra-name">🔒 ' + esc(rt.extra[0]) + '</span><span class="reto-extra-note">' + esc(rt.extra[1]) + "</span>" + (rt.extraWa && isNew ? waLink(rt.extraWa[0], rt.extraWa[1]) : "") + "</span>" : "";
