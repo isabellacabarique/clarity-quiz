@@ -1648,7 +1648,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   function blankOut(el) { if (!el || el.querySelector(":scope > .ph")) return; const n = el.textContent.trim().length; el.textContent = ""; el.appendChild(phBox(n)); }
   function exampleize(root) {
     if (!root) return;
-    ["#r-intro", "#r-desc", "#r-challenge", "#r-roadmap", "#cal-hint", "#cal-note"].forEach((q) => { const el = root.querySelector(q); if (el && el.textContent.trim()) blankOut(el); });
+    const ch = root.querySelector("#cal-hint"), chT = "Este plan está pensado para 60 días."; if (ch && ch.textContent !== chT) ch.textContent = chT;
+    ["#r-intro", "#r-desc", "#r-challenge", "#r-roadmap", "#cal-note"].forEach((q) => { const el = root.querySelector(q); if (el && el.textContent.trim()) blankOut(el); });
     root.querySelectorAll("#r-path > li, .pp-path > li").forEach((li) => {
       if (li.querySelector(":scope > .ph")) return;
       const n = li.textContent.length, un = li.querySelector(".unlock:not(.soon)");
@@ -1661,10 +1662,10 @@ strong.course { font-weight: 800; color: var(--ink); }
         li.appendChild(un);
       }
     });
-    root.querySelectorAll(".cal-b").forEach((b) => { b.textContent = ""; });
-    root.querySelectorAll(".cal-day h4 small").forEach((sm) => { sm.textContent = ""; });
+    root.querySelectorAll(".cal-b").forEach((b) => { if (b.childNodes.length) b.textContent = ""; });
+    root.querySelectorAll(".cal-day h4 small").forEach((sm) => { if (sm.childNodes.length) sm.textContent = ""; });
     root.querySelectorAll(".ck span").forEach((sp) => { sp.textContent = ""; });
-    root.querySelectorAll(".pp > p:not(.sub), .pp-roadmap p, .pp-next p.pp-rec, .ps p.foot").forEach(blankOut);
+    root.querySelectorAll(".pp > p:not(.sub):not(.pp-calhint), .pp-roadmap p, .pp-next p.pp-rec, .ps p.foot").forEach(blankOut);
     root.querySelectorAll(".pp h2").forEach((h) => { if (/^¿Qué significa ser/.test(h.textContent)) h.textContent = "¿Qué significa tu nivel?"; });
     const t = root.querySelector("#r-mean-title"); if (t) t.textContent = "¿Qué significa tu nivel?";
     const nm = root.querySelector("#r-name"); if (nm) { nm.textContent = "Hoy eres "; const c = document.createElement("span"); c.className = "lvl ph-chip"; c.textContent = "tu nivel"; nm.appendChild(c); }
@@ -2157,7 +2158,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     h += '<div class="pp-roadmap">' + rm.outerHTML + path.outerHTML + "</div>";
     const plan = CAL[calKey];
     if (plan) {
-      h += "<h2>Tu semana en Clarity</h2><p>" + txt($("cal-hint")) + "</p>";
+      h += "<h2>Tu semana en Clarity</h2><p class=\"pp-calhint\">" + txt($("cal-hint")) + "</p>";
       plan.stages.forEach((st) => {
         const stageTitle = plan.stages.length > 1 ? "<h3>" + esc(st.label) + "</h3>" : "";
         let firstDay = true;
