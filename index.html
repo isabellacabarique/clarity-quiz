@@ -1731,8 +1731,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       const ic = have ? '<span class="reto-ic ok" aria-hidden="true">' + OK_SVG + "</span>" : '<span class="reto-ic lock" aria-hidden="true">🔒</span>';
       const names = rt.names.map((n) => "<span>" + esc(n) + "</span>").join("");
       const waLink = (label, text) => '<a class="reto-wa" target="_blank" rel="noopener" href="https://wa.me/573023629834?text=' + encodeURIComponent(text) + '">' + esc(label) + " →</a>";
-      const wa = have && rt.wa ? waLink(rt.wa[0], "Hola Santi, hice el test y soy " + pageName(r) + ". " + rt.wa[1] + " Te envío el pantallazo de mi resultado del test. Muchas gracias") : "";
-      const extra = rt.extra && have ? '<span class="reto-extra">🔒 ' + esc(rt.extra) + (rt.extraWa ? " " + waLink(rt.extraWa[0], rt.extraWa[1]) : "") + "</span>" : "";
+      const wa = isNew && rt.wa ? waLink(rt.wa[0], "Hola Santi, hice el test y soy " + pageName(r) + ". " + rt.wa[1] + " Te envío el pantallazo de mi resultado del test. Muchas gracias") : "";
+      const extra = rt.extra && have ? '<span class="reto-extra">🔒 ' + esc(rt.extra) + (rt.extraWa && isNew ? " " + waLink(rt.extraWa[0], rt.extraWa[1]) : "") + "</span>" : "";
       const where = have && rt.where ? '<span class="reto-where">' + esc(rt.where) + "</span>" : !have && !rt.soon ? '<span class="reto-where">Se desbloquea cuando llegues a este nivel.</span>' : "";
       return '<div class="reto-lv' + (have ? "" : " is-locked") + '">' + ic + '<span class="reto-lvname">' + esc(rt.lv) + " " + pill + '</span><span class="reto-names">' + names + "</span>" + where + (wa ? '<span class="reto-waw">' + wa + "</span>" : "") + extra + "</div>";
     }).join("");
