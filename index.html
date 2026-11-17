@@ -1714,7 +1714,7 @@ strong.course { font-weight: 800; color: var(--ink); }
   // "Tus retos": every level's challenges, with what the student already has, just unlocked, or still has to reach.
   const RETOS = [
     { lv: "Nivel 1 · Observer", names: ["Reto Despierta tu oído"], where: "Lo encuentras al final de cada módulo del curso Pronunciation Foundation." },
-    { lv: "Nivel 2 · Observer Alpha", names: ["Reto 15 días: entiende series sin subtítulos (edición Friends)"], soon: true, where: "Una vez esté disponible, te lo haremos saber.", wa: ["Quiero unirme al reto", "Quiero tener acceso al Reto 15 días: entiende series sin subtítulos (edición Friends)."] },
+    { lv: "Nivel 2 · Observer Alpha", names: ["Reto 15 días: entiende inglés sin subtítulos"], soon: true, where: "Una vez esté disponible, te lo haremos saber.", wa: ["Quiero unirme al reto", "Quiero tener acceso al Reto 15 días: entiende series sin subtítulos (edición Friends)."] },
     { lv: "Nivel 3 · Shy Speaker", names: ["Reto Linking sounds", "Reto Reductions", "Reto Grammar (past tense)"], where: "Los encuentras al final de cada módulo del curso Shadow the Scene.", extra: "Reto 30 días de speaking: se desbloquea cuando termines los 3 retos.",
       wa: ["Quiero empezar los retos", "Quiero desbloquear los retos Linking sounds, Reductions y Grammar (past tense)."],
       extraWa: ["Desbloquear el reto de 30 días", "Hola Santi, acabo de terminar los retos Linking sounds, Reductions y Grammar (past tense) y quiero empezar el Reto de 30 días para mejorar mi speaking. Te dejo un pantallazo de mi post en la comunidad. Muchas gracias :)"] },
@@ -1726,15 +1726,16 @@ strong.course { font-weight: 800; color: var(--ink); }
     const cur = r.level.n === 1 ? (isVocabObs(r) ? 0 : 1) : r.level.n;
     const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     return RETOS.map((rt, i) => {
-      const have = i <= cur && !rt.soon, isNew = i === cur;
-      const pill = rt.soon ? '<span class="reto-pill soon">Próximamente</span>'
-        : isNew ? '<span class="reto-pill new">¡Acabas de desbloquear' + (rt.names.length > 1 ? "los" : "lo") + "!</span>" : have ? '<span class="reto-pill have">Desbloqueado</span>' : '<span class="reto-pill locked">Bloqueado</span>';
-      const ic = have ? '<span class="reto-ic ok" aria-hidden="true">' + OK_SVG + "</span>" : isNew ? '<span class="reto-ic lock" aria-hidden="true">🏆</span>' : '<span class="reto-ic lock" aria-hidden="true">🔒</span>';
+      const have = i <= cur, isNew = i === cur; // "soon" challenges are unlocked too, just not available yet
+      const soonPill = rt.soon ? ' <span class="reto-pill soon">Próximamente</span>' : "";
+      const pill = !have ? (rt.soon ? '<span class="reto-pill soon">Próximamente</span>' : '<span class="reto-pill locked">Bloqueado</span>')
+        : (isNew ? '<span class="reto-pill new">¡Acabas de desbloquear' + (rt.names.length > 1 ? "los" : "lo") + "!</span>" : '<span class="reto-pill have">Desbloqueado</span>') + soonPill;
+      const ic = have ? '<span class="reto-ic ok" aria-hidden="true">' + OK_SVG + "</span>" : '<span class="reto-ic lock" aria-hidden="true">🔒</span>';
       const names = rt.names.map((n) => "<span>" + esc(n) + "</span>").join("");
       const waLink = (label, text) => '<a class="reto-wa" target="_blank" rel="noopener" href="https://wa.me/573023629834?text=' + encodeURIComponent(text) + '">' + esc(label) + " →</a>";
       const wa = isNew && rt.wa ? waLink(rt.wa[0], "Hola Santi, hice el test y soy " + pageName(r) + ". " + rt.wa[1] + " Te envío el pantallazo de mi resultado del test. Muchas gracias") : "";
       const extra = rt.extra && have ? '<span class="reto-extra">🔒 ' + esc(rt.extra) + (rt.extraWa && isNew ? " " + waLink(rt.extraWa[0], rt.extraWa[1]) : "") + "</span>" : "";
-      const where = (have || (isNew && rt.soon)) && rt.where ? '<span class="reto-where">' + esc(rt.where) + "</span>" : !have && !rt.soon ? '<span class="reto-where">Se desbloquea cuando llegues a este nivel.</span>' : "";
+      const where = have && rt.where ? '<span class="reto-where">' + esc(rt.where) + "</span>" : !have && !rt.soon ? '<span class="reto-where">Se desbloquea cuando llegues a este nivel.</span>' : "";
       return '<div class="reto-lv' + (have || isNew ? "" : " is-locked") + '">' + ic + '<span class="reto-lvname">' + esc(rt.lv) + " " + pill + '</span><span class="reto-names">' + names + "</span>" + where + (wa ? '<span class="reto-waw">' + wa + "</span>" : "") + extra + "</div>";
     }).join("");
   }
