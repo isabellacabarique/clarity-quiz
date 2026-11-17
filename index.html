@@ -2127,12 +2127,19 @@ strong.course { font-weight: 800; color: var(--ink); }
     },
     // Observer who still doesn't understand when reading: vocabulary first.
     "1v": {
-      // One BONUS lesson a week (every Monday) so there's time to absorb it; the other days, Pronunciation Foundation.
+      // Months 1-2: vocabulary first (one BONUS lesson every Monday). Pronunciation Foundation starts in month 3.
       stages: [
-        { key: "wk", label: "Tu semana", practice: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo y repasa su PDF de vocabulario." },
+        { key: "m12", label: "Meses 1 y 2 · días 1 a 60", practice: { cls: "ra", min: 30, tag: "Práctica de vocabulario", txt: "Lee 1 capítulo de Read Along With Me y repasa el PDF de vocabulario." },
           days: [
-            // Monday: only vocabulary + one BONUS lesson (this level is about building vocabulary)
-            { d: "Lunes", head: "Lección BONUS + vocabulario", bonus: "Mira una lección BONUS.", noDaily: true, prac: { cls: "ra", tag: "Read Along With Me", txt: "Lee 1 capítulo conmigo, con foco en el PDF de vocabulario y luego en encontrar esas palabras en el texto. O aprende vocabulario por tu cuenta." } },
+            { d: "Lunes", head: "Lección BONUS + vocabulario", bonus: "Mira una lección BONUS.", noDaily: true },
+            { d: "Martes", live: true },
+            { d: "Miércoles" },
+            { d: "Jueves" },
+            { d: "Viernes" }
+          ] },
+        { key: "m3", label: "Mes 3 · días 61 a 90", practice: { cls: "ra", tag: "Práctica de vocabulario", txt: "Lee 1 capítulo de Read Along With Me y repasa el PDF de vocabulario." },
+          days: [
+            { d: "Lunes", pf: ["", "Revisa la lección del día."] },
             { d: "Martes", pf: ["", "Revisa la lección del día."], live: true },
             { d: "Miércoles", pf: ["", "Revisa la lección del día."] },
             { d: "Jueves", pf: ["", "Revisa la lección del día."] },
@@ -2160,7 +2167,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       ["Empieza con Read Along With Me", "Tu foco en este nivel es construir tu vocabulario, y para eso creé el curso Read Along With Me, en el que leemos libros e historias juntos. Los capítulos son muy cortos, así que puedes leer uno diario. Es muy importante que uses el PDF de vocabulario que acompaña cada capítulo; recuerda que tu foco es aumentar la cantidad de palabras que conoces en inglés. A medida que leas, vas a entender cada vez más. No te obsesiones con entenderlo todo: obsesiónate con entender la idea general, encontrar las palabras nuevas que vas aprendiendo y poder seguir la historia. Diseñé estas historias para estudiantes, así que no es como leer un libro largo y pesado: son capítulos fáciles de digerir e historias entretenidas de seguir. Si nunca has leído en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo."],
       ["Asegúrate de ver estas video lecciones BONUS", { text: "Las encuentras en el módulo BONUS del curso Clarity (Primeros pasos). Te van a llevar por el camino correcto y te van a ayudar a evitar errores que veo a muchos estudiantes cometer, que les quitan tiempo valioso y retrasan su aprendizaje.", list: ["Qué es la inmersión y cómo hacerla", "Cómo aprender vocabulario correctamente", "Cómo aprender inglés con series y películas", "Taller 10 errores que debes evitar"] }],
       ["Tu inmersión diaria", "Haz inmersión todos los días. Puedes hacerla con Read Along With Me o viendo series, videos o podcasts en inglés. Tu inmersión no es tiempo de estudio: es tiempo para conectar con el inglés, y puedes distribuirlo durante el día."],
-      ["Avanza en el curso Pronunciation Foundation", "Para reconocer las bases de los sonidos del inglés y entender por qué las palabras que aprendes suenan como suenan. Hazlo en orden: el curso está diseñado para que completes los módulos uno tras otro, en el orden en que aparecen. Cada vez que termines un sonido, completa su reto y súbelo al feed para recibir retroalimentación."],
+      ["A partir del tercer mes: Pronunciation Foundation", "Desde el tercer mes, empieza el curso Pronunciation Foundation para reconocer las bases de los sonidos del inglés y entender por qué las palabras que aprendes suenan como suenan. Hazlo en orden: el curso está diseñado para que completes los módulos uno tras otro, en el orden en que aparecen. Cada vez que termines un sonido, completa su reto y súbelo al feed para recibir retroalimentación."],
       ["Cuándo volver a hacer el test", "Cuando sientas que ya puedes seguir la idea de los capítulos sin perderte, porque ya conoces muchas más palabras, vuelve a hacer este test y te daré el siguiente paso."],
       ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]
     ]
