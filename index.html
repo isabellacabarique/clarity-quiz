@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Clarity Speaker Quiz</title>
-<meta name="description" content="Quiz de Clarity by teacher Isa: descubre qué tipo de speaker eres hoy.">
+<title>Clarity Speaker Test</title>
+<meta name="description" content="Test de Clarity by teacher Isa: descubre qué tipo de speaker eres hoy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap">
@@ -476,7 +476,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     </div>
 
     <div class="meta"><span id="meta-count">27 preguntas</span><span>7 minutos</span><span id="meta-mic">Necesitas micrófono</span><span>Repítelo cada 30 días</span></div>
-    <div><button class="btn" id="start">Empezar el quiz</button></div>
+    <div><button class="btn" id="start">Empezar el test</button></div>
   </section>
 
   <!-- QUESTION -->
@@ -1737,7 +1737,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       ["Es mi primera vez con la pronunciación", startBy.replace(/^Si nunca has tenido acercamiento a la pronunciación y los sonidos en inglés, te recomiendo/, "Te recomiendo")],
       ["Ya tengo bases de pronunciación o vengo de Observer", "Si ya has tenido acercamiento a la pronunciación, significa que ya conoces sonidos como el schwa, las vocales y las consonantes del inglés, y que ya estás familiarizado con las reducciones y los linking sounds 😏. Ese conocimiento te permite escuchar el inglés de una forma diferente: ya sabes por qué las palabras no suenan como se escriben, por qué se pegan unas con otras y por qué algunos sonidos casi desaparecen cuando un nativo habla.\n\nAhora tu reto es lograr que ese conocimiento se conecte con tu oído y logres entender el inglés sin sufrir porque «los nativos hablan muy rápido» 😭.\n\nTe recomiendo que revises el curso Pronunciation Foundation para ver si hay algún sonido que aún no reconoces o algo que quieras repasar. Si no es así, salta directo al curso Shadow the Scene, donde, a través del ejercicio de shadowing, vas a imitar a nativos. En este curso vas a encontrar el Listening Lab, que será el ejercicio más importante para ti, porque es lo que realmente va a entrenar tu oído. No te lo saltes.\n\nNo olvides hacer tu inmersión diaria. Es importante que escuches inglés todos los días: sin esa inmersión, tu cerebro nunca va a tener suficiente contacto con el inglés para lograr entenderlo. Puedes hacer inmersión con el curso Read Along With Me, en el que leemos libros e historias juntos. Revisa el PDF de vocabulario y luego lee conmigo: solo escúchame y sigue el texto con la vista. Puedes reducir la velocidad del video si lo necesitas. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo. También puedes hacer inmersión viendo series, películas o escuchando podcasts."]
     ] } : startBy;
-    const items = [["Por dónde empezar", startVal], ...(L.n === 1 && !vocabObs ? [OBS_VOCAB.items[1], ["Tu premio de este nivel", { text: "Pronto podrás desbloquear el Reto 15 días: entiende series sin subtítulos (edición Friends). Toma un pantallazo de tu resultado y envíalo a mi equipo por WhatsApp para tener el acceso. Una vez esté disponible, te lo haremos saber.", locked: "Reto 15 días: entiende series sin subtítulos (edición Friends)", lockedImg: "img/reto-friends.jpg?v=15", lockedHref: "https://wa.me/573023629834?text=Hola%20Santi%2C%20hice%20el%20test%20y%20soy%20Observer%20Alpha.%20Quiero%20tener%20acceso%20al%20Reto%2015%20d%C3%ADas%3A%20entiende%20series%20sin%20subt%C3%ADtulos%20%28edici%C3%B3n%20Friends%29.%20Te%20env%C3%ADo%20el%20pantallazo%20del%20resultado%20del%20test." }]] : L.n === 1 ? [OBS_VOCAB.items[1]] : L.n === 2 ? [] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el quiz" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
+    const items = [["Por dónde empezar", startVal], ...(L.n === 1 && !vocabObs ? [OBS_VOCAB.items[1], ["Tu premio de este nivel", { text: "Pronto podrás desbloquear el Reto 15 días: entiende series sin subtítulos (edición Friends). Toma un pantallazo de tu resultado y envíalo a mi equipo por WhatsApp para tener el acceso. Una vez esté disponible, te lo haremos saber.", locked: "Reto 15 días: entiende series sin subtítulos (edición Friends)", lockedImg: "img/reto-friends.jpg?v=15", lockedHref: "https://wa.me/573023629834?text=Hola%20Santi%2C%20hice%20el%20test%20y%20soy%20Observer%20Alpha.%20Quiero%20tener%20acceso%20al%20Reto%2015%20d%C3%ADas%3A%20entiende%20series%20sin%20subt%C3%ADtulos%20%28edici%C3%B3n%20Friends%29.%20Te%20env%C3%ADo%20el%20pantallazo%20del%20resultado%20del%20test." }]] : L.n === 1 ? [OBS_VOCAB.items[1]] : L.n === 2 ? [] : [["Tu semana", weekVal]]), [L.n === 1 ? "Cuándo volver a hacer el test" : r.next ? "Tu meta para subir" : "Tu rol", L.up], ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]];
     if (vocabObs) items.splice(0, items.length, ...OBS_VOCAB.items);
     // Reading question: "Muy poco" or "La idea general, pero se me escapan muchas palabras" -> vocabulary still needs work.
     else if (r.reading !== null && r.reading <= 1) {
@@ -1797,7 +1797,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         li.appendChild(cl);
       }
       if (k === "Nos vemos los martes") li.classList.add("step-live");
-      if (k === "Tu meta para subir" || k === "Cuándo volver a hacer el quiz" || k === "Tu rol") li.classList.add("goal");
+      if (k === "Tu meta para subir" || k === "Cuándo volver a hacer el test" || k === "Tu rol") li.classList.add("goal");
       ul.appendChild(li);
     });
 
@@ -2060,7 +2060,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       ],
       daily: { tag: "Inmersión", txt: "Lee conmigo en Read Along With Me o ve videos, series o podcasts en inglés.", min: 30 },
       note: "Sábado y domingo: descansa, ponte al día o lee un capítulo más si te provoca.",
-      hint: "Este calendario está pensado para que alcances tu meta de llegar a ser Observer Alpha en 90 días. Para conseguirlo, debes invertir un mínimo de 30 minutos al día a tu práctica de vocabulario y 30 minutos a tu inmersión, 5 días a la semana.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla». Y tu tiempo de práctica de vocabulario no tiene que ser sentarte a traducir palabras 30 minutos: puedes distribuir ese tiempo durante el día mientras conectas con el inglés. Revisa la video lección BONUS «Cómo aprender vocabulario correctamente» para que sepas cómo hacer este proceso.\n\nSigue este plan hasta que puedas seguir la idea sin perderte cuando consumas contenido en inglés; ahí vuelve a hacer el quiz. Si puedes invertir más tiempo, aumenta los tiempos."
+      hint: "Este calendario está pensado para que alcances tu meta de llegar a ser Observer Alpha en 90 días. Para conseguirlo, debes invertir un mínimo de 30 minutos al día a tu práctica de vocabulario y 30 minutos a tu inmersión, 5 días a la semana.\n\nNo quiero que pienses: «¿Entonces tengo que estudiar inglés 1 hora todos los días? ¡Yo no tengo tanto tiempo libre!», porque no es así. Ese es el error que mantiene a muchos estancados. Tu inmersión en el inglés no es tiempo de estudio: es tiempo para conectar con el inglés. Para que entiendas bien cómo hacer ese acercamiento, revisa la video lección BONUS «Qué es la inmersión y cómo hacerla». Y tu tiempo de práctica de vocabulario no tiene que ser sentarte a traducir palabras 30 minutos: puedes distribuir ese tiempo durante el día mientras conectas con el inglés. Revisa la video lección BONUS «Cómo aprender vocabulario correctamente» para que sepas cómo hacer este proceso.\n\nSigue este plan hasta que puedas seguir la idea sin perderte cuando consumas contenido en inglés; ahí vuelve a hacer el test. Si puedes invertir más tiempo, aumenta los tiempos."
     }
   };
   let calKey = 1;
@@ -2072,7 +2072,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       ["Empieza con el curso Pronunciation Foundation", "Para reconocer las bases de los sonidos del inglés y entender por qué las palabras que aprendes suenan como suenan. Hazlo en orden: el curso está diseñado para que completes los módulos uno tras otro, en el orden en que aparecen. Cada vez que termines un sonido, completa su reto y súbelo al feed para recibir retroalimentación."],
       ["Asegúrate de ver estas video lecciones BONUS", { text: "Las encuentras en el módulo BONUS del curso Clarity (Primeros pasos). Te van a llevar por el camino correcto y te van a ayudar a evitar errores que veo a muchos estudiantes cometer, que les quitan tiempo valioso y retrasan su aprendizaje.", list: ["Qué es la inmersión y cómo hacerla", "Cómo aprender vocabulario correctamente", "Cómo aprender inglés con series y películas", "Taller 10 errores que debes evitar"] }],
       ["Tu inmersión diaria", "Explora el curso Read Along With Me, en el que leemos libros e historias juntos. Úsalo como tu inmersión de todos los días: los capítulos son muy cortos, así que puedes leer uno diario. Es muy importante que uses el PDF de vocabulario que acompaña cada capítulo; recuerda que tu foco es aumentar la cantidad de palabras que conoces en inglés. A medida que leas, vas a entender cada vez más. No te obsesiones con entenderlo todo: obsesiónate con entender la idea general y poder seguir la historia. Diseñé estas historias para estudiantes, así que no es como leer un libro largo y pesado: son capítulos fáciles de digerir e historias entretenidas de seguir. Si nunca has hablado en inglés o tienes muy poca práctica, reduce la velocidad del video. Es normal que al principio no puedas ir a mi mismo ritmo. Ve a tu velocidad y, poco a poco, la vas subiendo."],
-      ["Cuándo volver a hacer el quiz", "Cuando sientas que ya puedes seguir la idea de los capítulos sin perderte, porque ya conoces muchas más palabras, vuelve a hacer este quiz y te daré el siguiente paso."],
+      ["Cuándo volver a hacer el test", "Cuando sientas que ya puedes seguir la idea de los capítulos sin perderte, porque ya conoces muchas más palabras, vuelve a hacer este test y te daré el siguiente paso."],
       ["Nos vemos los martes", "Te espero en la clase en vivo, de 7:00 a 8:00 p. m. (hora Colombia). Ahí practicamos juntos y te doy feedback."]
     ]
   };
