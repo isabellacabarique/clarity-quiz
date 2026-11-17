@@ -377,6 +377,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 .path li > .after-btn { grid-column: 2; color: var(--ink-soft); white-space: pre-line; margin-top: 16px; }
 .unlock { grid-column: 2; margin-top: 16px; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 14px; padding: 16px 18px; border-radius: 18px; background: linear-gradient(135deg, #FFF6D8, #FFE9B8); border: 1px solid #F3D27A; box-shadow: 0 18px 30px -22px rgba(163,95,0,.6); }
 .unlock-ic { font-size: 30px; grid-row: span 2; }
+.unlock-note { grid-column: 2; margin: 2px 0 0; font-size: 13px; line-height: 1.4; opacity: .85; }
 .unlock-img { grid-column: 1 / -1; width: 100%; max-width: 320px; border-radius: 12px; margin-top: 12px; display: block; }
 .unlock.soon { background: var(--bg); border: 1px dashed var(--line); box-shadow: none; }
 .unlock.soon .unlock-ic { filter: grayscale(1); opacity: .5; }
@@ -1746,8 +1747,8 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (vocabObs) {
       items.splice(0, items.length, ...OBS_VOCAB.items);
       // Observer's prize: the "Despierta tu oído" challenge
-      items.splice(3, 0, ["Tu premio de este nivel", { text: "Por llegar a este nivel desbloqueaste el Reto Despierta tu oído. Ya está disponible para ti: lo encuentras al final de cada módulo del curso Pronunciation Foundation.",
-        button: { title: "¡Reto desbloqueado!", sub: "Reto Despierta tu oído" } }]);
+      items.splice(3, 0, ["Tu premio de este nivel", { text: "Por llegar a este nivel desbloqueaste el Reto Despierta tu oído. Ya está disponible para ti.",
+        button: { title: "¡Reto desbloqueado!", sub: "Reto Despierta tu oído", note: "Lo encuentras al final de cada módulo del curso Pronunciation Foundation." } }]);
     }
     // Reading question: "Muy poco" or "La idea general, pero se me escapan muchas palabras" -> vocabulary still needs work.
     else if (r.reading !== null && r.reading <= 1) {
@@ -1779,6 +1780,7 @@ strong.course { font-weight: 800; color: var(--ink); }
         const badge = document.createElement("div"); badge.className = "unlock";
         badge.innerHTML = '<span class="unlock-ic" aria-hidden="true">🔓</span><span><b>¡Retos desbloqueados!</b><small>Reto Linking sounds · Reto Reductions · Reto Grammar (past tense)</small></span>';
         if (v.button.title) { badge.querySelector("b").textContent = v.button.title; badge.querySelector("small").textContent = v.button.sub || ""; }
+        if (v.button.note) { const nt = document.createElement("p"); nt.className = "unlock-note"; nt.textContent = v.button.note; badge.appendChild(nt); }
         if (v.button.href) { const a = document.createElement("a"); a.className = "btn wa-btn"; a.href = v.button.href; a.target = "_blank"; a.rel = "noopener"; a.textContent = v.button.label; badge.appendChild(a); }
         li.appendChild(badge);
         if (v.after) { const s2 = document.createElement("span"); s2.className = "after-btn"; setRich(s2, v.after); li.appendChild(s2); }
