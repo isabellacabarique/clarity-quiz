@@ -406,6 +406,7 @@ strong.course { font-weight: 800; color: var(--ink); }
 .reto-extra .reto-wa { margin-top: 8px; background: #EEF2F1; color: #2D7A72 !important; }
 .reto-extra .reto-wa::before { filter: grayscale(1); opacity: .55; }
 .reto-note { display: block; font-size: 13px; font-weight: 400; color: var(--ink-soft); line-height: 1.4; margin: 1px 0 8px; }
+.reto-waw.in-name { display: block; margin: 0 0 10px; font-weight: 400; }
 .reto-extra { grid-column: 2; margin-top: 12px; display: grid; justify-items: start; gap: 2px; }
 .reto-extra-name { font-size: 15.5px; font-weight: 700; color: #7E938F; line-height: 1.4; }
 .reto-extra-note { font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
@@ -512,7 +513,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       <p class="levels-sub">Cada vez que llegas a un nivel, desbloqueas un reto exclusivo 🏆</p>
       <ol class="stairs">
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="1">👀</span><span class="lv">Nivel 1</span><b>Observer</b></div><span class="prize locked"><i class="trophy" aria-hidden="true">🏆</i><small>Próximamente</small></span></li>
-        <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="1">👀</span><span class="lv">Nivel 2</span><b>Observer Alpha</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><ul class="pzlist"><li>Reto Despierta tu oído</li><li>Reto 15 días: entiende inglés sin subtítulos (próximamente)</li></ul></span></li>
+        <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="1">👀</span><span class="lv">Nivel 2</span><b>Observer Alpha</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><ul class="pzlist"><li>Reto Despierta tu oído</li><li>Listening Lab</li><li>Reto 15 días: entiende inglés sin subtítulos (próximamente)</li></ul></span></li>
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="2">🌱</span><span class="lv">Nivel 3</span><b>Shy Speaker</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><ul class="pzlist"><li>Reto Linking sounds</li><li>Reto Reductions</li><li>Reto Grammar (past tense)</li><li>Reto 30 días de speaking</li></ul></span></li>
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="3">🔥</span><span class="lv">Nivel 4</span><b>Brave Speaker</b></div><span class="prize"><i class="trophy" aria-hidden="true">🏆</i><small>Desbloqueas</small><span class="pz">Speaking Club</span></span></li>
         <li><div class="lvcard"><span class="em" aria-hidden="true" data-face="4">🌊</span><span class="lv">Nivel 5</span><b>Fluent Speaker</b></div><span class="prize locked"><i class="trophy" aria-hidden="true">🏆</i><small>Próximamente</small></span></li>
@@ -1728,7 +1729,9 @@ strong.course { font-weight: 800; color: var(--ink); }
   // "Tus retos": every level's challenges, with what the student already has, just unlocked, or still has to reach.
   const RETOS = [
     { lv: "Nivel 1 · Observer", names: ["Nuevo reto"], soon: true, placeholder: true },
-    { lv: "Nivel 2 · Observer Alpha", names: [{ t: "Reto Despierta tu oído", note: "Lo encuentras al final de cada módulo del curso Pronunciation Foundation." }, { t: "Reto 15 días: entiende inglés sin subtítulos", soon: true, note: "Estará disponible pronto: te lo haremos saber." }],
+    { lv: "Nivel 2 · Observer Alpha", names: [{ t: "Reto Despierta tu oído", note: "Lo encuentras al final de cada módulo del curso Pronunciation Foundation." },
+        { t: "Listening Lab", note: "Para entrar, pídele la contraseña a Santi.", wa: ["Quiero la contraseña del Listening Lab", "Hola Santi, hice el test y soy {nivel}. Quiero pedirte la contraseña del Listening Lab. Te envío el pantallazo de mi resultado del test. Muchas gracias"] },
+        { t: "Reto 15 días: entiende inglés sin subtítulos", soon: true, note: "Estará disponible pronto: te lo haremos saber." }],
       wa: ["Quiero unirme al Reto 15 días", "Quiero tener acceso al Reto 15 días: entiende inglés sin subtítulos."] },
     { lv: "Nivel 3 · Shy Speaker", names: ["Reto Linking sounds", "Reto Reductions", "Reto Grammar (past tense)"], where: "Los encuentras al final de cada módulo del curso Shadow the Scene.", extra: ["Reto 30 días de speaking", "Se desbloquea cuando termines los 3 retos de Shadow the Scene."],
       wa: ["Quiero empezar los retos", "Quiero desbloquear los retos Linking sounds, Reductions y Grammar (past tense)."],
@@ -1746,8 +1749,8 @@ strong.course { font-weight: 800; color: var(--ink); }
       const pill = !have ? (rt.soon ? '<span class="reto-pill soon">Próximamente</span>' : '<span class="reto-pill locked">Bloqueado</span>')
         : (isNew ? '<span class="reto-pill new">¡Acabas de desbloquear' + (rt.names.length > 1 ? "los" : "lo") + "!</span>" : '<span class="reto-pill have">Desbloqueado</span>') + soonPill;
       const ic = have ? '<span class="reto-ic ok" aria-hidden="true">' + OK_SVG + "</span>" : '<span class="reto-ic lock" aria-hidden="true">🔒</span>';
-      const names = rt.names.map((n) => typeof n === "string" ? "<span>" + esc(n) + "</span>" : "<span>" + esc(n.t) + (n.soon ? ' <span class="reto-pill soon">Próximamente</span>' : "") + (n.note && have ? '<span class="reto-note">' + esc(n.note) + "</span>" : "") + "</span>").join("");
       const waLink = (label, text) => '<a class="reto-wa" target="_blank" rel="noopener" href="https://wa.me/573023629834?text=' + encodeURIComponent(text) + '">' + esc(label) + " →</a>";
+      const names = rt.names.map((n) => typeof n === "string" ? "<span>" + esc(n) + "</span>" : "<span>" + esc(n.t) + (n.soon ? ' <span class="reto-pill soon">Próximamente</span>' : "") + (n.note && have ? '<span class="reto-note">' + esc(n.note) + "</span>" : "") + (n.wa && isNew ? '<span class="reto-waw in-name">' + waLink(n.wa[0], n.wa[1].replace("{nivel}", pageName(r))) + "</span>" : "") + "</span>").join("");
       const wa = isNew && rt.wa ? waLink(rt.wa[0], "Hola Santi, hice el test y soy " + pageName(r) + ". " + rt.wa[1] + " Te envío el pantallazo de mi resultado del test. Muchas gracias") : "";
       const extra = rt.extra && have ? '<span class="reto-extra"><span class="reto-extra-name">🔒 ' + esc(rt.extra[0]) + '</span><span class="reto-extra-note">' + esc(rt.extra[1]) + "</span>" + (rt.extraWa && isNew ? waLink(rt.extraWa[0], rt.extraWa[1]) : "") + "</span>" : "";
       const where = have && rt.where ? '<span class="reto-where">' + esc(rt.where) + "</span>" : !have && !rt.soon ? '<span class="reto-where">Se desbloquea cuando llegues a este nivel.</span>' : "";
