@@ -379,6 +379,9 @@ strong.course { font-weight: 800; color: var(--ink); }
 .unlock-ic { font-size: 30px; grid-row: span 2; }
 .unlock-ok { color: var(--teal); display: flex; filter: drop-shadow(0 3px 6px rgba(45,122,114,.25)); }
 .unlock-ok svg { display: block; }
+.unlock-list { display: grid; gap: 2px; margin-top: 6px; font-size: 13.5px; font-weight: 600; line-height: 1.45; color: #7A5A1A; }
+.unlock-list > span, #r-path .unlock-list > span, .pp-path .unlock-list > span { position: relative; padding-left: 14px; color: #7A5A1A; }
+.unlock-list > span::before { content: ""; position: absolute; left: 2px; top: .6em; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 .unlock-note { grid-column: 2; margin: 2px 0 0; font-size: 13px; line-height: 1.4; opacity: .85; }
 .unlock-img { grid-column: 1 / -1; width: 100%; max-width: 320px; border-radius: 12px; margin-top: 12px; display: block; }
 .unlock.soon { background: var(--bg); border: 1px dashed var(--line); box-shadow: none; }
@@ -1665,6 +1668,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       if (un) {
         // sample of how an unlocked challenge looks
         un.querySelector("b").textContent = "¡Reto desbloqueado!";
+        const ul2 = un.querySelector(".unlock-list"); if (ul2) { const sm2 = document.createElement("small"); ul2.replaceWith(sm2); }
         const sm = un.querySelector("small"); if (sm) sm.textContent = "Nombre del reto";
         const bt = un.querySelector("a"); if (bt) { bt.textContent = "Quiero empezar el reto"; bt.href = "#ejemplo"; bt.removeAttribute("target"); bt.addEventListener("click", (e) => e.preventDefault()); }
         li.appendChild(un);
@@ -1780,7 +1784,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       }
       if (v && v.button) {
         const badge = document.createElement("div"); badge.className = "unlock";
-        badge.innerHTML = '<span class="unlock-ic unlock-ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="38" height="38"><circle cx="12" cy="12" r="12" fill="#3F9C92"/><path d="M7.2 12.4l3.1 3.1 6.5-6.6" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>¡Retos desbloqueados!</b><small>Reto Linking sounds · Reto Reductions · Reto Grammar (past tense)</small></span>';
+        badge.innerHTML = '<span class="unlock-ic unlock-ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="38" height="38"><circle cx="12" cy="12" r="12" fill="#3F9C92"/><path d="M7.2 12.4l3.1 3.1 6.5-6.6" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>¡Retos desbloqueados!</b><span class="unlock-list"><span>Reto Linking sounds</span><span>Reto Reductions</span><span>Reto Grammar (past tense)</span></span></span>';
         if (v.button.title) { badge.querySelector("b").textContent = v.button.title; badge.querySelector("small").textContent = v.button.sub || ""; }
         if (v.button.note) { const nt = document.createElement("p"); nt.className = "unlock-note"; nt.textContent = v.button.note; badge.appendChild(nt); }
         if (v.button.href) { const a = document.createElement("a"); a.className = "btn wa-btn"; a.href = v.button.href; a.target = "_blank"; a.rel = "noopener"; a.textContent = v.button.label; badge.appendChild(a); }
