@@ -1778,7 +1778,7 @@ strong.course { font-weight: 800; color: var(--ink); }
       }
       if (v && v.button) {
         const badge = document.createElement("div"); badge.className = "unlock";
-        badge.innerHTML = '<span class="unlock-ic" aria-hidden="true">🔓</span><span><b>¡Retos desbloqueados!</b><small>Reto Linking sounds · Reto Reductions · Reto Grammar (past tense)</small></span>';
+        badge.innerHTML = '<span class="unlock-ic" aria-hidden="true">✅</span><span><b>¡Retos desbloqueados!</b><small>Reto Linking sounds · Reto Reductions · Reto Grammar (past tense)</small></span>';
         if (v.button.title) { badge.querySelector("b").textContent = v.button.title; badge.querySelector("small").textContent = v.button.sub || ""; }
         if (v.button.note) { const nt = document.createElement("p"); nt.className = "unlock-note"; nt.textContent = v.button.note; badge.appendChild(nt); }
         if (v.button.href) { const a = document.createElement("a"); a.className = "btn wa-btn"; a.href = v.button.href; a.target = "_blank"; a.rel = "noopener"; a.textContent = v.button.label; badge.appendChild(a); }
