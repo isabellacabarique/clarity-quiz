@@ -753,6 +753,8 @@ strong.course { font-weight: 800; color: var(--ink); }
   // Azure pronunciation assessment: paste here the address of your Cloudflare Worker. Empty = use the browser's recognition.
   const DEBUG = new URLSearchParams(location.search).has("debug");
   const AZURE_TOKEN_URL = "https://clarity-quiz-token.isabellacabarique.workers.dev/";
+  // Browsers inside apps (Instagram, Facebook, WhatsApp, TikTok, LINE…) often block or hang the microphone.
+  const IN_APP = /Instagram|FBAN|FBAV|FB_IAB|WhatsApp|TikTok|musical_ly|Line\/|Snapchat|; wv\)/i.test(navigator.userAgent || "");
   const USE_AZURE = !!AZURE_TOKEN_URL && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
   if (!SR && !USE_AZURE) { for (let i = QUESTIONS.length - 1; i >= 0; i--) if (QUESTIONS[i].type === "speak") QUESTIONS.splice(i, 1); }
@@ -1220,9 +1222,21 @@ strong.course { font-weight: 800; color: var(--ink); }
     if (s.listening) { if (azFinish) azFinish(true); return; }
     if (s.tries >= SPEAK_TRIES || s.preparing) return;
     s.preparing = true; s.err = ""; s.live = ""; renderSpeak(q);
+    // Watchdog: some phones (in-app browsers like Instagram/WhatsApp/Facebook, a permission prompt that never shows,
+    // another app using the mic) never answer. After 12 s stop waiting and tell the student what to do.
+    const attempt = (s.attempt = (s.attempt || 0) + 1);
+    setTimeout(() => {
+      if (!s.preparing || s.attempt !== attempt) return;
+      s.attempt++; s.preparing = false;
+      try { azRec && azRec.close(); } catch (e) {} azRec = null; azFinish = null;
+      s.err = IN_APP
+        ? "Tu micrófono no se activó. Parece que abriste el test desde una app (Instagram, WhatsApp, Facebook…), y ahí el micrófono no siempre funciona. Copia el enlace y ábrelo en Chrome o Safari, o toca «Mi micrófono no funciona»."
+        : "Tu micrófono no se activó. Revisa que le hayas dado permiso a esta página para usar el micrófono y que ninguna otra app lo esté usando, e intenta de nuevo. Si sigue sin funcionar, ábrelo en Chrome o Safari, o toca «Mi micrófono no funciona».";
+      if (current === idx) renderSpeak(q);
+    }, 12000);
     let tok;
     try { await loadSdk(); tok = await getToken(); }
-    catch (e) { s.preparing = false; s.err = "No pude conectarme con el evaluador de voz. Revisa tu conexión a internet e intenta de nuevo."; if (current === idx) renderSpeak(q); return; }
+    catch (e) { if (s.attempt !== attempt) return; s.preparing = false; s.err = "No pude conectarme con el evaluador de voz. Revisa tu conexión a internet e intenta de nuevo."; if (current === idx) renderSpeak(q); return; }
     const SDK = window.SpeechSDK;
     const cfg = SDK.SpeechConfig.fromAuthorizationToken(tok.token, tok.region);
     cfg.speechRecognitionLanguage = "en-US";
@@ -1483,6 +1497,7 @@ strong.course { font-weight: 800; color: var(--ink); }
     };
     let meter = null;
     rec.startContinuousRecognitionAsync(() => {
+      if (s.attempt !== attempt) { try { rec.close(); } catch (e) {} return; } // gave up waiting (watchdog)
       meter = startMeter();
       s.preparing = false; s.listening = true; quiet(9000);
       hard = setTimeout(() => finish(false), 25000);
