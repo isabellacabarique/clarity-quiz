@@ -1573,7 +1573,13 @@ strong.course { font-weight: 800; color: var(--ink); }
     const fluentReady = sp.length === 1 && sp[0] === 5 && (!compQs.length || compRight === compQs.length) && dictAvg >= 0.9
       && one("reading") >= 4 && sel("freq").includes(3) && one("feel") >= 2 && rep === 3;
     if (idx === 3 && !fluentReady) idx = 2;
-    const shown = Math.max(LEVELS[idx].min, Math.min(score, idx < 3 ? LEVELS[idx + 1].min - 1 : 100)); // keep the score inside the level's range
+    // Keep the score inside the level's range. When a rule holds the student in a lower level than their points
+    // (e.g. many Observer Alpha with lots of points), don't pin them to the top of the range ("te falta 1 punto"):
+    // place them between 45 % and 90 % of the range, depending on their dictations, videos and points (so it varies).
+    const lo = LEVELS[idx].min, hi = idx < 3 ? LEVELS[idx + 1].min - 1 : 100;
+    const compFrac = compQs.length ? compRight / compQs.length : 0.5;
+    const pos = 0.45 + 0.2 * dictAvg + 0.15 * compFrac + 0.1 * (score - hi) / (100 - hi);
+    const shown = score > hi ? lo + Math.round((hi - lo) * pos) : Math.max(lo, score);
     const level = LEVELS[idx], next = idx < 3 ? LEVELS[idx + 1] : null;
     const toNext = next ? next.min - shown : 0;
     const progress = next ? Math.max(0, Math.min(1, (shown - level.min) / (next.min - level.min))) : 1;
